@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>proWIN Lager</title>
+  <title>Lorena's proWIN Lager</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -85,34 +85,34 @@ const statusOf = (p) => {
 const CATS = ["Alle","Reinigung","Küche","Bad","Textil","Körperpflege","Raumduft","Duft","Auto"];
 
 const SEED = [
-  {id:"p1",  name:"Alleskönner Mint",             category:"Reinigung",    buyPrice:8.50,  sellPrice:13.90, stock:5, minStock:2, description:"Universalreiniger mit Minzduft, ECOCERT",      image:IMG("allesk%C3%B6nner-mint"),              notes:""},
-  {id:"p2",  name:"Glancy Orange 500 ml",         category:"Reinigung",    buyPrice:7.90,  sellPrice:12.90, stock:3, minStock:2, description:"Glasreiniger mit Orangenduft",                 image:IMG("glancy-orange"),                      notes:""},
-  {id:"p3",  name:"Glancy Lemon",                 category:"Reinigung",    buyPrice:7.90,  sellPrice:12.90, stock:0, minStock:2, description:"Glasreiniger mit Zitronenduft",                image:IMG("glancy-lemon"),                       notes:""},
-  {id:"p4",  name:"Dish n Clean Boutique No3",    category:"Küche",        buyPrice:6.50,  sellPrice:10.90, stock:8, minStock:3, description:"Geschirrspülmittel Boutique Edition",          image:IMG("dish-n-clean-boutique-no-3"),         notes:""},
-  {id:"p5",  name:"Klarspüler",                   category:"Küche",        buyPrice:5.90,  sellPrice:9.50,  stock:4, minStock:2, description:"Klarspüler für die Spülmaschine",              image:IMG("klarsp%C3%BCler"),                    notes:""},
-  {id:"p6",  name:"CleanerGy Mint",               category:"Bad",          buyPrice:9.00,  sellPrice:14.90, stock:2, minStock:2, description:"Badreiniger mit Pfefferminzöl, ECOCERT",       image:IMG("cleanergy-mint"),                     notes:""},
-  {id:"p7",  name:"CleanerGy Mandarin",           category:"Bad",          buyPrice:9.00,  sellPrice:14.90, stock:1, minStock:2, description:"Badreiniger mit Mandarinenöl, ECOCERT",        image:IMG("cleanergy-mandarin"),                 notes:""},
-  {id:"p8",  name:"Softclean Lemon Mint 1000 ml", category:"Reinigung",    buyPrice:11.00, sellPrice:17.90, stock:6, minStock:2, description:"Universalreiniger 100% natürlichen Ursprungs", image:IMG("softclean"),                          notes:""},
-  {id:"p9",  name:"Calex",                        category:"Bad",          buyPrice:8.00,  sellPrice:13.50, stock:3, minStock:2, description:"Kalklöser und Badreiniger",                    image:IMG("calex"),                              notes:""},
-  {id:"p10", name:"Calex Liquid",                 category:"Bad",          buyPrice:8.50,  sellPrice:13.90, stock:2, minStock:2, description:"Flüssiger Kalklöser für Bad und Küche",        image:IMG("calex-liquid"),                       notes:""},
-  {id:"p11", name:"Tex n Clean No1 Lemon",        category:"Textil",       buyPrice:10.00, sellPrice:16.50, stock:4, minStock:2, description:"Boutique Waschmittel mit Zitronenduft",        image:IMG("tex-n-clean-boutique-no-1-lemon"),    notes:""},
-  {id:"p12", name:"Tex n Clean No2 Lavender",     category:"Textil",       buyPrice:10.00, sellPrice:16.50, stock:3, minStock:2, description:"Boutique Waschmittel mit Lavendelduft",        image:IMG("tex-n-clean-boutique-no-2-lavender"), notes:""},
-  {id:"p13", name:"Special Force",                category:"Reinigung",    buyPrice:12.00, sellPrice:19.90, stock:1, minStock:2, description:"Intensive Flecken- und Fettentfernung",        image:IMG("special-force"),                      notes:""},
-  {id:"p14", name:"Window",                       category:"Reinigung",    buyPrice:7.50,  sellPrice:12.50, stock:5, minStock:2, description:"Streifenfreier Fenster- und Glasreiniger",     image:IMG("window"),                             notes:""},
-  {id:"p15", name:"Aloe Vera Face Cream",         category:"Körperpflege", buyPrice:14.00, sellPrice:22.90, stock:3, minStock:2, description:"Pflegende Gesichtscreme mit Aloe Vera",        image:IMG("aloe-vera-face-cream"),               notes:""},
-  {id:"p16", name:"Aloe Vera Toothpaste",         category:"Körperpflege", buyPrice:6.00,  sellPrice:9.90,  stock:7, minStock:3, description:"Zahnpasta mit Aloe Vera",                      image:IMG("aloe-vera-toothpaste"),               notes:""},
-  {id:"p17", name:"GWNC Day & Night Intensive",   category:"Körperpflege", buyPrice:18.00, sellPrice:29.90, stock:2, minStock:2, description:"Intensive Tag & Nacht Gesichtspflege",         image:IMG("gwnc-day-night-intensive"),           notes:""},
-  {id:"p18", name:"Sundays Sunspray SPF30",       category:"Körperpflege", buyPrice:11.00, sellPrice:17.90, stock:4, minStock:2, description:"Sonnenschutzspray SPF30",                       image:IMG("sundays-sunspray-spf30"),             notes:""},
-  {id:"p19", name:"Handsafe",                     category:"Körperpflege", buyPrice:5.00,  sellPrice:8.50,  stock:6, minStock:3, description:"Pflegendes Händedesinfektionsmittel",           image:IMG("handsafe"),                           notes:""},
-  {id:"p20", name:"Pure Air Green Tea",           category:"Raumduft",     buyPrice:9.00,  sellPrice:14.90, stock:3, minStock:2, description:"Natürlicher Raumduft Grüner Tee",              image:IMG("pure-air-green-tea"),                 notes:""},
-  {id:"p21", name:"Pure Air Cherry Blossom",      category:"Raumduft",     buyPrice:9.00,  sellPrice:14.90, stock:2, minStock:2, description:"Raumduft Kirschblüte",                         image:IMG("pure-air-cherry-blossom"),            notes:""},
-  {id:"p22", name:"Pure Air White Cotton",        category:"Raumduft",     buyPrice:9.00,  sellPrice:14.90, stock:1, minStock:2, description:"Raumduft White Cotton",                        image:IMG("pure-air-white-cotton"),              notes:""},
-  {id:"p23", name:"Dark Eau de Toilette",         category:"Duft",         buyPrice:22.00, sellPrice:36.90, stock:2, minStock:1, description:"Herbmaskulines Eau de Toilette",                image:IMG("dark-eau-de-toilette"),               notes:""},
-  {id:"p24", name:"Machine n Clean",              category:"Küche",        buyPrice:7.00,  sellPrice:11.50, stock:4, minStock:2, description:"Maschinenreiniger für Geschirrspüler",          image:IMG("machine-n-clean"),                    notes:""},
-  {id:"p25", name:"Backofen & Grillreiniger",     category:"Küche",        buyPrice:9.50,  sellPrice:15.90, stock:3, minStock:2, description:"Kraftvoller Backofenreiniger",                 image:IMG("backofen-grillreiniger"),             notes:""},
-  {id:"p26", name:"Seal & Care Spray",            category:"Reinigung",    buyPrice:10.00, sellPrice:16.90, stock:2, minStock:2, description:"Versiegelungs- und Pflegespray",                image:IMG("seal-care-spray"),                    notes:""},
-  {id:"p27", name:"Autokönner",                   category:"Auto",         buyPrice:13.00, sellPrice:21.90, stock:2, minStock:1, description:"Universalpflege für Autolack und Felgen",       image:IMG("autok%C3%B6nner"),                    notes:""},
-  {id:"p28", name:"Footsafe",                     category:"Körperpflege", buyPrice:7.00,  sellPrice:11.90, stock:3, minStock:2, description:"Pflegendes Fußbad-Konzentrat",                  image:IMG("footsafe"),                           notes:""},
+  {id:"p1",  name:"Alleskönner Mint",             category:"Reinigung",    buyPrice:0,  sellPrice:0, stock:5, minStock:2, description:"Universalreiniger mit Minzduft, ECOCERT",      image:IMG("allesk%C3%B6nner-mint"),              notes:""},
+  {id:"p2",  name:"Glancy Orange 500 ml",         category:"Reinigung",    buyPrice:0,  sellPrice:0, stock:3, minStock:2, description:"Glasreiniger mit Orangenduft",                 image:IMG("glancy-orange"),                      notes:""},
+  {id:"p3",  name:"Glancy Lemon",                 category:"Reinigung",    buyPrice:0,  sellPrice:0, stock:0, minStock:2, description:"Glasreiniger mit Zitronenduft",                image:IMG("glancy-lemon"),                       notes:""},
+  {id:"p4",  name:"Dish n Clean Boutique No3",    category:"Küche",        buyPrice:0,  sellPrice:0, stock:8, minStock:3, description:"Geschirrspülmittel Boutique Edition",          image:IMG("dish-n-clean-boutique-no-3"),         notes:""},
+  {id:"p5",  name:"Klarspüler",                   category:"Küche",        buyPrice:0,  sellPrice:0,  stock:4, minStock:2, description:"Klarspüler für die Spülmaschine",              image:IMG("klarsp%C3%BCler"),                    notes:""},
+  {id:"p6",  name:"CleanerGy Mint",               category:"Bad",          buyPrice:0,  sellPrice:0, stock:2, minStock:2, description:"Badreiniger mit Pfefferminzöl, ECOCERT",       image:IMG("cleanergy-mint"),                     notes:""},
+  {id:"p7",  name:"CleanerGy Mandarin",           category:"Bad",          buyPrice:0,  sellPrice:0, stock:1, minStock:2, description:"Badreiniger mit Mandarinenöl, ECOCERT",        image:IMG("cleanergy-mandarin"),                 notes:""},
+  {id:"p8",  name:"Softclean Lemon Mint 1000 ml", category:"Reinigung",    buyPrice:0, sellPrice:0, stock:6, minStock:2, description:"Universalreiniger 100% natürlichen Ursprungs", image:IMG("softclean"),                          notes:""},
+  {id:"p9",  name:"Calex",                        category:"Bad",          buyPrice:0,  sellPrice:0, stock:3, minStock:2, description:"Kalklöser und Badreiniger",                    image:IMG("calex"),                              notes:""},
+  {id:"p10", name:"Calex Liquid",                 category:"Bad",          buyPrice:0,  sellPrice:0, stock:2, minStock:2, description:"Flüssiger Kalklöser für Bad und Küche",        image:IMG("calex-liquid"),                       notes:""},
+  {id:"p11", name:"Tex n Clean No1 Lemon",        category:"Textil",       buyPrice:0, sellPrice:0, stock:4, minStock:2, description:"Boutique Waschmittel mit Zitronenduft",        image:IMG("tex-n-clean-boutique-no-1-lemon"),    notes:""},
+  {id:"p12", name:"Tex n Clean No2 Lavender",     category:"Textil",       buyPrice:0, sellPrice:0, stock:3, minStock:2, description:"Boutique Waschmittel mit Lavendelduft",        image:IMG("tex-n-clean-boutique-no-2-lavender"), notes:""},
+  {id:"p13", name:"Special Force",                category:"Reinigung",    buyPrice:0, sellPrice:0, stock:1, minStock:2, description:"Intensive Flecken- und Fettentfernung",        image:IMG("special-force"),                      notes:""},
+  {id:"p14", name:"Window",                       category:"Reinigung",    buyPrice:0,  sellPrice:0, stock:5, minStock:2, description:"Streifenfreier Fenster- und Glasreiniger",     image:IMG("window"),                             notes:""},
+  {id:"p15", name:"Aloe Vera Face Cream",         category:"Körperpflege", buyPrice:0, sellPrice:0, stock:3, minStock:2, description:"Pflegende Gesichtscreme mit Aloe Vera",        image:IMG("aloe-vera-face-cream"),               notes:""},
+  {id:"p16", name:"Aloe Vera Toothpaste",         category:"Körperpflege", buyPrice:0,  sellPrice:0,  stock:7, minStock:3, description:"Zahnpasta mit Aloe Vera",                      image:IMG("aloe-vera-toothpaste"),               notes:""},
+  {id:"p17", name:"GWNC Day & Night Intensive",   category:"Körperpflege", buyPrice:0, sellPrice:0, stock:2, minStock:2, description:"Intensive Tag & Nacht Gesichtspflege",         image:IMG("gwnc-day-night-intensive"),           notes:""},
+  {id:"p18", name:"Sundays Sunspray SPF30",       category:"Körperpflege", buyPrice:0, sellPrice:0, stock:4, minStock:2, description:"Sonnenschutzspray SPF30",                       image:IMG("sundays-sunspray-spf30"),             notes:""},
+  {id:"p19", name:"Handsafe",                     category:"Körperpflege", buyPrice:0,  sellPrice:0,  stock:6, minStock:3, description:"Pflegendes Händedesinfektionsmittel",           image:IMG("handsafe"),                           notes:""},
+  {id:"p20", name:"Pure Air Green Tea",           category:"Raumduft",     buyPrice:0,  sellPrice:0, stock:3, minStock:2, description:"Natürlicher Raumduft Grüner Tee",              image:IMG("pure-air-green-tea"),                 notes:""},
+  {id:"p21", name:"Pure Air Cherry Blossom",      category:"Raumduft",     buyPrice:0,  sellPrice:0, stock:2, minStock:2, description:"Raumduft Kirschblüte",                         image:IMG("pure-air-cherry-blossom"),            notes:""},
+  {id:"p22", name:"Pure Air White Cotton",        category:"Raumduft",     buyPrice:0,  sellPrice:0, stock:1, minStock:2, description:"Raumduft White Cotton",                        image:IMG("pure-air-white-cotton"),              notes:""},
+  {id:"p23", name:"Dark Eau de Toilette",         category:"Duft",         buyPrice:0, sellPrice:0, stock:2, minStock:1, description:"Herbmaskulines Eau de Toilette",                image:IMG("dark-eau-de-toilette"),               notes:""},
+  {id:"p24", name:"Machine n Clean",              category:"Küche",        buyPrice:0,  sellPrice:0, stock:4, minStock:2, description:"Maschinenreiniger für Geschirrspüler",          image:IMG("machine-n-clean"),                    notes:""},
+  {id:"p25", name:"Backofen & Grillreiniger",     category:"Küche",        buyPrice:0,  sellPrice:0, stock:3, minStock:2, description:"Kraftvoller Backofenreiniger",                 image:IMG("backofen-grillreiniger"),             notes:""},
+  {id:"p26", name:"Seal & Care Spray",            category:"Reinigung",    buyPrice:0, sellPrice:0, stock:2, minStock:2, description:"Versiegelungs- und Pflegespray",                image:IMG("seal-care-spray"),                    notes:""},
+  {id:"p27", name:"Autokönner",                   category:"Auto",         buyPrice:0, sellPrice:0, stock:2, minStock:1, description:"Universalpflege für Autolack und Felgen",       image:IMG("autok%C3%B6nner"),                    notes:""},
+  {id:"p28", name:"Footsafe",                     category:"Körperpflege", buyPrice:0,  sellPrice:0, stock:3, minStock:2, description:"Pflegendes Fußbad-Konzentrat",                  image:IMG("footsafe"),                           notes:""},
 ];
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
@@ -171,8 +171,8 @@ function LoginScreen({ onUnlock }) {
           <Ic n="drop" s={32} style={{color:"#fff"}}/>
         </div>
 
-        <h1 style={{margin:"0 0 4px",fontSize:26,fontWeight:900,color:B[900],letterSpacing:-.5}}>proWIN Lager</h1>
-        <p style={{margin:"0 0 32px",color:"#94a3b8",fontSize:14}}>Lagerverwaltung · Bitte einloggen</p>
+        <h1 style={{margin:"0 0 4px",fontSize:26,fontWeight:900,color:B[900],letterSpacing:-.5}}>Lorena's proWIN Lager</h1>
+        <p style={{margin:"0 0 32px",color:"#94a3b8",fontSize:14}}>Mein persönliches Lager 💜</p>
 
         <form onSubmit={tryLogin}>
           <div style={{animation:shake?"shake .4s ease":undefined,marginBottom:16}}>
@@ -238,7 +238,7 @@ function ProdCard({p,onEdit,onIn,onSale}) {
           <div>
             <div style={{fontSize:10,color:"#94a3b8",fontWeight:700,textTransform:"uppercase",letterSpacing:.4}}>Verkaufspreis</div>
             <div style={{fontSize:20,fontWeight:900,color:B[600],letterSpacing:-.5}}>{chf(p.sellPrice)}</div>
-            <div style={{fontSize:10,color:"#94a3b8"}}>EK: {chf(p.buyPrice)} · {margin}% Marge</div>
+            
           </div>
           <div style={{textAlign:"right"}}>
             <div style={{fontSize:10,color:"#94a3b8",fontWeight:700,textTransform:"uppercase",letterSpacing:.4}}>Bestand</div>
@@ -331,7 +331,7 @@ function StockModal({product,onApply,onClose}) {
           <button onClick={()=>setQty(q=>q+1)} style={{width:44,height:44,borderRadius:12,border:`1px solid ${B[100]}`,background:"#f8faff",cursor:"pointer",fontSize:22,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",color:B[700]}}>+</button>
         </div>
       </Lbl>
-      {mode==="sale"&&<div style={{background:B[50],border:`1px solid ${B[200]}`,borderRadius:12,padding:14,marginTop:12,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+      {mode==="sale"&&product.sellPrice>0&&<div style={{background:B[50],border:`1px solid ${B[200]}`,borderRadius:12,padding:14,marginTop:12,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
         <div><div style={{fontSize:10,color:"#94a3b8",fontWeight:700}}>UMSATZ</div><div style={{fontWeight:900,color:B[700],fontSize:16}}>{chf(product.sellPrice*qty)}</div></div>
         <div><div style={{fontSize:10,color:"#94a3b8",fontWeight:700}}>GEWINN</div><div style={{fontWeight:900,color:"#16a34a",fontSize:16}}>{chf((product.sellPrice-product.buyPrice)*qty)}</div></div>
       </div>}
@@ -420,20 +420,20 @@ function App() {
   return (
     <div style={{minHeight:"100vh",background:"#f0f5ff"}}>
       {/* Header */}
-      <header style={{background:"#fff",borderBottom:`1px solid ${B[100]}`,position:"sticky",top:0,zIndex:50}}>
-        <div style={{maxWidth:960,margin:"0 auto",padding:"0 16px",display:"flex",alignItems:"center",height:58,gap:10}}>
+      <header style={{background:`linear-gradient(135deg,${B[800]},${B[600]})`,position:"sticky",top:0,zIndex:50,boxShadow:`0 2px 16px ${B[900]}30`}}>
+        <div style={{maxWidth:960,margin:"0 auto",padding:"0 16px",display:"flex",alignItems:"center",height:60,gap:10}}>
           <div style={{display:"flex",alignItems:"center",gap:10,flex:1}}>
-            <div style={{width:36,height:36,background:`linear-gradient(135deg,${B[700]},${B[400]})`,borderRadius:12,display:"flex",alignItems:"center",justifyContent:"center"}}><Ic n="drop" s={18} style={{color:"#fff"}}/></div>
-            <div><div style={{fontWeight:900,fontSize:17,color:B[900],letterSpacing:-.5,lineHeight:1}}>proWIN Lager</div><div style={{fontSize:10,color:B[400],fontWeight:700,letterSpacing:.8}}>CLOUD · ECHTZEIT</div></div>
+            <div style={{width:38,height:38,background:"rgba(255,255,255,0.2)",borderRadius:13,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)"}}><Ic n="drop" s={20} style={{color:"#fff"}}/></div>
+            <div><div style={{fontWeight:900,fontSize:17,color:"#fff",letterSpacing:-.3,lineHeight:1}}>Lorena's proWIN Lager</div><div style={{fontSize:10,color:"rgba(255,255,255,0.65)",fontWeight:700,letterSpacing:.6}}>MEIN LAGER ✨</div></div>
           </div>
-          <div style={{display:"flex",alignItems:"center",gap:4,fontSize:11,color:syncing?"#d97706":"#16a34a",fontWeight:700,background:syncing?"#fffbeb":"#f0fdf4",padding:"4px 10px",borderRadius:20,border:`1px solid ${syncing?"#fde68a":"#bbf7d0"}`}}>
+          <div style={{display:"flex",alignItems:"center",gap:4,fontSize:11,color:syncing?"#fbbf24":"rgba(255,255,255,0.9)",fontWeight:700,background:"rgba(255,255,255,0.15)",padding:"4px 10px",borderRadius:20,border:`1px solid rgba(255,255,255,${syncing?".4":".25"})`}}>
             <Ic n={syncing?"sync":"check"} s={12}/>{syncing?"Speichern…":"Sync ✓"}
           </div>
           <div style={{display:"flex",gap:5}}>
-            {aus>0&&<span style={{background:"#fef2f2",color:"#dc2626",border:"1px solid #fecaca",padding:"3px 8px",borderRadius:20,fontSize:11,fontWeight:700}}>{aus} aus</span>}
-            {wenig>0&&<span style={{background:"#fffbeb",color:"#d97706",border:"1px solid #fde68a",padding:"3px 8px",borderRadius:20,fontSize:11,fontWeight:700}}>{wenig} wenig</span>}
+            {aus>0&&<span style={{background:"rgba(254,242,242,0.9)",color:"#dc2626",border:"1px solid #fecaca",padding:"3px 8px",borderRadius:20,fontSize:11,fontWeight:700}}>{aus} aus</span>}
+            {wenig>0&&<span style={{background:"rgba(255,251,235,0.9)",color:"#d97706",border:"1px solid #fde68a",padding:"3px 8px",borderRadius:20,fontSize:11,fontWeight:700}}>{wenig} wenig</span>}
           </div>
-          <button onClick={logout} title="Ausloggen" style={{width:32,height:32,borderRadius:"50%",border:`1px solid ${B[100]}`,background:"#f8faff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"#94a3b8"}}>
+          <button onClick={logout} title="Ausloggen" style={{width:32,height:32,borderRadius:"50%",border:"1px solid rgba(255,255,255,0.3)",background:"rgba(255,255,255,0.15)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(255,255,255,0.8)"}}>
             <Ic n="key" s={14}/>
           </button>
         </div>
@@ -455,7 +455,7 @@ function App() {
         {/* DASHBOARD */}
         {tab==="dashboard"&&<div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:12,marginBottom:20}}>
-            <Stat icon="pkg"   label="Lagerwert"     value={`CHF ${lagWert.toFixed(0)}`}  accent={B[600]}/>
+            <Stat icon="pkg"   label="Produkte"      value={`${products.length} Artikel`}             accent={B[600]}/>
             <Stat icon="trend" label="Gesamtumsatz"  value={`CHF ${totalRev.toFixed(0)}`} accent="#0891b2"/>
             <Stat icon="down"  label="Wenig Bestand" value={`${wenig} Produkte`}          accent="#d97706"/>
             <Stat icon="x"     label="Ausverkauft"   value={`${aus} Produkte`}            accent="#dc2626"/>
@@ -503,7 +503,7 @@ function App() {
                   <div style={{fontWeight:800,fontSize:14,color:B[900],whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
                   <div style={{fontSize:11,color:"#94a3b8",display:"flex",gap:6,marginTop:2,flexWrap:"wrap"}}>
                     <span style={{background:cs.bg,color:cs.color,padding:"1px 7px",borderRadius:8,fontWeight:700}}>{p.category}</span>
-                    <span>VK: {chf(p.sellPrice)}</span>
+                    {p.sellPrice>0&&<span>VK: {chf(p.sellPrice)}</span>}
                   </div>
                 </div>
                 <div style={{textAlign:"right",flexShrink:0}}>
@@ -547,7 +547,7 @@ function App() {
                 <div style={{marginTop:10,paddingTop:10,borderTop:`1px solid ${B[50]}`,display:"flex",gap:16,fontSize:12}}>
                   <span style={{color:"#94a3b8"}}>Einkauf: <strong style={{color:B[800]}}>{chf(s.buyPrice*s.qty)}</strong></span>
                   <span style={{color:"#94a3b8"}}>Gewinn: <strong style={{color:"#16a34a"}}>{chf(s.profit)}</strong></span>
-                  <span style={{color:"#94a3b8",marginLeft:"auto"}}>Marge: <strong style={{color:B[600]}}>{((s.profit/s.revenue)*100).toFixed(0)}%</strong></span>
+                  
                 </div>
               </div>)}
             </div>
