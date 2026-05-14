@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Nunito','Segoe UI',sans-serif;background:#f0f5ff;min-height:100vh}
+    body{font-family:'Nunito','Segoe UI',sans-serif;background:#eef3fc;min-height:100vh}
     input,select,textarea,button{font-family:inherit}
     input:focus,select:focus,textarea:focus{outline:2px solid #93c5fd;outline-offset:1px}
     @keyframes fadein{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
@@ -53,7 +53,7 @@ const { useState, useEffect, useMemo } = React;
 const { db, collection, onSnapshot, doc, setDoc, deleteDoc, serverTimestamp, query, orderBy } = window.__firebase;
 
 // ── 🔑 PASSWORT HIER ÄNDERN ───────────────────────────────────────────────────
-const APP_PASSWORD = "prowin2024";
+const APP_PASSWORD = "Lorenasunshine";
 // ─────────────────────────────────────────────────────────────────────────────
 
 const STORAGE_KEY = "prowin_unlocked";
@@ -163,16 +163,16 @@ function LoginScreen({ onUnlock }) {
   };
 
   return (
-    <div style={{minHeight:"100vh",background:`linear-gradient(135deg,${B[50]},${B[100]},${B[200]})`,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
-      <div style={{background:"#fff",borderRadius:24,padding:"44px 32px",maxWidth:380,width:"100%",textAlign:"center",boxShadow:`0 20px 60px ${B[200]}`}}>
+    <div style={{minHeight:"100vh",background:`linear-gradient(145deg,${B[900]},${B[700]},${B[500]})`,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+      <div style={{background:"rgba(255,255,255,0.97)",backdropFilter:"blur(20px)",borderRadius:28,padding:"48px 36px",maxWidth:380,width:"100%",textAlign:"center",boxShadow:`0 32px 80px rgba(30,58,138,0.35),0 0 0 1px rgba(255,255,255,0.8)`}}>
 
         {/* Logo */}
-        <div style={{width:68,height:68,background:`linear-gradient(135deg,${B[700]},${B[400]})`,borderRadius:22,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 20px",boxShadow:`0 8px 24px ${B[300]}`}}>
-          <Ic n="drop" s={32} style={{color:"#fff"}}/>
+        <div style={{width:76,height:76,background:`linear-gradient(145deg,${B[900]},${B[500]})`,borderRadius:26,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 24px",boxShadow:`0 12px 32px ${B[700]}60,0 0 0 1px rgba(255,255,255,0.1)`}}>
+          <Ic n="drop" s={34} style={{color:"#fff"}}/>
         </div>
 
-        <h1 style={{margin:"0 0 4px",fontSize:26,fontWeight:900,color:B[900],letterSpacing:-.5}}>Lorena's proWIN Lager</h1>
-        <p style={{margin:"0 0 32px",color:"#94a3b8",fontSize:14}}>Mein persönliches Lager 💜</p>
+        <h1 style={{margin:"0 0 6px",fontSize:26,fontWeight:900,color:B[900],letterSpacing:-.5}}>Lorena's proWIN Lager</h1>
+        <p style={{margin:"0 0 36px",color:"#94a3b8",fontSize:14,fontWeight:500}}>Mein persönliches Lager 💙</p>
 
         <form onSubmit={tryLogin}>
           <div style={{animation:shake?"shake .4s ease":undefined,marginBottom:16}}>
@@ -184,7 +184,7 @@ function LoginScreen({ onUnlock }) {
                 onChange={e=>{ setPw(e.target.value); setErr(""); }}
                 placeholder="Passwort eingeben"
                 autoFocus
-                style={{width:"100%",padding:"14px 48px 14px 44px",border:`2px solid ${err?'#fecaca':B[200]}`,borderRadius:14,fontSize:16,background:"#f8faff",color:B[900],letterSpacing:show?0:2}}
+                style={{width:"100%",padding:"14px 48px 14px 44px",border:`2px solid ${err?'#fecaca':B[100]}`,borderRadius:14,fontSize:16,background:"#f8faff",color:B[900],letterSpacing:show?0:2,boxShadow:"inset 0 2px 4px rgba(0,0,0,0.04)"}}
               />
               <button type="button" onClick={()=>setShow(s=>!s)} style={{position:"absolute",right:14,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:"#94a3b8",display:"flex",alignItems:"center"}}>
                 <Ic n="eye" s={16}/>
@@ -193,14 +193,14 @@ function LoginScreen({ onUnlock }) {
             {err && <p style={{marginTop:8,color:"#dc2626",fontSize:12,fontWeight:600,textAlign:"left"}}>{err}</p>}
           </div>
 
-          <button type="submit" style={{width:"100%",padding:"14px",background:`linear-gradient(135deg,${B[700]},${B[500]})`,color:"#fff",border:"none",borderRadius:14,fontSize:16,fontWeight:800,cursor:"pointer",boxShadow:`0 4px 16px ${B[300]}`}}>
+          <button type="submit" style={{width:"100%",padding:"15px",background:`linear-gradient(135deg,${B[900]},${B[600]})`,color:"#fff",border:"none",borderRadius:14,fontSize:16,fontWeight:800,cursor:"pointer",boxShadow:`0 6px 20px ${B[700]}50`,letterSpacing:.3}}>
             Einloggen
           </button>
         </form>
 
         <div style={{marginTop:24,display:"flex",alignItems:"center",gap:8,justifyContent:"center",background:B[50],borderRadius:12,padding:"10px 16px"}}>
-          <Ic n="cloud" s={14} style={{color:B[500]}}/>
-          <span style={{fontSize:12,color:B[600],fontWeight:700}}>Echtzeit-Sync auf allen Geräten</span>
+          <Ic n="lock" s={14} style={{color:B[500]}}/>
+          <span style={{fontSize:12,color:B[600],fontWeight:700}}>Sicher & privat geschützt</span>
         </div>
       </div>
     </div>
@@ -225,7 +225,7 @@ function ProdCard({p,onEdit,onIn,onSale}) {
   const [err,setErr]=useState(false);
   const margin=p.sellPrice>0?((p.sellPrice-p.buyPrice)/p.sellPrice*100).toFixed(0):0;
   return (
-    <div style={{background:"#fff",border:`1px solid ${B[100]}`,borderRadius:18,overflow:"hidden",display:"flex",flexDirection:"column"}}>
+    <div style={{background:"#fff",border:`1px solid ${B[100]}`,borderRadius:20,overflow:"hidden",display:"flex",flexDirection:"column",boxShadow:`0 2px 12px ${B[200]}50`}}>
       <div style={{height:145,background:B[50],display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
         {p.image&&!err?<img src={p.image} alt={p.name} onError={()=>setErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:10}}/>:<div style={{width:60,height:60,borderRadius:16,background:B[100],display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,fontWeight:900,color:B[600]}}>{ini(p.name)}</div>}
         <span style={{position:"absolute",top:10,right:10,background:st.bg,color:st.color,fontSize:10,fontWeight:800,padding:"3px 9px",borderRadius:12,border:`1px solid ${st.color}30`,display:"flex",alignItems:"center",gap:4}}><span style={{width:5,height:5,borderRadius:"50%",background:st.dot,display:"inline-block"}}/>{st.label}</span>
@@ -418,12 +418,12 @@ function App() {
   if(!unlocked) return <LoginScreen onUnlock={()=>setUnlocked(true)}/>;
 
   return (
-    <div style={{minHeight:"100vh",background:"#f0f5ff"}}>
+    <div style={{minHeight:"100vh",background:"#eef3fc"}}>
       {/* Header */}
-      <header style={{background:`linear-gradient(135deg,${B[800]},${B[600]})`,position:"sticky",top:0,zIndex:50,boxShadow:`0 2px 16px ${B[900]}30`}}>
+      <header style={{background:`linear-gradient(135deg,${B[900]},${B[700]})`,position:"sticky",top:0,zIndex:50,boxShadow:`0 4px 24px ${B[900]}50`}}>
         <div style={{maxWidth:960,margin:"0 auto",padding:"0 16px",display:"flex",alignItems:"center",height:60,gap:10}}>
           <div style={{display:"flex",alignItems:"center",gap:10,flex:1}}>
-            <div style={{width:38,height:38,background:"rgba(255,255,255,0.2)",borderRadius:13,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)"}}><Ic n="drop" s={20} style={{color:"#fff"}}/></div>
+            <div style={{width:38,height:38,background:"rgba(255,255,255,0.15)",borderRadius:13,display:"flex",alignItems:"center",justifyContent:"center",backdropFilter:"blur(4px)",boxShadow:"0 2px 8px rgba(0,0,0,0.15)"}}><Ic n="drop" s={20} style={{color:"#fff"}}/></div>
             <div><div style={{fontWeight:900,fontSize:17,color:"#fff",letterSpacing:-.3,lineHeight:1}}>Lorena's proWIN Lager</div><div style={{fontSize:10,color:"rgba(255,255,255,0.65)",fontWeight:700,letterSpacing:.6}}>MEIN LAGER ✨</div></div>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:4,fontSize:11,color:syncing?"#fbbf24":"rgba(255,255,255,0.9)",fontWeight:700,background:"rgba(255,255,255,0.15)",padding:"4px 10px",borderRadius:20,border:`1px solid rgba(255,255,255,${syncing?".4":".25"})`}}>
@@ -557,9 +557,9 @@ function App() {
         {/* EINSTELLUNGEN */}
         {tab==="settings"&&<div>
           <h2 style={{margin:"0 0 20px",fontSize:20,fontWeight:900,color:B[900]}}>Einstellungen</h2>
-          <div style={{background:B[50],border:`1px solid ${B[200]}`,borderRadius:14,padding:14,marginBottom:12,fontSize:13,color:B[800]}}>
-            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,fontWeight:800}}><Ic n="cloud" s={16} style={{color:B[500]}}/>Cloud-Synchronisation aktiv</div>
-            Änderungen erscheinen sofort auf allen Geräten – Handy, Laptop, Tablet.
+          <div style={{background:`linear-gradient(135deg,${B[700]},${B[500]})`,border:"none",borderRadius:16,padding:18,marginBottom:12,fontSize:13,color:"#fff",boxShadow:`0 4px 20px ${B[400]}50`}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,fontWeight:800,fontSize:14}}><Ic n="check" s={16} style={{color:"#93c5fd"}}/>Daten sicher gespeichert</div>
+            <span style={{color:"rgba(255,255,255,0.8)"}}>Alle Änderungen werden automatisch in der Cloud gesichert.</span>
           </div>
           <div style={{background:"#fff",border:`1px solid ${B[100]}`,borderRadius:14,padding:16,marginBottom:12}}>
             <div style={{fontWeight:800,fontSize:14,color:B[900],marginBottom:3}}>Beispielprodukte laden</div>
@@ -568,7 +568,7 @@ function App() {
           </div>
           <div style={{background:"#fff",border:`1px solid ${B[100]}`,borderRadius:14,padding:16,marginBottom:12}}>
             <div style={{fontWeight:800,fontSize:14,color:B[900],marginBottom:3}}>Passwort</div>
-            <div style={{fontSize:13,color:"#94a3b8",marginBottom:4}}>Aktuelles Passwort: <strong style={{color:B[800],letterSpacing:1}}>{APP_PASSWORD}</strong></div>
+            <div style={{fontSize:13,color:"#94a3b8",marginBottom:4}}>Aktuelles Passwort: <strong style={{color:B[800],letterSpacing:1}}>Lorenasunshine</strong></div>
             <div style={{fontSize:12,color:"#94a3b8"}}>Um das Passwort zu ändern, muss es in der index.html Datei angepasst werden (Zeile mit APP_PASSWORD).</div>
           </div>
           <div style={{background:"#fff",border:`1px solid ${B[100]}`,borderRadius:14,padding:16}}>
