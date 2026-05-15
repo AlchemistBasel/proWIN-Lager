@@ -2,8 +2,13 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>Lorena's proWIN Lager</title>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="proWIN Lager"/>
+  <meta name="theme-color" content="#1e3a8a"/>
+  <link rel="manifest" href="manifest.json"/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
@@ -684,6 +689,48 @@ function App() {
             <Stat icon="down"  label="Wenig Bestand" value={`${wenig} Produkte`}           accent="#d97706" onClick={()=>{setStockFilter("wenig");setTab("products");setCat("Alle");setSearch("");}}/>
             <Stat icon="x"     label="Ausverkauft"   value={`${aus} Produkte`}             accent="#dc2626" onClick={()=>{setStockFilter("aus");setTab("products");setCat("Alle");setSearch("");}}/>
           </div>
+          {/* Lagerwert */}
+          {(()=>{
+            const lagerwert = products.reduce((s,p)=>s+p.sellPrice*p.stock,0);
+            const einkauf   = products.reduce((s,p)=>s+p.buyPrice*p.stock,0);
+            return (
+              <div style={{background:`linear-gradient(135deg,${B[900]},#1a56c4)`,borderRadius:16,padding:"16px 20px",marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <div>
+                  <div style={{fontSize:10,fontWeight:800,color:"rgba(255,255,255,0.6)",letterSpacing:.8,marginBottom:4}}>LAGERWERT (VERKAUFSPREIS)</div>
+                  <div style={{fontSize:28,fontWeight:900,color:"#fff",letterSpacing:-.5}}>{chf(lagerwert)}</div>
+                  {einkauf>0&&<div style={{fontSize:12,color:"rgba(255,255,255,0.6)",marginTop:3}}>Einkaufswert: {chf(einkauf)}</div>}
+                </div>
+                <div style={{width:52,height:52,borderRadius:"50%",background:"rgba(255,255,255,0.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24}}>💰</div>
+              </div>
+            );
+          })()}
+          {/* Bestseller */}
+          {(()=>{
+            const counts = {};
+            sales.forEach(s=>{counts[s.productName]=(counts[s.productName]||0)+s.qty;});
+            const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+            if(!top.length) return null;
+            const max = top[0][1];
+            return (
+              <div style={{background:"#fff",border:`1px solid ${B[100]}`,borderRadius:16,padding:"16px",marginBottom:20}}>
+                <div style={{fontWeight:900,fontSize:15,color:B[900],marginBottom:14}}>🏆 Bestseller</div>
+                {top.map(([name,qty],i)=>(
+                  <div key={name} style={{display:"flex",alignItems:"center",gap:10,marginBottom:i<top.length-1?10:0}}>
+                    <div style={{width:22,height:22,borderRadius:"50%",background:i===0?`${B[600]}22`:B[50],display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                      <span style={{fontSize:11,fontWeight:900,color:i===0?B[600]:"#94a3b8"}}>{i+1}</span>
+                    </div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:13,fontWeight:700,color:B[900],whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{name}</div>
+                      <div style={{height:5,borderRadius:4,background:B[100],marginTop:4,overflow:"hidden"}}>
+                        <div style={{height:"100%",borderRadius:4,background:i===0?B[500]:B[300],width:`${(qty/max)*100}%`}}/>
+                      </div>
+                    </div>
+                    <div style={{fontSize:13,fontWeight:900,color:i===0?B[600]:"#94a3b8",flexShrink:0}}>{qty} Stk</div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
           <div style={{background:"#fff",borderRadius:16,border:`1px solid ${B[100]}`,padding:14,marginBottom:18}}>
             <div style={{position:"relative",marginBottom:12}}>
               <Ic n="search" s={16} style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:B[300]}}/>
