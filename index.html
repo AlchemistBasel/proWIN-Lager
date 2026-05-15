@@ -681,8 +681,8 @@ function App() {
           <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:12,marginBottom:20}}>
             <Stat icon="pkg"   label="Produkte"      value={`${products.length} Artikel`}  accent={B[600]}/>
             <Stat icon="trend" label="Gesamtumsatz"  value={`CHF ${totalRev.toFixed(0)}`}  accent="#0891b2"/>
-            <Stat icon="down"  label="Wenig Bestand" value={`${wenig} Produkte`}           accent="#d97706"/>
-            <Stat icon="x"     label="Ausverkauft"   value={`${aus} Produkte`}             accent="#dc2626"/>
+            <Stat icon="down"  label="Wenig Bestand" value={`${wenig} Produkte`}           accent="#d97706" onClick={()=>{setStockFilter("wenig");setTab("products");setCat("Alle");setSearch("");}}/>
+            <Stat icon="x"     label="Ausverkauft"   value={`${aus} Produkte`}             accent="#dc2626" onClick={()=>{setStockFilter("aus");setTab("products");setCat("Alle");setSearch("");}}/>
           </div>
           <div style={{background:"#fff",borderRadius:16,border:`1px solid ${B[100]}`,padding:14,marginBottom:18}}>
             <div style={{position:"relative",marginBottom:12}}>
