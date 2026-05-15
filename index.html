@@ -284,7 +284,6 @@ function LoginScreen({ onUnlock }) {
   const [show, setShow]   = useState(false);
   const [shake, setShake] = useState(false);
   const [err, setErr]     = useState("");
-  const [splash, setSplash] = useState(!localStorage.getItem(STORAGE_KEY));
 
   const tryLogin = (e) => {
     e.preventDefault();
@@ -298,8 +297,6 @@ function LoginScreen({ onUnlock }) {
       setTimeout(() => setShake(false), 600);
     }
   };
-
-  if(splash) return <SplashScreen onDone={()=>setSplash(false)}/>;
 
   return (
     <div style={{minHeight:"100vh",background:`linear-gradient(145deg,${B[900]},${B[700]},${B[500]})`,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
@@ -535,6 +532,7 @@ function StockModal({product,onApply,onClose}) {
 // ── Main App ──────────────────────────────────────────────────────────────────
 function App() {
   const [unlocked, setUnlocked] = useState(!!localStorage.getItem(STORAGE_KEY));
+  const [splash, setSplash]     = useState(true);
   const [products,setProducts]  = useState([]);
   const [sales,setSales]        = useState([]);
   const [syncing,setSyncing]    = useState(false);
@@ -615,6 +613,7 @@ function App() {
   const aus=products.filter(p=>p.stock===0).length;
   const openStock=(p,mode)=>setModal({type:"stock",product:{...p,_mode:mode}});
 
+  if(splash) return <SplashScreen onDone={()=>setSplash(false)}/>;
   if(!unlocked) return <LoginScreen onUnlock={()=>setUnlocked(true)}/>;
 
   return (
@@ -695,8 +694,18 @@ function App() {
             <h2 style={{margin:0,fontSize:20,fontWeight:900,color:B[900]}}>Alle Produkte</h2>
             <button onClick={()=>setModal({type:"add"})} style={{display:"flex",alignItems:"center",gap:6,padding:"9px 18px",background:B[600],color:"#fff",border:"none",borderRadius:20,fontSize:13,fontWeight:800,cursor:"pointer"}}><Ic n="plus" s={14}/> Hinzufügen</button>
           </div>
+          {stockFilter&&<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12,padding:"8px 14px",borderRadius:10,background:stockFilter==="aus"?"#fff5f5":"#fffbeb",border:`1px solid ${stockFilter==="aus"?"#fecaca":"#fde68a"}`}}>
+            <span style={{fontSize:13,fontWeight:700,color:stockFilter==="aus"?"#dc2626":"#d97706"}}>
+              {stockFilter==="aus"?"🔴 Ausverkauft":"🟡 Wenig Bestand"} – {filtered.length} Produkt{filtered.length!==1?"e":""}
+            </span>
+            <button onClick={()=>setStockFilter(null)} style={{marginLeft:"auto",fontSize:12,fontWeight:700,color:"#94a3b8",background:"none",border:"none",cursor:"pointer"}}>✕ Filter aufheben</button>
+          </div>}
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            {products.map(p=><ProdRow key={p.id} p={p} onIn={()=>openStock(p,"in")} onSale={()=>openStock(p,"sale")} onEdit={()=>setModal({type:"edit",product:p})} onDel={()=>{if(window.confirm(`"${p.name}" löschen?`))delProduct(p.id);}}/>)}
+            {filtered.map(p=><ProdRow key={p.id} p={p} onIn={()=>openStock(p,"in")} onSale={()=>openStock(p,"sale")} onEdit={()=>setModal({type:"edit",product:p})} onDel={()=>{if(window.confirm(`"${p.name}" löschen?`))delProduct(p.id);}}/>)}
+            {filtered.length===0&&<div style={{textAlign:"center",padding:40,background:"#fff",borderRadius:16,border:`2px dashed ${B[200]}`}}>
+              <div style={{fontWeight:800,fontSize:15,color:B[800],marginBottom:4}}>Keine Produkte gefunden</div>
+              <p style={{color:"#94a3b8",fontSize:13,margin:0}}>Alle Produkte sind auf Lager 🎉</p>
+            </div>}
           </div>
         </div>}
 
