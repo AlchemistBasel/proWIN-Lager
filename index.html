@@ -36,6 +36,21 @@
       .drawer-inner{padding:20px 16px 32px!important;border-radius:20px 20px 0 0!important;max-height:90vh!important}
       .module-card{padding:20px 16px!important}
     }
+    /* Safe area / Notch support */
+    .safe-header{
+      padding-top: env(safe-area-inset-top, 0px) !important;
+    }
+    .safe-nav{
+      top: calc(56px + env(safe-area-inset-top, 0px)) !important;
+    }
+    .safe-bottom{
+      padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+    .safe-home-top{
+      top: calc(12px + env(safe-area-inset-top, 0px)) !important;
+    }
+    /* Swipe hint indicator */
+    @keyframes swipeHint{0%{opacity:0;transform:translateX(12px)}40%{opacity:1}100%{opacity:0;transform:translateX(-4px)}}
   </style>
 </head>
 <body>
@@ -649,7 +664,7 @@ function LoginScreen({onUnlock}) {
 // ══════════════════════════════════════════════════════════════════════════════
 function HomeScreen({onSelect,prowinStats,zumbaStats}) {
   return (
-    <main style={{maxWidth:600,margin:"0 auto",padding:"32px 16px 80px"}}>
+    <main style={{maxWidth:600,margin:"0 auto",padding:"32px 16px 80px",paddingTop:"calc(32px + env(safe-area-inset-top,0px))",paddingBottom:"calc(80px + env(safe-area-inset-bottom,0px))"}}>
       <div style={{textAlign:"center",marginBottom:36}}>
         <div style={{fontSize:48,marginBottom:8}}>✨</div>
         <h1 style={{fontSize:26,fontWeight:900,color:B[900],marginBottom:6}}>Hallo Lorena!</h1>
@@ -856,6 +871,88 @@ function StockModal({product,onApply,onClose}) {
   );
 }
 
+// ══════════════════════════════════════════════════════════════════════════════
+// SWIPE BACK HOOK
+// ══════════════════════════════════════════════════════════════════════════════
+function useSwipeBack(onBack) {
+  useEffect(()=>{
+    let startX=0, startY=0, active=false;
+    const onStart=(e)=>{
+      const t=e.touches?e.touches[0]:e;
+      startX=t.clientX; startY=t.clientY; active=true;
+    };
+    const onEnd=(e)=>{
+      if(!active)return; active=false;
+      const t=e.changedTouches?e.changedTouches[0]:e;
+      const dx=t.clientX-startX;
+      const dy=Math.abs(t.clientY-startY);
+      // Right swipe from left edge (first 60px) or general right swipe > 80px and mostly horizontal
+      if(dx>60&&dy<80&&(startX<60||dx>120)){onBack();}
+    };
+    document.addEventListener("touchstart",onStart,{passive:true});
+    document.addEventListener("touchend",onEnd,{passive:true});
+    return()=>{document.removeEventListener("touchstart",onStart);document.removeEventListener("touchend",onEnd);};
+  },[onBack]);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PREISLISTE TAB COMPONENT (must be a real component, not IIFE, for hooks)
+// ══════════════════════════════════════════════════════════════════════════════
+function PreislisteTab() {
+  const [plSearch,setPlSearch]=useState("");
+  const [plSerie,setPlSerie]=useState("Alle");
+  const series=["Alle","Reinigung","win-i","New Wellness","Best Friends"];
+  const filtered=PREISLISTE.filter(p=>{
+    const matchSerie=plSerie==="Alle"||p.serie===plSerie;
+    const matchSearch=!plSearch.trim()||p.name.toLowerCase().includes(plSearch.toLowerCase())||(p.groesse&&p.groesse.toLowerCase().includes(plSearch.toLowerCase()));
+    return matchSerie&&matchSearch;
+  });
+  const byKat=filtered.reduce((acc,p)=>{const k=p.serie+" · "+p.kat;if(!acc[k])acc[k]=[];acc[k].push(p);return acc;},{});
+  return (
+    <div style={{animation:"fadein .3s ease"}}>
+      <div style={{marginBottom:16}}>
+        <h2 style={{fontSize:20,fontWeight:900,color:B[900],marginBottom:4}}>Preisliste 2026</h2>
+        <div style={{fontSize:13,color:"#94a3b8"}}>{PREISLISTE.length} Artikel · Stand 20.01.2026</div>
+      </div>
+      <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap"}}>
+        <div style={{flex:1,minWidth:180,position:"relative"}}>
+          <Ic n="info" s={14} style={{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",color:"#94a3b8"}}/>
+          <input value={plSearch} onChange={e=>setPlSearch(e.target.value)} placeholder="Artikel suchen…" style={{...inp,paddingLeft:34}}/>
+        </div>
+        <select value={plSerie} onChange={e=>setPlSerie(e.target.value)} style={{...inp,width:"auto"}}>
+          {series.map(s=><option key={s}>{s}</option>)}
+        </select>
+      </div>
+      <div style={{fontSize:12,color:"#94a3b8",marginBottom:12,fontWeight:600}}>{filtered.length} Artikel gefunden</div>
+      {Object.entries(byKat).map(([kat,items])=>{
+        const serie=items[0].serie;
+        const sc=SERIE_COLORS[serie]||{bg:B[50],color:B[600],border:B[200]};
+        return (
+          <div key={kat} style={{marginBottom:16}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+              <span style={{fontSize:10,fontWeight:800,padding:"3px 10px",borderRadius:20,background:sc.bg,color:sc.color,border:`1px solid ${sc.border}`,textTransform:"uppercase",letterSpacing:.5}}>{serie}</span>
+              <span style={{fontSize:13,fontWeight:800,color:B[800]}}>{items[0].kat}</span>
+              <span style={{fontSize:11,color:"#94a3b8"}}>({items.length})</span>
+            </div>
+            <div style={{background:"#fff",border:`1px solid ${B[100]}`,borderRadius:14,overflow:"hidden"}}>
+              {items.map((p,i)=>(
+                <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 16px",borderBottom:i<items.length-1?`1px solid ${B[50]}`:"none"}}>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontWeight:700,fontSize:13,color:B[900]}}>{p.name}</div>
+                    {p.groesse&&<div style={{fontSize:11,color:"#94a3b8",marginTop:1}}>{p.groesse}</div>}
+                  </div>
+                  <div style={{fontWeight:900,fontSize:14,color:B[700],flexShrink:0,marginLeft:12}}>CHF {p.preis.toFixed(2)}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+      {filtered.length===0&&<div style={{textAlign:"center",padding:60,color:"#94a3b8"}}><div style={{fontSize:36,marginBottom:8}}>🔍</div><div style={{fontWeight:700}}>Kein Artikel gefunden</div></div>}
+    </div>
+  );
+}
+
 function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
   const [products,setProducts]=useState([]);
   const [sales,setSales]=useState([]);
@@ -863,6 +960,8 @@ function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
   const [search,setSearch]=useState("");
   const [cat,setCat]=useState("Alle");
   const [modal,setModal]=useState(null);
+
+  useSwipeBack(useCallback(()=>{if(!modal)onBack();},[modal,onBack]));
 
   useEffect(()=>{
     const pq=query(col("products"),orderBy("name"));
@@ -899,9 +998,9 @@ function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
   return (
     <div style={{minHeight:"100vh",background:"#eef3fc"}}>
       {/* Header */}
-      <header style={{background:`linear-gradient(135deg,${B[900]},${B[700]})`,position:"sticky",top:0,zIndex:50,boxShadow:`0 4px 24px ${B[900]}50`}}>
+      <header className="safe-header" style={{background:`linear-gradient(135deg,${B[900]},${B[700]})`,position:"sticky",top:0,zIndex:50,boxShadow:`0 4px 24px ${B[900]}50`,paddingTop:"env(safe-area-inset-top,0px)"}}>
         <div style={{maxWidth:960,margin:"0 auto",padding:"0 12px",display:"flex",alignItems:"center",height:56,gap:8}}>
-          <button onClick={onBack} style={{width:36,height:36,borderRadius:12,background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",flexShrink:0}}><Ic n="home" s={16}/></button>
+          <button onClick={onBack} style={{width:36,height:36,borderRadius:12,background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",flexShrink:0,WebkitTapHighlightColor:"transparent",touchAction:"manipulation"}}><Ic n="home" s={16}/></button>
           <div style={{display:"flex",alignItems:"center",gap:8,flex:1,minWidth:0}}>
             <Ic n="pkg" s={20} style={{color:"#fff"}}/>
             <div style={{fontWeight:900,fontSize:16,color:"#fff"}}>proWIN Lager</div>
@@ -913,7 +1012,7 @@ function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
       </header>
 
       {/* Nav */}
-      <nav style={{background:"#fff",borderBottom:`1px solid ${B[100]}`,position:"sticky",top:56,zIndex:40}}>
+      <nav className="safe-nav" style={{background:"#fff",borderBottom:`1px solid ${B[100]}`,position:"sticky",top:"calc(56px + env(safe-area-inset-top,0px))",zIndex:40}}>
         <div style={{maxWidth:960,margin:"0 auto",padding:"0 12px",display:"flex"}}>
           {[["products","Produkte","pkg"],["sales","Verkäufe","bar"],["preisliste","Preisliste","star"],["settings","Einstellungen","cog"]].map(([id,lb,ic])=>(
             <button key={id} onClick={()=>setTab(id)} className="nav-btn" style={{display:"flex",alignItems:"center",gap:5,padding:"12px 16px",background:"none",border:"none",cursor:"pointer",fontSize:13,fontWeight:700,color:tab===id?B[600]:"#94a3b8",borderBottom:`2.5px solid ${tab===id?B[500]:"transparent"}`,flex:1,justifyContent:"center"}}>
@@ -923,7 +1022,7 @@ function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
         </div>
       </nav>
 
-      <main className="main-pad" style={{maxWidth:960,margin:"0 auto",padding:"20px 16px 80px"}}>
+      <main className="main-pad" style={{maxWidth:960,margin:"0 auto",padding:"20px 16px",paddingBottom:"calc(80px + env(safe-area-inset-bottom,0px))"}}>
 
         {tab==="products"&&<div>
           <div style={{display:"flex",gap:10,marginBottom:16,alignItems:"center"}}>
@@ -984,60 +1083,7 @@ function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
           }
         </div>}
 
-        {tab==="preisliste"&&(()=>{
-          const [plSearch,setPlSearch]=useState("");
-          const [plSerie,setPlSerie]=useState("Alle");
-          const series=["Alle","Reinigung","win-i","New Wellness","Best Friends"];
-          const filtered=PREISLISTE.filter(p=>{
-            const matchSerie=plSerie==="Alle"||p.serie===plSerie;
-            const matchSearch=!plSearch.trim()||p.name.toLowerCase().includes(plSearch.toLowerCase())||(p.groesse&&p.groesse.toLowerCase().includes(plSearch.toLowerCase()));
-            return matchSerie&&matchSearch;
-          });
-          const byKat=filtered.reduce((acc,p)=>{const k=p.serie+" · "+p.kat;if(!acc[k])acc[k]=[];acc[k].push(p);return acc;},{});
-          return (
-            <div style={{animation:"fadein .3s ease"}}>
-              <div style={{marginBottom:16}}>
-                <h2 style={{fontSize:20,fontWeight:900,color:B[900],marginBottom:4}}>Preisliste 2026</h2>
-                <div style={{fontSize:13,color:"#94a3b8"}}>{PREISLISTE.length} Artikel · Stand 20.01.2026</div>
-              </div>
-              <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap"}}>
-                <div style={{flex:1,minWidth:200,position:"relative"}}>
-                  <Ic n="info" s={14} style={{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",color:"#94a3b8"}}/>
-                  <input value={plSearch} onChange={e=>setPlSearch(e.target.value)} placeholder="Artikel suchen…" style={{...inp,paddingLeft:34}}/>
-                </div>
-                <select value={plSerie} onChange={e=>setPlSerie(e.target.value)} style={{...inp,width:"auto"}}>
-                  {series.map(s=><option key={s}>{s}</option>)}
-                </select>
-              </div>
-              <div style={{fontSize:12,color:"#94a3b8",marginBottom:12,fontWeight:600}}>{filtered.length} Artikel gefunden</div>
-              {Object.entries(byKat).map(([kat,items])=>{
-                const serie=items[0].serie;
-                const sc=SERIE_COLORS[serie]||{bg:B[50],color:B[600],border:B[200]};
-                return (
-                  <div key={kat} style={{marginBottom:16}}>
-                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
-                      <span style={{fontSize:10,fontWeight:800,padding:"3px 10px",borderRadius:20,background:sc.bg,color:sc.color,border:`1px solid ${sc.border}`,textTransform:"uppercase",letterSpacing:.5}}>{serie}</span>
-                      <span style={{fontSize:13,fontWeight:800,color:B[800]}}>{items[0].kat}</span>
-                      <span style={{fontSize:11,color:"#94a3b8"}}>({items.length})</span>
-                    </div>
-                    <div style={{background:"#fff",border:`1px solid ${B[100]}`,borderRadius:14,overflow:"hidden"}}>
-                      {items.map((p,i)=>(
-                        <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 16px",borderBottom:i<items.length-1?`1px solid ${B[50]}`:"none"}}>
-                          <div style={{flex:1,minWidth:0}}>
-                            <div style={{fontWeight:700,fontSize:13,color:B[900]}}>{p.name}</div>
-                            {p.groesse&&<div style={{fontSize:11,color:"#94a3b8",marginTop:1}}>{p.groesse}</div>}
-                          </div>
-                          <div style={{fontWeight:900,fontSize:14,color:B[700],flexShrink:0,marginLeft:12}}>CHF {p.preis.toFixed(2)}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-              {filtered.length===0&&<div style={{textAlign:"center",padding:60,color:"#94a3b8"}}><div style={{fontSize:36,marginBottom:8}}>🔍</div><div style={{fontWeight:700}}>Kein Artikel gefunden</div></div>}
-            </div>
-          );
-        })()}
+        {tab==="preisliste"&&<PreislisteTab/>}
 
         {tab==="settings"&&<div>
           <h2 style={{margin:"0 0 20px",fontSize:20,fontWeight:900,color:B[900]}}>Einstellungen</h2>
@@ -1319,6 +1365,8 @@ function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
   const [classes,setClasses]=useState([]);
   const [tab,setTab]=useState("dashboard");
   const [modal,setModal]=useState(null);
+
+  useSwipeBack(useCallback(()=>{if(!modal)onBack();},[modal,onBack]));
   const [prices,setPricesState]=useState(()=>{
     try{return JSON.parse(localStorage.getItem("zumba_prices")||"null")||DEFAULT_ZUMBA_PRICES;}catch{return DEFAULT_ZUMBA_PRICES;}
   });
@@ -1396,9 +1444,9 @@ function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
   return (
     <div style={{minHeight:"100vh",background:"#fdf4ff"}}>
       {/* Header */}
-      <header style={{background:`linear-gradient(135deg,${Z[900]},${Z[600]})`,position:"sticky",top:0,zIndex:50,boxShadow:`0 4px 24px ${Z[900]}50`}}>
+      <header className="safe-header" style={{background:`linear-gradient(135deg,${Z[900]},${Z[600]})`,position:"sticky",top:0,zIndex:50,boxShadow:`0 4px 24px ${Z[900]}50`,paddingTop:"env(safe-area-inset-top,0px)"}}>
         <div style={{maxWidth:960,margin:"0 auto",padding:"0 12px",display:"flex",alignItems:"center",height:56,gap:8}}>
-          <button onClick={onBack} style={{width:36,height:36,borderRadius:12,background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",flexShrink:0}}><Ic n="home" s={16}/></button>
+          <button onClick={onBack} style={{width:36,height:36,borderRadius:12,background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",flexShrink:0,WebkitTapHighlightColor:"transparent",touchAction:"manipulation"}}><Ic n="home" s={16}/></button>
           <div style={{display:"flex",alignItems:"center",gap:8,flex:1,minWidth:0}}>
             <span style={{fontSize:22}}>💃</span>
             <div style={{fontWeight:900,fontSize:16,color:"#fff"}}>Zumba Kurse</div>
@@ -1409,7 +1457,7 @@ function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
       </header>
 
       {/* Nav */}
-      <nav style={{background:"#fff",borderBottom:`1px solid ${Z[100]}`,position:"sticky",top:56,zIndex:40}}>
+      <nav style={{background:"#fff",borderBottom:`1px solid ${Z[100]}`,position:"sticky",top:"calc(56px + env(safe-area-inset-top,0px))",zIndex:40}}>
         <div style={{maxWidth:960,margin:"0 auto",padding:"0 4px",display:"flex"}}>
           {[["dashboard","Übersicht","grid"],["members","Teilnehmer","users"],["finances","Finanzen","cash"],["classes","Kurse","cal"]].map(([id,lb,ic])=>(
             <button key={id} onClick={()=>setTab(id)} className="nav-btn" style={{display:"flex",alignItems:"center",gap:5,padding:"12px 8px",background:"none",border:"none",cursor:"pointer",fontSize:12,fontWeight:700,color:tab===id?Z[600]:"#94a3b8",borderBottom:`2.5px solid ${tab===id?Z[500]:"transparent"}`,flex:1,justifyContent:"center"}}>
@@ -1419,7 +1467,7 @@ function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
         </div>
       </nav>
 
-      <main className="main-pad" style={{maxWidth:960,margin:"0 auto",padding:"20px 16px 80px"}}>
+      <main className="main-pad" style={{maxWidth:960,margin:"0 auto",padding:"20px 16px",paddingBottom:"calc(80px + env(safe-area-inset-bottom,0px))"}}>
 
         {/* DASHBOARD */}
         {tab==="dashboard"&&<div style={{animation:"fadein .3s ease"}}>
@@ -1658,7 +1706,7 @@ function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
       {modal?.type==="class"&&<ClassModal onSave={saveClass} onClose={()=>setModal(null)} members={members}/>}
 
       {/* Settings FAB */}
-      {tab==="dashboard"&&<div style={{position:"fixed",bottom:24,right:16,zIndex:90}}>
+      {tab==="dashboard"&&<div style={{position:"fixed",bottom:"calc(24px + env(safe-area-inset-bottom,0px))",right:16,zIndex:90}}>
         <button onClick={()=>setModal({type:"settings"})} style={{width:48,height:48,borderRadius:24,background:`linear-gradient(135deg,${Z[700]},${Z[500]})`,border:"none",color:"#fff",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:`0 6px 24px ${Z[600]}60`}}><Ic n="cog" s={20}/></button>
       </div>}
 
@@ -1735,7 +1783,7 @@ function App() {
     <div>
       {/* Logout button on home */}
       {module===null&&(
-        <div style={{position:"fixed",top:12,right:16,zIndex:100}}>
+        <div style={{position:"fixed",top:"calc(12px + env(safe-area-inset-top,0px))",right:16,zIndex:100}}>
           <button onClick={()=>{localStorage.removeItem(STORAGE_KEY);setUnlocked(false);}} title="Ausloggen"
             style={{width:36,height:36,borderRadius:18,background:"rgba(255,255,255,0.9)",border:`1px solid ${B[200]}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:B[600],boxShadow:"0 2px 8px rgba(0,0,0,0.1)"}}>
             <Ic n="key" s={15}/>
@@ -1755,7 +1803,7 @@ function App() {
         <ZumbaModule col={col} flash={flash} syncing={syncing} setSyncing={setSyncing} onBack={()=>setModule(null)}/>
       )}
 
-      {toast&&<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:toast.ok?B[800]:"#7f1d1d",color:"#fff",padding:"11px 22px",borderRadius:30,fontSize:13,fontWeight:700,boxShadow:"0 4px 24px rgba(0,0,0,.2)",zIndex:9999,whiteSpace:"nowrap",animation:"fadein .2s ease"}}>{toast.msg}</div>}
+      {toast&&<div style={{position:"fixed",bottom:"calc(24px + env(safe-area-inset-bottom,0px))",left:"50%",transform:"translateX(-50%)",background:toast.ok?B[800]:"#7f1d1d",color:"#fff",padding:"11px 22px",borderRadius:30,fontSize:13,fontWeight:700,boxShadow:"0 4px 24px rgba(0,0,0,.2)",zIndex:9999,whiteSpace:"nowrap",animation:"fadein .2s ease"}}>{toast.msg}</div>}
     </div>
   );
 }
