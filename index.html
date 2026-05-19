@@ -90,6 +90,398 @@ const DEFAULT_ZUMBA_PRICES = {
 };
 
 const CATS = ["Alle","Reinigung","Körperpflege","Wohnen","Küche","Wellness","Sonstiges"];
+
+const SERIE_COLORS = {
+  "Reinigung":   {bg:"#eff6ff",color:"#1d4ed8",border:"#bfdbfe"},
+  "win-i":       {bg:"#f0fdf4",color:"#15803d",border:"#bbf7d0"},
+  "New Wellness":{bg:"#fdf4ff",color:"#7e22ce",border:"#e9d5ff"},
+  "Best Friends":{bg:"#fff7ed",color:"#c2410c",border:"#fed7aa"},
+};
+
+const PREISLISTE = [
+  // REINIGUNG
+  {serie:"Reinigung",kat:"Stiftung",name:"SWEETHEART",groesse:"14x14 cm",preis:15.50},
+  {serie:"Reinigung",kat:"Universal",name:"ALLESKÖNNER",groesse:"1000 ml",preis:41.90},
+  {serie:"Reinigung",kat:"Universal",name:"ALLESKÖNNER",groesse:"2,5 l",preis:83.80},
+  {serie:"Reinigung",kat:"Universal",name:"ALLESKÖNNER MINT",groesse:"500 ml",preis:31.90},
+  {serie:"Reinigung",kat:"Universal",name:"Druckzerstäuber klein",groesse:"30 ml",preis:3.50},
+  {serie:"Reinigung",kat:"Universal",name:"OMNIFOAM",groesse:"1,5 l",preis:40.50},
+  {serie:"Reinigung",kat:"Universal",name:"Schaumspender",groesse:"250 ml",preis:8.90},
+  {serie:"Reinigung",kat:"Universal",name:"SPECIAL FORCE",groesse:"500 ml",preis:42.50},
+  {serie:"Reinigung",kat:"Universal",name:"SPRÜHFLASCHE DUO",groesse:"500 ml",preis:11.50},
+  {serie:"Reinigung",kat:"Universal",name:"SPRÜHFLASCHE DUO ALLESKÖNNER",groesse:"500 ml",preis:11.50},
+  {serie:"Reinigung",kat:"Universal",name:"SPRÜHFLASCHE DUO STONE TEX",groesse:"500 ml",preis:11.50},
+  {serie:"Reinigung",kat:"Universal",name:"SPRÜHFLASCHE DUO GLANCY",groesse:"500 ml",preis:11.50},
+  {serie:"Reinigung",kat:"Universal",name:"SPRÜHFLASCHE DUO CLEANERGY",groesse:"500 ml",preis:11.50},
+  {serie:"Reinigung",kat:"Küche",name:"BACKOFEN- & GRILLREINIGER",groesse:"500 ml",preis:43.50},
+  {serie:"Reinigung",kat:"Küche",name:"BACKOFEN- & GRILLREINIGER",groesse:"1000 ml",preis:64.90},
+  {serie:"Reinigung",kat:"Küche",name:"BACKOFEN- & GRILLREINIGER Pinsel",groesse:"1 Stück",preis:3.50},
+  {serie:"Reinigung",kat:"Küche",name:"BACKOFEN- & GRILLREINIGER Pinsel breit",groesse:"1 Stück",preis:5.50},
+  {serie:"Reinigung",kat:"Küche",name:"BURNEX",groesse:"500 ml",preis:43.50},
+  {serie:"Reinigung",kat:"Küche",name:"CREAMEX SOFT",groesse:"250 g",preis:27.50},
+  {serie:"Reinigung",kat:"Küche",name:"DISH N'CLEAN BOUTIQUE No.1",groesse:"500 g",preis:21.50},
+  {serie:"Reinigung",kat:"Küche",name:"DISH N'CLEAN BOUTIQUE No.1",groesse:"5 kg",preis:136.00},
+  {serie:"Reinigung",kat:"Küche",name:"DISH N'CLEAN BOUTIQUE No.1 Nachfüllpack",groesse:"500 g",preis:19.00},
+  {serie:"Reinigung",kat:"Küche",name:"Klarspüler",groesse:"1000 ml",preis:22.50},
+  {serie:"Reinigung",kat:"Küche",name:"Klarspüler",groesse:"5 l",preis:82.00},
+  {serie:"Reinigung",kat:"Küche",name:"Duo Pad HURRICANE",groesse:"13x13 cm",preis:17.50},
+  {serie:"Reinigung",kat:"Küche",name:"Duo Pad STRONG",groesse:"15x20 cm",preis:18.50},
+  {serie:"Reinigung",kat:"Küche",name:"GLANCY/LEMON/HERBAL",groesse:"1000 ml",preis:20.50},
+  {serie:"Reinigung",kat:"Küche",name:"GLANCY LEMON",groesse:"5 l",preis:76.00},
+  {serie:"Reinigung",kat:"Küche",name:"HEROFIX schwarz",groesse:"30x30 cm",preis:16.50},
+  {serie:"Reinigung",kat:"Küche",name:"HOCHGLANZZAUBER",groesse:"32x32 cm",preis:20.50},
+  {serie:"Reinigung",kat:"Küche",name:"FENOCARE",groesse:"32x32 cm",preis:33.90},
+  {serie:"Reinigung",kat:"Küche",name:"FENOCLEAN",groesse:"31x32 cm",preis:33.90},
+  {serie:"Reinigung",kat:"Küche",name:"KRISTALL",groesse:"50x70 cm",preis:30.90},
+  {serie:"Reinigung",kat:"Küche",name:"KRISTALL Mini Pocket",groesse:"18x18 cm",preis:14.50},
+  {serie:"Reinigung",kat:"Küche",name:"LIGHT & QUICK",groesse:"32x32 cm",preis:21.50},
+  {serie:"Reinigung",kat:"Küche",name:"LONDRY grau",groesse:"50x70 cm",preis:29.90},
+  {serie:"Reinigung",kat:"Küche",name:"MACHINE N'CLEAN",groesse:"500 ml",preis:35.90},
+  {serie:"Reinigung",kat:"Küche",name:"MACHINE N'CLEAN Zubehörset",groesse:"1 Stück",preis:5.50},
+  {serie:"Reinigung",kat:"Küche",name:"MIKRO SOFT",groesse:"35x40 cm",preis:24.90},
+  {serie:"Reinigung",kat:"Küche",name:"MILLIONENDING",groesse:"25x25 cm",preis:30.90},
+  {serie:"Reinigung",kat:"Küche",name:"Nischenbürste",groesse:"30 cm",preis:3.50},
+  {serie:"Reinigung",kat:"Küche",name:"ORANGE POWER",groesse:"250 ml",preis:42.50},
+  {serie:"Reinigung",kat:"Küche",name:"POLISH & SHINE",groesse:"250 ml",preis:20.50},
+  {serie:"Reinigung",kat:"Küche",name:"MULTIBRUSH BBQ",groesse:"1 Stück",preis:18.50},
+  {serie:"Reinigung",kat:"Küche",name:"MULTIBRUSH BBQ Wechselkopf",groesse:"1 Stück",preis:12.50},
+  {serie:"Reinigung",kat:"Küche",name:"MULTIBRUSH",groesse:"1 Stück",preis:15.50},
+  {serie:"Reinigung",kat:"Küche",name:"MULTIBRUSH Wechselkopf",groesse:"1 Stück",preis:12.50},
+  {serie:"Reinigung",kat:"Küche",name:"BOTTLEBRUSH",groesse:"1 Stück",preis:15.50},
+  {serie:"Reinigung",kat:"Küche",name:"UNIVERSAL Reinigungstuch",groesse:"32x32 cm",preis:34.50},
+  {serie:"Reinigung",kat:"Bad",name:"ACTIFLOW",groesse:"1000 ml",preis:25.50},
+  {serie:"Reinigung",kat:"Bad",name:"ACTIVE MINT",groesse:"1000 g",preis:49.90},
+  {serie:"Reinigung",kat:"Bad",name:"ACTIVE ORANGE",groesse:"1000 g",preis:49.90},
+  {serie:"Reinigung",kat:"Bad",name:"CALEX Kalklöser",groesse:"500 ml",preis:27.50},
+  {serie:"Reinigung",kat:"Bad",name:"CALEX Kalklöser",groesse:"2,5 l",preis:99.50},
+  {serie:"Reinigung",kat:"Bad",name:"CLEANERGY MINT",groesse:"500 ml",preis:27.50},
+  {serie:"Reinigung",kat:"Bad",name:"CLEANERGY MINT",groesse:"2,5 l",preis:110.00},
+  {serie:"Reinigung",kat:"Bad",name:"CLEANERGY MANDARIN",groesse:"500 ml",preis:27.50},
+  {serie:"Reinigung",kat:"Bad",name:"COPPA braun",groesse:"25x25 cm",preis:23.50},
+  {serie:"Reinigung",kat:"Bad",name:"COPPA grau",groesse:"40x40 cm",preis:32.50},
+  {serie:"Reinigung",kat:"Bad",name:"Handpumpe 2,5l Kanister",groesse:"1 Stück",preis:13.90},
+  {serie:"Reinigung",kat:"Bad",name:"SIMPLY DRY",groesse:"40x40 cm",preis:34.90},
+  {serie:"Reinigung",kat:"Bad",name:"SIMPLY DRY",groesse:"50x70 cm",preis:46.90},
+  {serie:"Reinigung",kat:"Bad",name:"SIMPLY DRY Handschuh",groesse:"24x18 cm",preis:38.50},
+  {serie:"Reinigung",kat:"Bad",name:"SOFTCLEAN",groesse:"250 ml",preis:12.50},
+  {serie:"Reinigung",kat:"Bad",name:"SOFTCLEAN",groesse:"1000 ml",preis:28.50},
+  {serie:"Reinigung",kat:"Bad",name:"SOFTCLEAN",groesse:"2,5 l",preis:63.50},
+  {serie:"Reinigung",kat:"Bad",name:"STENNEX LEMONGRAS",groesse:"750 ml",preis:17.50},
+  {serie:"Reinigung",kat:"Bad",name:"STENNEX LEMONGRAS Nachfüllbeutel",groesse:"1,5 l",preis:23.50},
+  {serie:"Reinigung",kat:"Bad",name:"STENNEX MINT",groesse:"750 ml",preis:17.50},
+  {serie:"Reinigung",kat:"Bad",name:"STENNEX MINT Nachfüllbeutel",groesse:"1,5 l",preis:23.50},
+  {serie:"Reinigung",kat:"Bad",name:"V7 LINE HERZILEIN",groesse:"1 Stück",preis:74.90},
+  {serie:"Reinigung",kat:"Bad",name:"V7 LINE HERZILEIN MINI komplett",groesse:"1 Stück",preis:49.90},
+  {serie:"Reinigung",kat:"Bad",name:"V7 LINE HERZILEIN MINI mit Clip",groesse:"1 Stück",preis:29.90},
+  {serie:"Reinigung",kat:"Bad",name:"V7 HERZILEIN MINI Halter",groesse:"1 Stück",preis:22.90},
+  {serie:"Reinigung",kat:"Raumklima",name:"PROWIN AIRBOWL 2",groesse:"1 Stück",preis:255.00},
+  {serie:"Reinigung",kat:"Raumklima",name:"proWIN AIR PUMP MINI",groesse:"1 Stück/100 ml",preis:17.90},
+  {serie:"Reinigung",kat:"Raumklima",name:"proWIN PURE AIR",groesse:"500 ml",preis:38.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"FENSTERREINIGER GRIFFVERLÄNGERUNG",groesse:"50 cm",preis:34.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"FENSTERREINIGER TELESKOPSTIEL",groesse:"1,5 m",preis:52.90},
+  {serie:"Reinigung",kat:"Oberflächen",name:"FLEXIBLE LINE ABZIEHER",groesse:"50 cm",preis:43.90},
+  {serie:"Reinigung",kat:"Oberflächen",name:"FLEXIBLE LINE FUGENBÜRSTE",groesse:"1 Stück",preis:27.90},
+  {serie:"Reinigung",kat:"Oberflächen",name:"FLEXIBLE LINE HANDGRIFF",groesse:"1 Stück",preis:17.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"FLEXIBLE LINE STIEL 2-fach",groesse:"bis 3,60 m",preis:59.90},
+  {serie:"Reinigung",kat:"Oberflächen",name:"FLEXIBLE LINE WINKELSTÜCK",groesse:"1 Stück",preis:9.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"FLOORCLEAN",groesse:"50x70 cm",preis:31.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"FLUFFY Handschuh",groesse:"27x13 cm",preis:26.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"I-DROP + ALLESKÖNNER",groesse:"1 St.+500 ml",preis:219.00},
+  {serie:"Reinigung",kat:"Oberflächen",name:"MIKROPADS div. Sorten",groesse:"1 Stück",preis:20.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"MIKRO BORSTE Handschuh",groesse:"22x15 cm",preis:38.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"MIKRO STANDARD Handschuh",groesse:"20x15 cm",preis:38.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"MISTER FLEXIBLE",groesse:"1 Stück",preis:90.90},
+  {serie:"Reinigung",kat:"Oberflächen",name:"MISTER FLEXIBLE MINI",groesse:"1 Stück",preis:31.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"SMART LINE ADAPTER",groesse:"1 Stück",preis:5.00},
+  {serie:"Reinigung",kat:"Oberflächen",name:"SMART LINE DUOSTIEL",groesse:"1 Stück",preis:14.90},
+  {serie:"Reinigung",kat:"Oberflächen",name:"SMART LINE FLÄCHENWISCHER",groesse:"1 Stück",preis:26.90},
+  {serie:"Reinigung",kat:"Oberflächen",name:"SMART LINE MULTISTAR DUO",groesse:"30 cm",preis:119.00},
+  {serie:"Reinigung",kat:"Oberflächen",name:"SMART LINE MULTISTAR Pad MIKRO BORSTE",groesse:"1 Stück",preis:35.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"SMART LINE MULTISTAR Pad MIKRO STANDARD",groesse:"1 Stück",preis:35.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"SMART LINE MULTISTAR Pad LANGFLOR",groesse:"1 Stück",preis:35.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"SMART LINE NISCHENWISCHER mit Faser",groesse:"1 Stück",preis:46.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"SMART LINE TELESKOPSTIEL 2-teilig",groesse:"1,10 m",preis:29.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"SPEEDY",groesse:"1 Stück",preis:29.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"STONE TEX",groesse:"500 ml",preis:26.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"STONE TEX",groesse:"2,5 l",preis:102.90},
+  {serie:"Reinigung",kat:"Oberflächen",name:"TF BAUMWOLLE",groesse:"1 Stück",preis:46.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"TF FLOORWONDER",groesse:"1 Stück",preis:53.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"TF HYGIENE",groesse:"1 Stück",preis:50.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"TF LANGFLOR",groesse:"1 Stück",preis:53.90},
+  {serie:"Reinigung",kat:"Oberflächen",name:"TF MAGIC",groesse:"1 Stück",preis:49.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"TF MIKRO BORSTE",groesse:"1 Stück",preis:48.90},
+  {serie:"Reinigung",kat:"Oberflächen",name:"TF MIKRO STANDARD",groesse:"1 Stück",preis:50.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"TF OUTDOOR",groesse:"1 Stück",preis:48.90},
+  {serie:"Reinigung",kat:"Oberflächen",name:"TF TROCKEN",groesse:"1 Stück",preis:46.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"WINDOW",groesse:"32x32 cm",preis:24.90},
+  {serie:"Reinigung",kat:"Oberflächen",name:"WINDOW",groesse:"32x64 cm",preis:45.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"WONDER",groesse:"45x40 cm",preis:29.50},
+  {serie:"Reinigung",kat:"Oberflächen",name:"WINDOW WONDER Set",groesse:"1 Stück",preis:58.00},
+  {serie:"Reinigung",kat:"Outdoor",name:"BRUSHTEX",groesse:"1 Stück",preis:17.50},
+  {serie:"Reinigung",kat:"Outdoor",name:"DRYFLOOR",groesse:"58x78 cm",preis:179.00},
+  {serie:"Reinigung",kat:"Outdoor",name:"LANGFLOR Handschuh",groesse:"22x16 cm",preis:38.50},
+  {serie:"Reinigung",kat:"Outdoor",name:"OUTDOOR Handschuh",groesse:"23x16 cm",preis:38.50},
+  {serie:"Reinigung",kat:"Outdoor",name:"V7 LINE HANDBESEN",groesse:"1 Stück",preis:30.90},
+  {serie:"Reinigung",kat:"Outdoor",name:"V7 LINE KEHRSCHAUFEL",groesse:"1 Stück",preis:21.50},
+  {serie:"Reinigung",kat:"Outdoor",name:"V7 LINE UNIVERSALBESEN",groesse:"1 Stück",preis:57.50},
+  {serie:"Reinigung",kat:"Outdoor",name:"V7 LINE S800",groesse:"1 Stück",preis:82.90},
+  {serie:"Reinigung",kat:"Pflege",name:"BOSHINE",groesse:"500 ml",preis:25.50},
+  {serie:"Reinigung",kat:"Pflege",name:"BOWAX",groesse:"500 ml",preis:35.50},
+  {serie:"Reinigung",kat:"Pflege",name:"NATURE",groesse:"40x40 cm",preis:31.50},
+  {serie:"Reinigung",kat:"Pflege",name:"SEAL & CARE",groesse:"750 ml",preis:44.50},
+  {serie:"Reinigung",kat:"Pflege",name:"FURNICARE",groesse:"200 ml",preis:34.50},
+  {serie:"Reinigung",kat:"Pflege",name:"CAREBALM",groesse:"200 ml",preis:20.50},
+  {serie:"Reinigung",kat:"Diverses",name:"Schwämmchen",groesse:"80 mm",preis:2.50},
+  {serie:"Reinigung",kat:"Diverses",name:"Schwammdose leer",groesse:"",preis:1.50},
+  {serie:"Reinigung",kat:"Diverses",name:"SEIDENGLANZ",groesse:"500 ml",preis:49.50},
+  {serie:"Reinigung",kat:"Diverses",name:"SEIDENGLANZ mit Sprühkopf",groesse:"500 ml",preis:55.50},
+  {serie:"Reinigung",kat:"Auto",name:"AUTOKÖNNER",groesse:"1000 ml",preis:39.90},
+  {serie:"Reinigung",kat:"Auto",name:"AUTOPOLITUR SOFT",groesse:"250 ml",preis:24.90},
+  {serie:"Reinigung",kat:"Auto",name:"AUTOPOLITUR STRONG",groesse:"250 ml",preis:24.90},
+  {serie:"Reinigung",kat:"Auto",name:"CARWASH Handschuh",groesse:"20x15 cm",preis:35.50},
+  {serie:"Reinigung",kat:"Auto",name:"POLISH & CLEAN",groesse:"40x40 cm",preis:21.90},
+  {serie:"Reinigung",kat:"Auto",name:"STRONG",groesse:"40x40 cm",preis:24.50},
+  {serie:"Reinigung",kat:"Auto",name:"WHEEL SHINE",groesse:"750 ml",preis:30.50},
+  {serie:"Reinigung",kat:"Wäsche",name:"Messbecher",groesse:"50 ml",preis:1.00},
+  {serie:"Reinigung",kat:"Wäsche",name:"Messbecher",groesse:"150 ml",preis:1.30},
+  {serie:"Reinigung",kat:"Wäsche",name:"Dosierkugel",groesse:"150 ml",preis:2.90},
+  {serie:"Reinigung",kat:"Wäsche",name:"TEX N'CLEAN BOUTIQUE No.1 LEMON/ZERO",groesse:"500 ml",preis:32.90},
+  {serie:"Reinigung",kat:"Wäsche",name:"TEX N'CLEAN BOUTIQUE No.1 LEMON/ZERO",groesse:"2,5 l",preis:134.00},
+  {serie:"Reinigung",kat:"Wäsche",name:"TEX N'CLEAN BOUTIQUE No.2 LAVENDER",groesse:"750 ml",preis:33.90},
+  {serie:"Reinigung",kat:"Wäsche",name:"TEX N'CLEAN BOUTIQUE No.2 LAVENDER",groesse:"2,5 l",preis:84.50},
+  {serie:"Reinigung",kat:"Wäsche",name:"TEX N'CLEAN BOUTIQUE No.3 Waschverstärker",groesse:"500 ml",preis:24.90},
+  {serie:"Reinigung",kat:"Wäsche",name:"TEX N'CLEAN BOUTIQUE No.3 Waschverstärker",groesse:"2,5 kg",preis:102.50},
+  {serie:"Reinigung",kat:"Wäsche",name:"TEX N'CLEAN BOUTIQUE No.4 Enthärter",groesse:"325 ml",preis:18.50},
+  {serie:"Reinigung",kat:"Wäsche",name:"TEX N'CLEAN BOUTIQUE No.5",groesse:"100 ml",preis:32.90},
+  {serie:"Reinigung",kat:"Wäsche",name:"TEX N'CLEAN BOUTIQUE No.6 DRY Gallseife",groesse:"100 g",preis:5.50},
+  {serie:"Reinigung",kat:"Wäsche",name:"TEX N'CLEAN BOUTIQUE No.6 DRY Klickbox",groesse:"11x9x3,5 cm",preis:0.90},
+  {serie:"Reinigung",kat:"Wäsche",name:"WÄSCHESÄCKCHEN Recyclat",groesse:"20x20 cm",preis:5.90},
+  {serie:"Reinigung",kat:"Wäsche",name:"WÄSCHESÄCKCHEN Recyclat",groesse:"35x45 cm",preis:9.90},
+  {serie:"Reinigung",kat:"Wäsche",name:"WÄSCHESÄCKCHEN Recyclat",groesse:"40x60 cm",preis:12.90},
+  // WIN-I
+  {serie:"win-i",kat:"Geräte",name:"win-i touch mit Elektrobürste",groesse:"",preis:1649.00},
+  {serie:"win-i",kat:"Geräte",name:"win-i touch anthrazit mit Handturbodüse",groesse:"",preis:1699.00},
+  {serie:"win-i",kat:"Geräte",name:"win-i touch anthrazit mit Zubehörset",groesse:"",preis:1649.00},
+  {serie:"win-i",kat:"Geräte",name:"win-i touch anthrazit mit Sprühextraktionskit",groesse:"",preis:1699.00},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Zubehör Powerbrush",groesse:"",preis:449.00},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Multifunktionsaufsatz für Bodendüse",groesse:"",preis:24.50},
+  {serie:"win-i",kat:"Zubehör",name:"Flächenfaser BAUMWOLLE Multifunktionsaufsatz",groesse:"",preis:31.50},
+  {serie:"win-i",kat:"Zubehör",name:"Flächenfaser Hygiene Multifunktionsaufsatz",groesse:"",preis:31.50},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Naturhaarbesen",groesse:"",preis:74.90},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Möbelpinsel",groesse:"",preis:29.50},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Handturbodüse Luftantrieb",groesse:"",preis:91.50},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Handturbodüse elektrisch",groesse:"",preis:199.00},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Noppenstriegel",groesse:"",preis:79.90},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Sprühextraktionskit",groesse:"",preis:499.00},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Abflussadapter",groesse:"",preis:6.90},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Aufblasspitze mit Peitsche",groesse:"",preis:26.50},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Squeegee",groesse:"",preis:99.90},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Fensterwischer",groesse:"",preis:95.90},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Verlängerungsrohr 348mm",groesse:"",preis:26.50},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Bettsack",groesse:"100x150 cm",preis:7.90},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Matratzensack",groesse:"140x270 cm",preis:18.50},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Matratzensack",groesse:"185x300 cm",preis:29.50},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Matratzenschoner für Powerbrush",groesse:"",preis:28.50},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Zubehörhalter",groesse:"",preis:48.90},
+  {serie:"win-i",kat:"Zubehör",name:"win-i Hygiene- & Matratzenschuh",groesse:"",preis:55.50},
+  {serie:"win-i",kat:"Sets",name:"win-i Set Handturbobürste el. mit Schlauch ohne Rohr",groesse:"",preis:449.00},
+  {serie:"win-i",kat:"Sets",name:"win-i Set Handturbobürste el. mit Schlauch und Rohr",groesse:"",preis:499.00},
+  {serie:"win-i",kat:"Sets",name:"win-i Wandhalterung",groesse:"",preis:159.00},
+  {serie:"win-i",kat:"Sets",name:"win-i Parkhalterung",groesse:"",preis:49.90},
+  {serie:"win-i",kat:"Sets",name:"win-i Polsterdüse transparent",groesse:"",preis:26.50},
+  {serie:"win-i",kat:"Ersatzteile",name:"Ersatzpad für Fensterwischer",groesse:"",preis:24.50},
+  {serie:"win-i",kat:"Ersatzteile",name:"E-Teil Schlüssel für Separator",groesse:"",preis:6.50},
+  {serie:"win-i",kat:"Ersatzteile",name:"E-Teil Schlauch",groesse:"",preis:55.90},
+  {serie:"win-i",kat:"Ersatzteile",name:"E-Teil Elektrodüsenschlauch",groesse:"",preis:199.00},
+  {serie:"win-i",kat:"Ersatzteile",name:"E-Teil Elektrodüsenrohr",groesse:"",preis:110.00},
+  {serie:"win-i",kat:"Ersatzteile",name:"E-Teil Edelstahlteleskoprohr",groesse:"",preis:39.90},
+  {serie:"win-i",kat:"Ersatzteile",name:"E-Teil Bodendüse",groesse:"",preis:78.90},
+  // NEW WELLNESS
+  {serie:"New Wellness",kat:"Aloe Vera",name:"Cream",groesse:"100 ml",preis:33.50},
+  {serie:"New Wellness",kat:"Aloe Vera",name:"Deo Roll On",groesse:"50 ml",preis:17.90},
+  {serie:"New Wellness",kat:"Aloe Vera",name:"Gel",groesse:"100 ml",preis:28.50},
+  {serie:"New Wellness",kat:"Aloe Vera",name:"Gel Spray",groesse:"30 ml",preis:12.50},
+  {serie:"New Wellness",kat:"Aloe Vera",name:"Gel Spray",groesse:"300 ml",preis:32.50},
+  {serie:"New Wellness",kat:"Aloe Vera",name:"Hair & Body Shampoo",groesse:"100 ml",preis:25.50},
+  {serie:"New Wellness",kat:"Aloe Vera",name:"Hair & Body Shampoo",groesse:"1000 ml",preis:57.90},
+  {serie:"New Wellness",kat:"Aloe Vera",name:"Heat Lotion",groesse:"100 ml",preis:32.50},
+  {serie:"New Wellness",kat:"Aloe Vera",name:"Toothpaste for Kids",groesse:"50 ml",preis:7.90},
+  {serie:"New Wellness",kat:"Aloe Vera",name:"Toothpaste",groesse:"100 ml",preis:12.50},
+  {serie:"New Wellness",kat:"Aloe Vera",name:"ALOE VERA Face Cream",groesse:"50 ml",preis:35.50},
+  {serie:"New Wellness",kat:"GWNC",name:"24/7 softcare",groesse:"50 ml",preis:36.90},
+  {serie:"New Wellness",kat:"GWNC",name:"body & massage",groesse:"100 ml",preis:35.90},
+  {serie:"New Wellness",kat:"GWNC",name:"bodyscrub",groesse:"200 ml",preis:66.90},
+  {serie:"New Wellness",kat:"GWNC",name:"cleansingmilk",groesse:"100 ml",preis:35.50},
+  {serie:"New Wellness",kat:"GWNC",name:"day & night intensive",groesse:"50 ml",preis:40.90},
+  {serie:"New Wellness",kat:"GWNC",name:"Deo Cream",groesse:"50 ml",preis:25.50},
+  {serie:"New Wellness",kat:"GWNC",name:"effectiveeyes",groesse:"20 ml",preis:32.00},
+  {serie:"New Wellness",kat:"GWNC",name:"Foot Bath Salt",groesse:"500 g",preis:28.50},
+  {serie:"New Wellness",kat:"GWNC",name:"Footbalm",groesse:"150 ml",preis:38.50},
+  {serie:"New Wellness",kat:"GWNC",name:"hydrocare",groesse:"100 ml",preis:38.50},
+  {serie:"New Wellness",kat:"GWNC",name:"nailcare oil",groesse:"10 ml",preis:17.90},
+  {serie:"New Wellness",kat:"GWNC",name:"refresh",groesse:"50 ml",preis:32.00},
+  {serie:"New Wellness",kat:"GWNC",name:"softpeeling",groesse:"50 ml",preis:35.50},
+  {serie:"New Wellness",kat:"TIME",name:"Anti Blue Light Fluid",groesse:"30 ml",preis:40.50},
+  {serie:"New Wellness",kat:"TIME",name:"Beauty Massage Set",groesse:"",preis:59.90},
+  {serie:"New Wellness",kat:"TIME",name:"CLEAR WASHGEL",groesse:"100 ml",preis:32.50},
+  {serie:"New Wellness",kat:"TIME",name:"CREAM RICH",groesse:"50 ml",preis:59.90},
+  {serie:"New Wellness",kat:"TIME",name:"CREAM RICH Refill",groesse:"50 ml",preis:52.90},
+  {serie:"New Wellness",kat:"TIME",name:"CREAM LIGHT",groesse:"50 ml",preis:52.90},
+  {serie:"New Wellness",kat:"TIME",name:"EYE CREAM",groesse:"20 ml",preis:36.60},
+  {serie:"New Wellness",kat:"TIME",name:"EYE ROLL ON",groesse:"15 ml",preis:26.50},
+  {serie:"New Wellness",kat:"TIME",name:"Peeling Powder",groesse:"30 g",preis:39.50},
+  {serie:"New Wellness",kat:"TIME",name:"BOOST",groesse:"15 ml",preis:62.90},
+  {serie:"New Wellness",kat:"TIME",name:"FILL",groesse:"15 ml",preis:62.90},
+  {serie:"New Wellness",kat:"TIME",name:"LIFT",groesse:"15 ml",preis:62.90},
+  {serie:"New Wellness",kat:"TIME",name:"INTENSE MASK",groesse:"50 ml",preis:84.50},
+  {serie:"New Wellness",kat:"TIME",name:"INTENSE MASK Refill",groesse:"50 ml",preis:69.90},
+  {serie:"New Wellness",kat:"TIME",name:"TONIC",groesse:"100 ml",preis:27.90},
+  {serie:"New Wellness",kat:"EXPRESSION",name:"Kajalstift",groesse:"1 Stück",preis:15.50},
+  {serie:"New Wellness",kat:"EXPRESSION",name:"Loose Powder",groesse:"10 g",preis:51.90},
+  {serie:"New Wellness",kat:"EXPRESSION",name:"Mascara black",groesse:"10 ml",preis:22.50},
+  {serie:"New Wellness",kat:"EXPRESSION",name:"Puderpinsel",groesse:"1 Stück",preis:19.50},
+  {serie:"New Wellness",kat:"EXPRESSION",name:"Tinted Daycare Brunette",groesse:"30 ml",preis:24.50},
+  {serie:"New Wellness",kat:"EXPRESSION",name:"Tinted Daycare Apricot",groesse:"30 ml",preis:24.50},
+  {serie:"New Wellness",kat:"MAX",name:"ALL IN ONE SHOWERGEL FOR MEN",groesse:"200 ml",preis:21.90},
+  {serie:"New Wellness",kat:"MAX",name:"BLADES FOR MEN",groesse:"3 Stück",preis:19.90},
+  {serie:"New Wellness",kat:"MAX",name:"RAZOR FOR MEN",groesse:"1 Stück",preis:19.90},
+  {serie:"New Wellness",kat:"MAX",name:"SHAVING GEL",groesse:"200 ml",preis:26.50},
+  {serie:"New Wellness",kat:"YOUNG",name:"BLACK MASK",groesse:"50 ml",preis:22.50},
+  {serie:"New Wellness",kat:"YOUNG",name:"Cover Cream",groesse:"15 ml",preis:25.50},
+  {serie:"New Wellness",kat:"YOUNG",name:"Face Care",groesse:"50 ml",preis:36.90},
+  {serie:"New Wellness",kat:"YOUNG",name:"Face Wash Concentrate",groesse:"100 ml",preis:39.90},
+  {serie:"New Wellness",kat:"YOUNG",name:"Time to Remove",groesse:"15 ml",preis:24.50},
+  {serie:"New Wellness",kat:"Protect & Care",name:"AFTER SHAVE GELCREME",groesse:"75 ml",preis:27.90},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Bodybutter Soft & Smooth",groesse:"200 ml",preis:35.50},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Body SORBET",groesse:"200 ml",preis:20.90},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Body SPRAY",groesse:"75 ml",preis:27.90},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Bronzer CONCENTRATE",groesse:"10 ml",preis:34.90},
+  {serie:"New Wellness",kat:"Protect & Care",name:"COMPACT AquaSoap",groesse:"100 g",preis:9.90},
+  {serie:"New Wellness",kat:"Protect & Care",name:"COMPACT Face Wash",groesse:"60 g",preis:24.90},
+  {serie:"New Wellness",kat:"Protect & Care",name:"COMPACT Face Peeling",groesse:"50 g",preis:24.50},
+  {serie:"New Wellness",kat:"Protect & Care",name:"COMPACT Hair & Body Wash Soft Scent",groesse:"100 g",preis:24.90},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Fresh Foam",groesse:"150 ml",preis:25.50},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Golden TAN",groesse:"100 ml",preis:30.90},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Hand MOUSSE",groesse:"75 ml",preis:24.90},
+  {serie:"New Wellness",kat:"Protect & Care",name:"HANDSAFE",groesse:"50 ml",preis:17.90},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Hautschutzcreme",groesse:"100 ml",preis:36.50},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Handwash Paste",groesse:"200 ml",preis:26.50},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Intimate Wash Lotion",groesse:"200 ml",preis:25.50},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Lotion EXOTIC",groesse:"200 ml",preis:24.50},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Peeling SORBET",groesse:"150 ml",preis:23.90},
+  {serie:"New Wellness",kat:"Protect & Care",name:"RAZOR BLADES FOR WOMEN",groesse:"3 Stück",preis:19.90},
+  {serie:"New Wellness",kat:"Protect & Care",name:"RAZOR FOR WOMEN",groesse:"1 Stück",preis:19.90},
+  {serie:"New Wellness",kat:"Protect & Care",name:"SHAVING CREAM",groesse:"150 ml",preis:30.50},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Shower SORBET",groesse:"200 ml",preis:18.50},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Shower SORBET",groesse:"50 ml",preis:9.90},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Skin Saver",groesse:"50 ml",preis:34.50},
+  {serie:"New Wellness",kat:"Protect & Care",name:"Vitamin Showergel",groesse:"200 ml",preis:25.50},
+  {serie:"New Wellness",kat:"SOMESHINE",name:"Face Cream SPF 30",groesse:"75 ml",preis:34.50},
+  {serie:"New Wellness",kat:"SOMESHINE",name:"SUNLOTION SENSITIVE SPF 50+",groesse:"100 ml",preis:35.50},
+  {serie:"New Wellness",kat:"SOMESHINE",name:"SUNLOTION SPF 30",groesse:"200 ml",preis:34.50},
+  {serie:"New Wellness",kat:"SOMESHINE",name:"SUNSPRAY SPF 30",groesse:"150 ml",preis:34.50},
+  {serie:"New Wellness",kat:"SOMESHINE",name:"SUNSTICK SPF 50",groesse:"15 g",preis:29.90},
+  {serie:"New Wellness",kat:"HAIR",name:"COLOUR SHAMPOO",groesse:"250 ml",preis:20.50},
+  {serie:"New Wellness",kat:"HAIR",name:"COLOUR SPÜLUNG",groesse:"250 ml",preis:22.50},
+  {serie:"New Wellness",kat:"HAIR",name:"CONDITIONER",groesse:"250 ml",preis:16.90},
+  {serie:"New Wellness",kat:"HAIR",name:"Haarbürste",groesse:"1 Stück",preis:7.90},
+  {serie:"New Wellness",kat:"HAIR",name:"Haarturban",groesse:"1 Stück",preis:38.90},
+  {serie:"New Wellness",kat:"HAIR",name:"Hair Tonic",groesse:"100 ml",preis:30.50},
+  {serie:"New Wellness",kat:"HAIR",name:"HYDRO MASK",groesse:"200 ml",preis:29.90},
+  {serie:"New Wellness",kat:"HAIR",name:"HAIR Care Mask",groesse:"100 ml",preis:16.90},
+  {serie:"New Wellness",kat:"HAIR",name:"SHAMPOO",groesse:"250 ml",preis:15.50},
+  {serie:"New Wellness",kat:"Düfte",name:"amazed by her",groesse:"100 ml",preis:45.50},
+  {serie:"New Wellness",kat:"Düfte",name:"amazed by him",groesse:"100 ml",preis:45.50},
+  {serie:"New Wellness",kat:"Düfte",name:"DARK",groesse:"100 ml",preis:45.50},
+  {serie:"New Wellness",kat:"Düfte",name:"IW ONE FOR MEN",groesse:"100 ml",preis:45.50},
+  {serie:"New Wellness",kat:"Düfte",name:"LIGHT",groesse:"100 ml",preis:45.50},
+  {serie:"New Wellness",kat:"Düfte",name:"Only You",groesse:"100 ml",preis:45.50},
+  {serie:"New Wellness",kat:"Düfte",name:"Parfumzerstäuber silber",groesse:"1 Stück",preis:19.90},
+  {serie:"New Wellness",kat:"Essentials",name:"Brush Cleansing Pad",groesse:"1 Stück",preis:3.90},
+  {serie:"New Wellness",kat:"Essentials",name:"Kosmetik Bag",groesse:"1 Stück",preis:20.90},
+  {serie:"New Wellness",kat:"Essentials",name:"Face n Eye Pads",groesse:"10 Stück",preis:42.50},
+  {serie:"New Wellness",kat:"Essentials",name:"Foamer",groesse:"1 Stück",preis:8.90},
+  {serie:"New Wellness",kat:"Essentials",name:"Fusspeeling Handschuh",groesse:"1 Stück",preis:20.50},
+  {serie:"New Wellness",kat:"Essentials",name:"Fussbadewanne",groesse:"1 Stück",preis:18.50},
+  {serie:"New Wellness",kat:"Essentials",name:"Halter Nassrasierer",groesse:"5 Stück",preis:12.50},
+  {serie:"New Wellness",kat:"Essentials",name:"KINDERZAHNBÜRSTE DENTALCARE SOFT",groesse:"1 Stück",preis:10.90},
+  {serie:"New Wellness",kat:"Essentials",name:"Kosmetikspiegel",groesse:"1 Stück",preis:13.00},
+  {serie:"New Wellness",kat:"Essentials",name:"Massageband",groesse:"1 Stück",preis:36.50},
+  {serie:"New Wellness",kat:"Essentials",name:"Massagekrake",groesse:"1 Stück",preis:9.50},
+  {serie:"New Wellness",kat:"Essentials",name:"Peelinghandschuh",groesse:"1 Stück",preis:18.90},
+  {serie:"New Wellness",kat:"Essentials",name:"Reinigungshandschuh Gesicht und Augen",groesse:"1 Stück",preis:18.50},
+  {serie:"New Wellness",kat:"Essentials",name:"Soap Dish",groesse:"1 Stück",preis:12.90},
+  {serie:"New Wellness",kat:"Essentials",name:"Soft Körperhandschuh",groesse:"1 Stück",preis:36.50},
+  {serie:"New Wellness",kat:"Essentials",name:"Spitzer",groesse:"1 Stück",preis:5.50},
+  {serie:"New Wellness",kat:"Essentials",name:"Sporttuch",groesse:"30x75 cm",preis:14.90},
+  {serie:"New Wellness",kat:"Essentials",name:"Strandtuch",groesse:"180x100 cm",preis:59.90},
+  {serie:"New Wellness",kat:"Essentials",name:"Toothbrush Cup",groesse:"1 Stück",preis:12.90},
+  {serie:"New Wellness",kat:"Essentials",name:"Wellnesstuch",groesse:"90x150 cm",preis:69.90},
+  {serie:"New Wellness",kat:"Essentials",name:"Zahnbürste DENTALCARE SOFT-MED",groesse:"1 Stück",preis:10.90},
+  {serie:"New Wellness",kat:"Nahrungsergänzung",name:"ALOE VERA Naturel",groesse:"1000 ml",preis:50.50},
+  {serie:"New Wellness",kat:"Nahrungsergänzung",name:"ALOE VERA Kapseln",groesse:"60 Stk.",preis:49.50},
+  {serie:"New Wellness",kat:"Nahrungsergänzung",name:"POWER4YOU",groesse:"10x10 ml",preis:26.90},
+  {serie:"New Wellness",kat:"pro nature Stiftung",name:"MEERSCHUTZCREME",groesse:"100 ml",preis:42.90},
+  // BEST FRIENDS
+  {serie:"Best Friends",kat:"Trockennahrung Hund",name:"ENTE MIT MAIS",groesse:"2,5 kg",preis:30.50},
+  {serie:"Best Friends",kat:"Trockennahrung Hund",name:"3x ENTE MIT MAIS",groesse:"3x2,5 kg",preis:78.00},
+  {serie:"Best Friends",kat:"Trockennahrung Hund",name:"GEFLÜGEL MIT GEMÜSE",groesse:"2,5 kg",preis:30.50},
+  {serie:"Best Friends",kat:"Trockennahrung Hund",name:"3x GEFLÜGEL MIT GEMÜSE",groesse:"3x2,5 kg",preis:78.00},
+  {serie:"Best Friends",kat:"Trockennahrung Hund",name:"Gourmet Set klein",groesse:"5x2,5 kg",preis:129.00},
+  {serie:"Best Friends",kat:"Trockennahrung Hund",name:"Gourmet Set gross",groesse:"5x7,5 kg",preis:309.00},
+  {serie:"Best Friends",kat:"Trockennahrung Hund",name:"LACHS MIT TRAUBENKERN",groesse:"2,5 kg",preis:30.50},
+  {serie:"Best Friends",kat:"Trockennahrung Hund",name:"3x LACHS MIT TRAUBENKERN",groesse:"3x2,5 kg",preis:78.00},
+  {serie:"Best Friends",kat:"Trockennahrung Hund",name:"LAMM MIT REIS",groesse:"2,5 kg",preis:30.50},
+  {serie:"Best Friends",kat:"Trockennahrung Hund",name:"3x LAMM MIT REIS",groesse:"3x2,5 kg",preis:78.00},
+  {serie:"Best Friends",kat:"Trockennahrung Hund",name:"PUPPY",groesse:"2,5 kg",preis:30.50},
+  {serie:"Best Friends",kat:"Trockennahrung Hund",name:"3x PUPPY",groesse:"3x2,5 kg",preis:78.00},
+  {serie:"Best Friends",kat:"Trockennahrung Hund",name:"RIND MIT KARTOFFELN",groesse:"2,5 kg",preis:30.50},
+  {serie:"Best Friends",kat:"Trockennahrung Hund",name:"3x RIND MIT KARTOFFELN",groesse:"3x2,5 kg",preis:78.00},
+  {serie:"Best Friends",kat:"Trockennahrung Katze",name:"CHICKEN'N'FISH",groesse:"1,5 kg",preis:30.50},
+  {serie:"Best Friends",kat:"Trockennahrung Katze",name:"3x CHICKEN'N'FISH",groesse:"3x1,5 kg",preis:78.00},
+  {serie:"Best Friends",kat:"Trockennahrung Katze",name:"FISH'N'CHIPS",groesse:"1,5 kg",preis:29.90},
+  {serie:"Best Friends",kat:"Trockennahrung Katze",name:"KITTEN",groesse:"1,5 kg",preis:31.50},
+  {serie:"Best Friends",kat:"Trockennahrung Katze",name:"3x KITTEN",groesse:"3x1,5 kg",preis:84.00},
+  {serie:"Best Friends",kat:"Feuchtnahrung Hund",name:"HERZHAFT! HUHN MIT PASTINAKEN",groesse:"6x200 g",preis:22.50},
+  {serie:"Best Friends",kat:"Feuchtnahrung Hund",name:"HERZHAFT! HUHN MIT PASTINAKEN",groesse:"6x800 g",preis:39.50},
+  {serie:"Best Friends",kat:"Feuchtnahrung Hund",name:"JUNIOR! GEFLÜGEL",groesse:"6x400 g",preis:28.50},
+  {serie:"Best Friends",kat:"Feuchtnahrung Hund",name:"KÖSTLICH! KALB MIT SÜSSKARTOFFELN",groesse:"6x200 g",preis:22.50},
+  {serie:"Best Friends",kat:"Feuchtnahrung Hund",name:"KÖSTLICH! KALB MIT SÜSSKARTOFFELN",groesse:"6x800 g",preis:39.50},
+  {serie:"Best Friends",kat:"Feuchtnahrung Hund",name:"WERTVOLL! WILD MIT PREISELBEEREN",groesse:"6x200 g",preis:22.50},
+  {serie:"Best Friends",kat:"Feuchtnahrung Hund",name:"WERTVOLL! WILD MIT PREISELBEEREN",groesse:"6x800 g",preis:39.50},
+  {serie:"Best Friends",kat:"Feuchtnahrung Katze",name:"MIAU! MINZE",groesse:"6x400 g",preis:30.50},
+  {serie:"Best Friends",kat:"Feuchtnahrung Katze",name:"KITTEN! GEFLÜGEL",groesse:"6x400 g",preis:30.50},
+  {serie:"Best Friends",kat:"Feuchtnahrung Katze",name:"LEICHT! LACHS",groesse:"16x85 g",preis:37.50},
+  {serie:"Best Friends",kat:"Feuchtnahrung Katze",name:"LEICHT! LACHS",groesse:"6x400 g",preis:30.50},
+  {serie:"Best Friends",kat:"Feuchtnahrung Katze",name:"LECKER! LAMM",groesse:"16x85 g",preis:37.50},
+  {serie:"Best Friends",kat:"Feuchtnahrung Katze",name:"RICHTIG! RIND",groesse:"16x85 g",preis:37.50},
+  {serie:"Best Friends",kat:"Snacks",name:"BEEF STICKS",groesse:"130 g",preis:12.50},
+  {serie:"Best Friends",kat:"Snacks",name:"BEUTEHAPPEN HUHN UND STRAUSS",groesse:"150 g",preis:12.50},
+  {serie:"Best Friends",kat:"Snacks",name:"FLEISCHSTREIFEN RIND MIT HÜTTENKÄSE",groesse:"150 g",preis:12.50},
+  {serie:"Best Friends",kat:"Snacks",name:"CAT STICKS",groesse:"150 g",preis:12.50},
+  {serie:"Best Friends",kat:"Snacks",name:"DENTAL KAUKNOCHEN 12cm",groesse:"2 Stück",preis:12.50},
+  {serie:"Best Friends",kat:"Snacks",name:"RINDEROHREN",groesse:"2 Stück",preis:12.50},
+  {serie:"Best Friends",kat:"Snacks",name:"RINDERTROCKENFLEISCH",groesse:"200 g",preis:18.50},
+  {serie:"Best Friends",kat:"Snacks",name:"CHICKEN'N'FISH MINIS",groesse:"150 g",preis:12.50},
+  {serie:"Best Friends",kat:"Snacks",name:"SNACK PUTE MIT KÜRBIS",groesse:"150 g",preis:12.50},
+  {serie:"Best Friends",kat:"Pflegeprodukte",name:"COMPACT SHAMPOO",groesse:"100 g",preis:24.50},
+  {serie:"Best Friends",kat:"Pflegeprodukte",name:"PFÖTCHENBALSAM",groesse:"50 ml",preis:24.50},
+  {serie:"Best Friends",kat:"Ergänzungsprodukte",name:"Beutelverschluss",groesse:"3 Stück",preis:8.50},
+  {serie:"Best Friends",kat:"Ergänzungsprodukte",name:"Dosendeckel",groesse:"3 Stück",preis:8.50},
+  {serie:"Best Friends",kat:"Ergänzungsprodukte",name:"Fellpflegehandschuh",groesse:"1 Stück",preis:22.50},
+  {serie:"Best Friends",kat:"Ergänzungsprodukte",name:"Fellpflegetuch",groesse:"40x80 cm",preis:42.50},
+  {serie:"Best Friends",kat:"Ergänzungsprodukte",name:"Fellpflegetuch",groesse:"100x80 cm",preis:52.50},
+  {serie:"Best Friends",kat:"Ergänzungsprodukte",name:"Futterlöffel",groesse:"1 Stück",preis:8.50},
+  {serie:"Best Friends",kat:"Ergänzungsprodukte",name:"Mimi-Decke",groesse:"70x50 cm",preis:20.90},
+  {serie:"Best Friends",kat:"Ergänzungsprodukte",name:"Pfötchentuch",groesse:"1 Stück",preis:23.50},
+  {serie:"Best Friends",kat:"Ergänzungsprodukte",name:"Pfötchenhandschuh",groesse:"27x13 cm",preis:30.50},
+  {serie:"Best Friends",kat:"Ergänzungsprodukte",name:"Reisedecke anti-rutsch",groesse:"70x55 cm",preis:33.50},
+  {serie:"Best Friends",kat:"Ergänzungsprodukte",name:"Schmusedecke",groesse:"100x150 cm",preis:55.50},
+  {serie:"Best Friends",kat:"Ergänzungsprodukte",name:"Schnüffelmatte",groesse:"70x70 cm",preis:54.90},
+  {serie:"Best Friends",kat:"Ergänzungsprodukte",name:"Traveler Bag",groesse:"1 Stück",preis:129.00},
+  {serie:"Best Friends",kat:"Ergänzungsprodukte",name:"Wäschebeutel XL",groesse:"70x80 cm",preis:23.50},
+];
+
 const CAT_STYLE = {
   Reinigung:    {bg:"#eff6ff",color:"#1d4ed8",border:"#bfdbfe"},
   Körperpflege: {bg:"#fdf4ff",color:"#7e22ce",border:"#e9d5ff"},
@@ -354,9 +746,18 @@ function ProdRow({p,onIn,onSale,onEdit,onDel}) {
 function ProdModal({product,onSave,onClose,onDel}) {
   const [f,setF]=useState(product||{name:"",description:"",category:"Reinigung",buyPrice:"",sellPrice:"",stock:"",minStock:2,image:"",notes:""});
   const [imgErr,setImgErr]=useState(false);
+  const [showRef,setShowRef]=useState(false);
+  const [refSearch,setRefSearch]=useState("");
   const s=(k,v)=>setF(x=>({...x,[k]:v}));
   const submit=(e)=>{e.preventDefault();if(!f.name.trim())return;onSave({...f,buyPrice:parseFloat(f.buyPrice)||0,sellPrice:parseFloat(f.sellPrice)||0,stock:parseInt(f.stock)||0,minStock:parseInt(f.minStock)||1});};
   const margin=f.sellPrice&&f.buyPrice?((f.sellPrice-f.buyPrice)/f.sellPrice*100).toFixed(0):null;
+
+  const refResults=useMemo(()=>{
+    if(!refSearch.trim()) return [];
+    const q=refSearch.toLowerCase();
+    return PREISLISTE.filter(p=>p.name.toLowerCase().includes(q)||(p.groesse&&p.groesse.toLowerCase().includes(q))).slice(0,8);
+  },[refSearch]);
+
   return (
     <Drawer onClose={onClose}>
       <h3 style={{margin:"0 0 16px",fontSize:18,fontWeight:900,color:B[900]}}>{product?"Produkt bearbeiten":"Neues Produkt"}</h3>
@@ -365,6 +766,38 @@ function ProdModal({product,onSave,onClose,onDel}) {
           <Lbl t="Produktname *"><input required value={f.name} onChange={e=>s("name",e.target.value)} style={inp}/></Lbl>
           <Lbl t="Beschreibung"><textarea value={f.description} onChange={e=>s("description",e.target.value)} rows={2} style={{...inp,resize:"vertical"}}/></Lbl>
           <Lbl t="Kategorie"><select value={f.category} onChange={e=>s("category",e.target.value)} style={inp}>{CATS.filter(c=>c!=="Alle").map(c=><option key={c}>{c}</option>)}</select></Lbl>
+
+          {/* Preislisten-Referenz */}
+          <div style={{background:B[50],border:`1px solid ${B[200]}`,borderRadius:12,overflow:"hidden"}}>
+            <button type="button" onClick={()=>setShowRef(x=>!x)}
+              style={{width:"100%",padding:"10px 14px",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:8,fontSize:13,fontWeight:700,color:B[700]}}>
+              <Ic n="star" s={14} style={{color:B[500]}}/>
+              Preis aus Preisliste 2026 übernehmen
+              <Ic n={showRef?"up":"down"} s={13} style={{marginLeft:"auto",color:"#94a3b8"}}/>
+            </button>
+            {showRef&&<div style={{padding:"0 12px 12px"}}>
+              <input value={refSearch} onChange={e=>setRefSearch(e.target.value)} placeholder="Artikelname suchen…" autoFocus
+                style={{...inp,marginBottom:8}}/>
+              {refSearch&&refResults.length===0&&<div style={{textAlign:"center",padding:12,color:"#94a3b8",fontSize:13}}>Kein Artikel gefunden</div>}
+              {refResults.map((p,i)=>{
+                const sc=SERIE_COLORS[p.serie]||{bg:B[50],color:B[600],border:B[200]};
+                return (
+                  <div key={i} onClick={()=>{s("name",p.name+(p.groesse?" "+p.groesse:""));s("sellPrice",p.preis);setShowRef(false);setRefSearch("");}}
+                    style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",borderRadius:10,cursor:"pointer",marginBottom:4,background:"#fff",border:`1px solid ${sc.border}`,transition:"all .1s"}}
+                    onMouseEnter={e=>e.currentTarget.style.background=sc.bg}
+                    onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
+                    <div>
+                      <div style={{fontWeight:700,fontSize:13,color:B[900]}}>{p.name}</div>
+                      <div style={{fontSize:11,color:"#94a3b8"}}>{p.groesse&&<span>{p.groesse} · </span>}<span style={{color:sc.color,fontWeight:700}}>{p.serie}</span> · {p.kat}</div>
+                    </div>
+                    <div style={{fontWeight:900,fontSize:14,color:B[700],flexShrink:0,marginLeft:12}}>CHF {p.preis.toFixed(2)}</div>
+                  </div>
+                );
+              })}
+              {!refSearch&&<div style={{textAlign:"center",padding:"8px 0",color:"#94a3b8",fontSize:12}}>Artikelname eingeben zum Suchen</div>}
+            </div>}
+          </div>
+
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
             <Lbl t="Einkaufspreis CHF"><input type="number" step="0.01" min="0" value={f.buyPrice} onChange={e=>s("buyPrice",e.target.value)} style={inp} placeholder="0.00"/></Lbl>
             <Lbl t="Verkaufspreis CHF"><input type="number" step="0.01" min="0" value={f.sellPrice} onChange={e=>s("sellPrice",e.target.value)} style={inp} placeholder="0.00"/></Lbl>
@@ -482,7 +915,7 @@ function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
       {/* Nav */}
       <nav style={{background:"#fff",borderBottom:`1px solid ${B[100]}`,position:"sticky",top:56,zIndex:40}}>
         <div style={{maxWidth:960,margin:"0 auto",padding:"0 12px",display:"flex"}}>
-          {[["products","Produkte","pkg"],["sales","Verkäufe","bar"],["settings","Einstellungen","cog"]].map(([id,lb,ic])=>(
+          {[["products","Produkte","pkg"],["sales","Verkäufe","bar"],["preisliste","Preisliste","star"],["settings","Einstellungen","cog"]].map(([id,lb,ic])=>(
             <button key={id} onClick={()=>setTab(id)} className="nav-btn" style={{display:"flex",alignItems:"center",gap:5,padding:"12px 16px",background:"none",border:"none",cursor:"pointer",fontSize:13,fontWeight:700,color:tab===id?B[600]:"#94a3b8",borderBottom:`2.5px solid ${tab===id?B[500]:"transparent"}`,flex:1,justifyContent:"center"}}>
               <Ic n={ic} s={16}/><span className="nav-label">{lb}</span>
             </button>
@@ -550,6 +983,61 @@ function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
             </div>
           }
         </div>}
+
+        {tab==="preisliste"&&(()=>{
+          const [plSearch,setPlSearch]=useState("");
+          const [plSerie,setPlSerie]=useState("Alle");
+          const series=["Alle","Reinigung","win-i","New Wellness","Best Friends"];
+          const filtered=PREISLISTE.filter(p=>{
+            const matchSerie=plSerie==="Alle"||p.serie===plSerie;
+            const matchSearch=!plSearch.trim()||p.name.toLowerCase().includes(plSearch.toLowerCase())||(p.groesse&&p.groesse.toLowerCase().includes(plSearch.toLowerCase()));
+            return matchSerie&&matchSearch;
+          });
+          const byKat=filtered.reduce((acc,p)=>{const k=p.serie+" · "+p.kat;if(!acc[k])acc[k]=[];acc[k].push(p);return acc;},{});
+          return (
+            <div style={{animation:"fadein .3s ease"}}>
+              <div style={{marginBottom:16}}>
+                <h2 style={{fontSize:20,fontWeight:900,color:B[900],marginBottom:4}}>Preisliste 2026</h2>
+                <div style={{fontSize:13,color:"#94a3b8"}}>{PREISLISTE.length} Artikel · Stand 20.01.2026</div>
+              </div>
+              <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap"}}>
+                <div style={{flex:1,minWidth:200,position:"relative"}}>
+                  <Ic n="info" s={14} style={{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",color:"#94a3b8"}}/>
+                  <input value={plSearch} onChange={e=>setPlSearch(e.target.value)} placeholder="Artikel suchen…" style={{...inp,paddingLeft:34}}/>
+                </div>
+                <select value={plSerie} onChange={e=>setPlSerie(e.target.value)} style={{...inp,width:"auto"}}>
+                  {series.map(s=><option key={s}>{s}</option>)}
+                </select>
+              </div>
+              <div style={{fontSize:12,color:"#94a3b8",marginBottom:12,fontWeight:600}}>{filtered.length} Artikel gefunden</div>
+              {Object.entries(byKat).map(([kat,items])=>{
+                const serie=items[0].serie;
+                const sc=SERIE_COLORS[serie]||{bg:B[50],color:B[600],border:B[200]};
+                return (
+                  <div key={kat} style={{marginBottom:16}}>
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+                      <span style={{fontSize:10,fontWeight:800,padding:"3px 10px",borderRadius:20,background:sc.bg,color:sc.color,border:`1px solid ${sc.border}`,textTransform:"uppercase",letterSpacing:.5}}>{serie}</span>
+                      <span style={{fontSize:13,fontWeight:800,color:B[800]}}>{items[0].kat}</span>
+                      <span style={{fontSize:11,color:"#94a3b8"}}>({items.length})</span>
+                    </div>
+                    <div style={{background:"#fff",border:`1px solid ${B[100]}`,borderRadius:14,overflow:"hidden"}}>
+                      {items.map((p,i)=>(
+                        <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 16px",borderBottom:i<items.length-1?`1px solid ${B[50]}`:"none"}}>
+                          <div style={{flex:1,minWidth:0}}>
+                            <div style={{fontWeight:700,fontSize:13,color:B[900]}}>{p.name}</div>
+                            {p.groesse&&<div style={{fontSize:11,color:"#94a3b8",marginTop:1}}>{p.groesse}</div>}
+                          </div>
+                          <div style={{fontWeight:900,fontSize:14,color:B[700],flexShrink:0,marginLeft:12}}>CHF {p.preis.toFixed(2)}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+              {filtered.length===0&&<div style={{textAlign:"center",padding:60,color:"#94a3b8"}}><div style={{fontSize:36,marginBottom:8}}>🔍</div><div style={{fontWeight:700}}>Kein Artikel gefunden</div></div>}
+            </div>
+          );
+        })()}
 
         {tab==="settings"&&<div>
           <h2 style={{margin:"0 0 20px",fontSize:20,fontWeight:900,color:B[900]}}>Einstellungen</h2>
