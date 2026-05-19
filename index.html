@@ -74,7 +74,7 @@ const { db, collection, onSnapshot, doc, setDoc, deleteDoc, serverTimestamp, que
 // ── Constants ─────────────────────────────────────────────────────────────────
 const APP_PASSWORD = "Lorenasunshine";
 const STORAGE_KEY  = "lorena_portal_unlocked";
-const USER_ID      = "lorena_main";
+const USER_ID      = "prowin_main_user";
 
 // Colors
 const B = {50:"#eff6ff",100:"#dbeafe",200:"#bfdbfe",300:"#93c5fd",400:"#60a5fa",500:"#3b82f6",600:"#2563eb",700:"#1d4ed8",800:"#1e40af",900:"#1e3a8a"};
@@ -482,7 +482,7 @@ function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
       {/* Nav */}
       <nav style={{background:"#fff",borderBottom:`1px solid ${B[100]}`,position:"sticky",top:56,zIndex:40}}>
         <div style={{maxWidth:960,margin:"0 auto",padding:"0 12px",display:"flex"}}>
-          {[["products","Produkte","pkg"],["sales","Verkäufe","bar"]].map(([id,lb,ic])=>(
+          {[["products","Produkte","pkg"],["sales","Verkäufe","bar"],["settings","Einstellungen","cog"]].map(([id,lb,ic])=>(
             <button key={id} onClick={()=>setTab(id)} className="nav-btn" style={{display:"flex",alignItems:"center",gap:5,padding:"12px 16px",background:"none",border:"none",cursor:"pointer",fontSize:13,fontWeight:700,color:tab===id?B[600]:"#94a3b8",borderBottom:`2.5px solid ${tab===id?B[500]:"transparent"}`,flex:1,justifyContent:"center"}}>
               <Ic n={ic} s={16}/><span className="nav-label">{lb}</span>
             </button>
@@ -550,6 +550,50 @@ function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
             </div>
           }
         </div>}
+
+        {tab==="settings"&&<div>
+          <h2 style={{margin:"0 0 20px",fontSize:20,fontWeight:900,color:B[900]}}>Einstellungen</h2>
+          <div style={{background:`linear-gradient(135deg,${B[700]},${B[500]})`,borderRadius:16,padding:18,marginBottom:12,fontSize:13,color:"#fff"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,fontWeight:800,fontSize:14}}><Ic n="check" s={16} style={{color:"#93c5fd"}}/>Daten sicher gespeichert</div>
+            <span style={{color:"rgba(255,255,255,0.8)"}}>Alle Änderungen werden automatisch in der Cloud gesichert.</span>
+          </div>
+          <div style={{background:"#fff",border:`1px solid ${B[100]}`,borderRadius:14,padding:16,marginBottom:12}}>
+            <div style={{fontWeight:800,fontSize:14,color:B[900],marginBottom:3}}>Beispielprodukte laden</div>
+            <div style={{fontSize:13,color:"#94a3b8",marginBottom:12}}>proWIN-Produkte in die Datenbank importieren</div>
+            <button onClick={async()=>{
+              if(!window.confirm("Beispielprodukte importieren?"))return;
+              setSyncing(true);
+              const SEED=[
+                {id:"s1",name:"WC Power",category:"Reinigung",buyPrice:8.50,sellPrice:16.90,stock:5,minStock:2,image:"",description:"WC Reiniger",notes:""},
+                {id:"s2",name:"Badreiniger",category:"Reinigung",buyPrice:7.00,sellPrice:14.50,stock:3,minStock:2,image:"",description:"Bad & Dusche",notes:""},
+                {id:"s3",name:"Küchenreiniger",category:"Küche",buyPrice:6.50,sellPrice:13.90,stock:4,minStock:2,image:"",description:"Fettlöser",notes:""},
+                {id:"s4",name:"Handcreme",category:"Körperpflege",buyPrice:9.00,sellPrice:18.90,stock:6,minStock:3,image:"",description:"Pflegende Handcreme",notes:""},
+                {id:"s5",name:"Duschgel",category:"Körperpflege",buyPrice:5.50,sellPrice:11.90,stock:8,minStock:3,image:"",description:"Pflegeduschgel",notes:""},
+              ];
+              try{for(const p of SEED)await setDoc(doc(col("products"),p.id),{...p,updatedAt:serverTimestamp()});flash("Importiert ✓");}
+              catch{flash("Fehler",false);}
+              setSyncing(false);
+            }} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"9px 16px",background:B[600],color:"#fff",border:"none",borderRadius:10,fontSize:13,fontWeight:700,cursor:"pointer"}}><Ic n="dl" s={14}/>Produkte importieren</button>
+          </div>
+          <div style={{background:"#fff",border:`1px solid ${B[100]}`,borderRadius:14,padding:16,marginBottom:12}}>
+            <div style={{fontWeight:800,fontSize:14,color:B[900],marginBottom:3}}>Passwort</div>
+            <div style={{fontSize:13,color:"#94a3b8",marginBottom:4}}>Aktuelles Passwort: <strong style={{color:B[800],letterSpacing:1}}>Lorenasunshine</strong></div>
+            <div style={{fontSize:12,color:"#94a3b8"}}>Um das Passwort zu ändern, muss es in der HTML-Datei angepasst werden (APP_PASSWORD).</div>
+          </div>
+          <div style={{background:"#fff",border:`1px solid ${B[100]}`,borderRadius:14,padding:16,marginBottom:12}}>
+            <div style={{fontWeight:800,fontSize:14,color:B[900],marginBottom:3}}>Verkäufe zurücksetzen</div>
+            <div style={{fontSize:13,color:"#94a3b8",marginBottom:12}}>Alle {sales.length} Verkäufe unwiderruflich löschen</div>
+            <button onClick={async()=>{
+              if(!window.confirm("Alle Verkäufe löschen? Kann nicht rückgängig gemacht werden."))return;
+              setSyncing(true);
+              try{for(const s of sales)await deleteDoc(doc(col("sales"),s.id));flash("Verkäufe zurückgesetzt ✓");}
+              catch{flash("Fehler",false);}
+              setSyncing(false);
+            }} disabled={sales.length===0} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"9px 16px",background:sales.length===0?"#f8faff":"#fff5f5",color:sales.length===0?"#cbd5e1":"#dc2626",border:`1px solid ${sales.length===0?"#e2e8f0":"#fecaca"}`,borderRadius:10,fontSize:13,fontWeight:700,cursor:sales.length===0?"not-allowed":"pointer"}}><Ic n="trash" s={14}/>Verkäufe löschen</button>
+          </div>
+          <div style={{textAlign:"center",fontSize:11,color:"#94a3b8",marginTop:16}}>{products.length} Produkte · {sales.length} Verkäufe · Firebase Firestore</div>
+        </div>}
+
       </main>
 
       {modal?.type==="add"&&<ProdModal onSave={saveProduct} onClose={()=>setModal(null)}/>}
