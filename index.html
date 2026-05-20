@@ -1565,6 +1565,11 @@ function RenewModal({member,onSave,onClose,prices}) {
     </Drawer>
   );
 }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ZUMBA MODULE
+// ══════════════════════════════════════════════════════════════════════════════
+function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
   const [members,setMembers]=useState([]);
   const [income,setIncome]=useState([]);
   const [expenses,setExpenses]=useState([]);
