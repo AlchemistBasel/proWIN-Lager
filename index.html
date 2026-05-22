@@ -529,6 +529,32 @@ const compressImage = (file, maxPx=800, quality=0.75) => new Promise((resolve)=>
   };
   reader.readAsDataURL(file);
 });
+
+function ImageUpload({image,onImage,onClear,accent,icon="pkg",imgErr,setImgErr}) {
+  const AC=accent||B;
+  const [drag,setDrag]=useState(false);
+  const handleFile=(file)=>{if(!file||!file.type.startsWith("image/"))return;compressImage(file).then(c=>{onImage(c);if(setImgErr)setImgErr(false);});};
+  const onDrop=(e)=>{e.preventDefault();setDrag(false);handleFile(e.dataTransfer.files[0]);};
+  return (
+    <div style={{display:"flex",alignItems:"center",gap:10}}>
+      {image&&!imgErr
+        ?<div style={{width:56,height:56,borderRadius:10,overflow:"hidden",flexShrink:0,border:`1px solid ${AC[100]}`}}>
+            <img src={image} alt="" onError={()=>setImgErr&&setImgErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:4}}/>
+          </div>
+        :<div style={{width:56,height:56,borderRadius:10,background:AC[50],flexShrink:0,border:`2px dashed ${AC[200]}`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <Ic n={icon} s={22} style={{color:AC[300]}}/>
+          </div>
+      }
+      <label onDragOver={e=>{e.preventDefault();setDrag(true);}} onDragLeave={()=>setDrag(false)} onDrop={onDrop}
+        style={{flex:1,display:"flex",alignItems:"center",gap:8,padding:"11px 14px",background:drag?AC[100]:AC[50],border:`1.5px dashed ${drag?AC[500]:AC[300]}`,borderRadius:12,cursor:"pointer",fontSize:13,fontWeight:700,color:AC[600],transition:"all .15s"}}>
+        <Ic n="dl" s={16}/>{image&&!imgErr?"Foto ändern":"📂 Hochladen oder hierher ziehen"}
+        <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const f=e.target.files[0];if(f)handleFile(f);}}/>
+      </label>
+      {image&&<button type="button" onClick={onClear} style={{width:34,height:34,borderRadius:8,background:"#fff5f5",border:"1px solid #fecaca",color:"#dc2626",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Ic n="x" s={14}/></button>}
+    </div>
+  );
+}
+
 const ini  = (s) => (s||"?").slice(0,2).toUpperCase();
 const dateStr = (d) => d ? new Date(d).toLocaleDateString("de-CH",{day:"2-digit",month:"short",year:"numeric"}) : "–";
 const today = () => new Date().toISOString().slice(0,10);
@@ -896,15 +922,7 @@ function ProdModal({product,onSave,onClose,onDel}) {
           {margin&&<div style={{background:B[50],border:`1px solid ${B[200]}`,borderRadius:8,padding:"7px 12px",fontSize:12,color:B[700],fontWeight:700,textAlign:"center"}}>Marge {margin}% · Gewinn/Stk: CHF {(f.sellPrice-f.buyPrice).toFixed(2)}</div>}
           <Lbl t="Produktbild">
             <div style={{display:"flex",alignItems:"center",gap:10}}>
-              {f.image&&!imgErr
-                ?<div style={{width:56,height:56,borderRadius:10,overflow:"hidden",flexShrink:0,border:`1px solid ${B[100]}`}}><img src={f.image} alt="" onError={()=>setImgErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:4}}/></div>
-                :<div style={{width:56,height:56,borderRadius:10,background:B[50],flexShrink:0,border:`2px dashed ${B[200]}`,display:"flex",alignItems:"center",justifyContent:"center"}}><Ic n="pkg" s={22} style={{color:B[300]}}/></div>
-              }
-              <label style={{flex:1,display:"flex",alignItems:"center",gap:8,padding:"11px 14px",background:B[50],border:`1.5px dashed ${B[300]}`,borderRadius:12,cursor:"pointer",fontSize:13,fontWeight:700,color:B[600]}}>
-                <Ic n="dl" s={16}/>{f.image&&!imgErr?"Foto ändern":"Foto hochladen"}
-                <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files[0];if(!file)return;compressImage(file).then(compressed=>{s("image",compressed);setImgErr(false);});}}/>
-              </label>
-              {f.image&&<button type="button" onClick={()=>{s("image","");setImgErr(false);}} style={{width:34,height:34,borderRadius:8,background:"#fff5f5",border:"1px solid #fecaca",color:"#dc2626",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Ic n="x" s={14}/></button>}
+              <ImageUpload image={f.image} onImage={v=>s("image",v)} onClear={()=>{s("image","");setImgErr(false);}} accent={B} icon="pkg" imgErr={imgErr} setImgErr={setImgErr}/>
             </div>
           </Lbl>
           <Lbl t="Notizen"><textarea value={f.notes} onChange={e=>s("notes",e.target.value)} rows={2} style={{...inp,resize:"vertical"}}/></Lbl>
@@ -2300,15 +2318,7 @@ function ItemModal({item,flohmärkte,onSave,onClose,onDel,cats,onAddCat}) {
           )}
           <Lbl t="Foto">
             <div style={{display:"flex",alignItems:"center",gap:10}}>
-              {f.image&&!imgErr
-                ?<div style={{width:60,height:60,borderRadius:10,overflow:"hidden",flexShrink:0,border:"1px solid "+FM_A[200]}}><img src={f.image} alt="" onError={()=>setImgErr(true)} style={{width:"100%",height:"100%",objectFit:"cover"}}/></div>
-                :<div style={{width:60,height:60,borderRadius:10,background:FM_A[100],flexShrink:0,border:"2px dashed "+FM_A[300],display:"flex",alignItems:"center",justifyContent:"center"}}><Ic n="img" s={22} style={{color:FM_A[400]}}/></div>
-              }
-              <label style={{flex:1,display:"flex",alignItems:"center",gap:8,padding:"11px 14px",background:FM_A[50],border:"1.5px dashed "+FM_A[400],borderRadius:12,cursor:"pointer",fontSize:13,fontWeight:700,color:FM_A[700]}}>
-                <Ic n="img" s={16}/>{f.image&&!imgErr?"Foto aendern":"Foto hochladen"}
-                <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files[0];if(!file)return;compressImage(file).then(compressed=>{s("image",compressed);setImgErr(false);});}}/>
-              </label>
-              {f.image&&<button type="button" onClick={()=>{s("image","");setImgErr(false);}} style={{width:34,height:34,borderRadius:8,background:"#fff5f5",border:"1px solid #fecaca",color:"#dc2626",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Ic n="x" s={14}/></button>}
+              <ImageUpload image={f.image} onImage={v=>s("image",v)} onClear={()=>{s("image","");setImgErr(false);}} accent={FM_A} icon="img" imgErr={imgErr} setImgErr={setImgErr}/>
             </div>
           </Lbl>
           <Lbl t="Notizen"><textarea value={f.notizen} onChange={e=>s("notizen",e.target.value)} rows={2} style={{...FM_inp,resize:"vertical"}} placeholder="z.B. leichter Fleck, VB..."/></Lbl>
@@ -3037,24 +3047,9 @@ function KleidungModal({item,onSave,onClose,onDel}) {
       <h3 style={{margin:"0 0 16px",fontSize:18,fontWeight:900,color:KSC[800]}}>{isEdit?"Bearbeiten":"Neues Teil hinzufügen"}</h3>
       <form onSubmit={submit}>
         <div style={{display:"flex",flexDirection:"column",gap:11}}>
-          {/* Image */}
-          <div style={{display:"flex",justifyContent:"center",marginBottom:4}}>
-            <label style={{cursor:"pointer"}}>
-              <div style={{width:130,height:165,borderRadius:16,background:`linear-gradient(145deg,${KSC[50]},${KSC[100]})`,border:`2px dashed ${KSC[400]}`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
-                {f.image&&!imgErr
-                  ?<img src={f.image} alt="" onError={()=>setImgErr(true)} style={{width:"100%",height:"100%",objectFit:"contain"}}/>
-                  :<>
-                    <span style={{fontSize:36,marginBottom:6}}>{KS_ICONS[f.kategorie]||"👗"}</span>
-                    <span style={{fontSize:11,color:KSC[600],fontWeight:700}}>Foto hochladen</span>
-                  </>
-                }
-              </div>
-              <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{
-                const file=e.target.files[0];if(!file)return;
-                compressImage(file).then(compressed=>{s("image",compressed);setImgErr(false);});
-              }}/>
-            </label>
-          </div>
+          <Lbl t="Foto">
+            <ImageUpload image={f.image} onImage={v=>s("image",v)} onClear={()=>{s("image","");setImgErr(false);}} accent={KSC} icon="shirt" imgErr={imgErr} setImgErr={setImgErr}/>
+          </Lbl>
           <Lbl t="Bezeichnung *"><input required value={f.name} onChange={e=>s("name",e.target.value)} style={ks_inp} placeholder="z.B. Schwarzes Kleid"/></Lbl>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
             <Lbl t="Kategorie">
