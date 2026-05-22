@@ -3501,6 +3501,23 @@ function KleiderschrankModule({onBack}) {
           <SwipeView items={items}/>
         </div>}
 
+        {/* Reset Schrank */}
+        <div style={{marginTop:32,padding:"16px",background:"#fff5f5",border:"1px solid #fecaca",borderRadius:16,textAlign:"center"}}>
+          <div style={{fontWeight:800,fontSize:14,color:"#7f1d1d",marginBottom:6}}>⚠️ Kleiderschrank zurücksetzen</div>
+          <p style={{fontSize:12,color:"#94a3b8",marginBottom:12}}>Alle {items.length} Kleider und {outfits.length} Outfits werden unwiderruflich gelöscht</p>
+          <button onClick={async()=>{
+            if(!window.confirm(`Wirklich alle ${items.length} Kleider und ${outfits.length} Outfits löschen? Das kann nicht rückgängig gemacht werden.`))return;
+            try{
+              for(const i of items) await deleteDoc(doc(ks_col("ks_items"),i.id));
+              for(const o of outfits) await deleteDoc(doc(ks_col("ks_outfits"),o.id));
+              flash("Kleiderschrank geleert ✓");
+            }catch{flash("Fehler",false);}
+          }} disabled={items.length===0&&outfits.length===0}
+            style={{padding:"10px 22px",background:items.length===0&&outfits.length===0?"#f1f5f9":"#dc2626",color:items.length===0&&outfits.length===0?"#94a3b8":"#fff",border:"none",borderRadius:12,fontSize:13,fontWeight:800,cursor:items.length===0&&outfits.length===0?"not-allowed":"pointer"}}>
+            🗑️ Alles löschen
+          </button>
+        </div>
+
       </main>
 
       {/* Modals */}
@@ -3601,20 +3618,3 @@ function App() {
         <FlohmarktModule onBack={()=>setModule(null)}/>
       )}
 
-      {module==="kleiderschrank"&&(
-        <KleiderschrankModule onBack={()=>setModule(null)}/>
-      )}
-
-      {toast&&<div style={{position:"fixed",bottom:"calc(24px + env(safe-area-inset-bottom,0px))",left:"50%",transform:"translateX(-50%)",background:toast.ok?B[800]:"#7f1d1d",color:"#fff",padding:"11px 22px",borderRadius:30,fontSize:13,fontWeight:700,boxShadow:"0 4px 24px rgba(0,0,0,.2)",zIndex:9999,whiteSpace:"nowrap",animation:"fadein .2s ease"}}>{toast.msg}</div>}
-    </div>
-  );
-}
-
-function waitAndRender() {
-  if(window.__firebase){ReactDOM.createRoot(document.getElementById("root")).render(<App/>);}
-  else{setTimeout(waitAndRender,50);}
-}
-waitAndRender();
-</script>
-</body>
-</html>
