@@ -3106,32 +3106,64 @@ function KleidungModal({item,onSave,onClose,onDel}) {
 // ── DetailModal ───────────────────────────────────────────────────────────────
 function DetailModal({item,onClose,onEdit,onFav}) {
   const [err,setErr]=useState(false);
+  const [zoom,setZoom]=useState(false);
+
+  if(zoom) return (
+    <div onClick={()=>setZoom(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.95)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",cursor:"zoom-out"}}>
+      <img src={item.image} alt={item.name} style={{maxWidth:"92vw",maxHeight:"88vh",objectFit:"contain",borderRadius:4}}/>
+      <div style={{position:"absolute",top:20,right:20,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:6,padding:"6px 12px",color:"rgba(255,255,255,0.7)",fontSize:12,fontWeight:600}}>✕ Schliessen</div>
+    </div>
+  );
+
   return (
-    <Drawer onClose={onClose}>
-      <div style={{textAlign:"center"}}>
-        <div style={{width:"100%",height:260,borderRadius:18,background:`linear-gradient(145deg,${KSC[50]},${KSC[100]})`,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:16,overflow:"hidden"}}>
-          {item.image&&!err
-            ?<img src={item.image} alt={item.name} onError={()=>setErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:12}}/>
-            :<span style={{fontSize:72}}>{KS_ICONS[item.kategorie]||"👗"}</span>
-          }
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.75)",zIndex:100,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div style={{background:"#13132b",borderRadius:"20px 20px 0 0",padding:"0 0 32px",width:"100%",maxWidth:540,maxHeight:"93vh",overflowY:"auto",animation:"slideup .25s ease",border:"1px solid rgba(255,255,255,0.08)",borderBottom:"none"}}>
+        {/* Drag handle */}
+        <div style={{width:36,height:4,background:"rgba(255,255,255,0.15)",borderRadius:4,margin:"14px auto 0"}}/>
+        {/* Close button */}
+        <div style={{display:"flex",justifyContent:"flex-end",padding:"10px 16px 0"}}>
+          <button onClick={onClose} style={{width:32,height:32,borderRadius:8,border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.06)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(255,255,255,0.5)"}}><Ic n="x" s={14}/></button>
         </div>
-        <h3 style={{fontSize:22,fontWeight:900,color:KSC[900],marginBottom:6}}>{item.name}</h3>
-        <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap",marginBottom:16}}>
-          <span style={{fontSize:12,fontWeight:700,background:KSC[100],color:KSC[700],padding:"3px 10px",borderRadius:20}}>{item.kategorie}</span>
-          {item.farbe&&item.farbe!=="–"&&<span style={{fontSize:12,fontWeight:700,background:"#f1f5f9",color:"#64748b",padding:"3px 10px",borderRadius:20}}>{item.farbe}</span>}
-          {item.marke&&<span style={{fontSize:12,fontWeight:700,background:"#f8faff",color:"#475569",padding:"3px 10px",borderRadius:20}}>{item.marke}</span>}
-          {item.groesse&&<span style={{fontSize:12,fontWeight:700,background:KSC[50],color:KSC[600],padding:"3px 10px",borderRadius:20}}>Gr. {item.groesse}</span>}
-          <span style={{fontSize:12,fontWeight:700,background:"#f0fdf4",color:"#16a34a",padding:"3px 10px",borderRadius:20}}>{item.saison}</span>
-        </div>
-        {item.notizen&&<p style={{fontSize:13,color:"#64748b",fontStyle:"italic",marginBottom:16,textAlign:"left",background:KSC[50],padding:"10px 14px",borderRadius:10}}>{item.notizen}</p>}
-        <div style={{display:"flex",gap:10}}>
-          <button onClick={()=>onFav(item)} style={{flex:1,padding:"12px",background:item.favorite?"#fff5f5":KSC[50],color:item.favorite?"#ef4444":KSC[700],border:`1px solid ${item.favorite?"#fecaca":KSC[200]}`,borderRadius:12,fontSize:13,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
-            <Ic n={item.favorite?"heartFill":"heart"} s={16}/>{item.favorite?"Unfavorit":"Favorit"}
-          </button>
-          <button onClick={onEdit} style={{flex:2,padding:"12px",background:`linear-gradient(135deg,${KSC[700]},${KSC[500]})`,color:"#fff",border:"none",borderRadius:12,fontSize:13,fontWeight:700,cursor:"pointer"}}>Bearbeiten</button>
+
+        <div style={{padding:"0 20px 0"}}>
+          {/* Big image — click to zoom */}
+          <div onClick={()=>item.image&&!err&&setZoom(true)}
+            style={{width:"100%",height:300,borderRadius:10,background:"#0a0a1a",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:20,overflow:"hidden",position:"relative",cursor:item.image&&!err?"zoom-in":"default",border:"1px solid rgba(255,255,255,0.06)"}}>
+            {item.image&&!err
+              ?<img src={item.image} alt={item.name} onError={()=>setErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:16}}/>
+              :<span style={{fontSize:80,opacity:.5}}>{KS_ICONS[item.kategorie]||"👗"}</span>
+            }
+            {item.image&&!err&&<div style={{position:"absolute",bottom:10,right:10,background:"rgba(0,0,0,0.55)",borderRadius:5,padding:"4px 9px",fontSize:10,color:"rgba(255,255,255,0.6)",fontWeight:600,display:"flex",alignItems:"center",gap:4}}>
+              🔍 Vergrössern
+            </div>}
+            {item.favorite&&<div style={{position:"absolute",top:12,right:12,color:"#f472b6",filter:"drop-shadow(0 0 8px #f472b6aa)"}}><Ic n="heartFill" s={20}/></div>}
+          </div>
+
+          {/* Name */}
+          <h3 style={{fontSize:20,fontWeight:800,color:"rgba(255,255,255,0.92)",marginBottom:12,letterSpacing:.2}}>{item.name}</h3>
+
+          {/* Tags */}
+          <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:16}}>
+            <span style={{fontSize:11,fontWeight:700,background:"rgba(167,139,250,0.15)",color:"#c4b5fd",padding:"4px 10px",borderRadius:4,letterSpacing:.3}}>{item.kategorie}</span>
+            {item.farbe&&item.farbe!=="–"&&<span style={{fontSize:11,fontWeight:700,background:"rgba(255,255,255,0.07)",color:"rgba(255,255,255,0.5)",padding:"4px 10px",borderRadius:4,letterSpacing:.3}}>⬤ {item.farbe}</span>}
+            {item.marke&&<span style={{fontSize:11,fontWeight:700,background:"rgba(255,255,255,0.07)",color:"rgba(255,255,255,0.5)",padding:"4px 10px",borderRadius:4,letterSpacing:.3}}>{item.marke}</span>}
+            {item.groesse&&<span style={{fontSize:11,fontWeight:700,background:"rgba(255,255,255,0.07)",color:"rgba(255,255,255,0.5)",padding:"4px 10px",borderRadius:4,letterSpacing:.3}}>Gr. {item.groesse}</span>}
+            {item.saison&&<span style={{fontSize:11,fontWeight:700,background:"rgba(52,211,153,0.12)",color:"#6ee7b7",padding:"4px 10px",borderRadius:4,letterSpacing:.3}}>{item.saison}</span>}
+          </div>
+
+          {/* Notes */}
+          {item.notizen&&<p style={{fontSize:13,color:"rgba(255,255,255,0.4)",fontStyle:"italic",marginBottom:16,background:"rgba(255,255,255,0.04)",padding:"10px 14px",borderRadius:8,lineHeight:1.5}}>{item.notizen}</p>}
+
+          {/* Buttons */}
+          <div style={{display:"flex",gap:10,marginTop:4}}>
+            <button onClick={()=>onFav(item)} style={{flex:1,padding:"13px",background:item.favorite?"rgba(244,114,182,0.1)":"rgba(255,255,255,0.05)",color:item.favorite?"#f472b6":"rgba(255,255,255,0.45)",border:`1px solid ${item.favorite?"rgba(244,114,182,0.4)":"rgba(255,255,255,0.1)"}`,borderRadius:8,fontSize:13,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
+              <Ic n={item.favorite?"heartFill":"heart"} s={15}/>{item.favorite?"Unfavorit":"Favorit"}
+            </button>
+            <button onClick={onEdit} style={{flex:2,padding:"13px",background:"linear-gradient(135deg,#7c3aed,#a78bfa)",color:"#fff",border:"none",borderRadius:8,fontSize:13,fontWeight:800,cursor:"pointer",letterSpacing:.3}}>Bearbeiten</button>
+          </div>
         </div>
       </div>
-    </Drawer>
+    </div>
   );
 }
 
