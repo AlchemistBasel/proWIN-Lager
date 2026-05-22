@@ -543,6 +543,9 @@ function Ic({n,s=16,style={}}) {
     arrow:  "M5 12h14M12 5l7 7-7 7",
     info:   "M12 22a10 10 0 100-20 10 10 0 000 20zm0-14v4m0 4h.01",
     star:   "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z",
+    search: "M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z",
+    img:    "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z",
+    store:  "M3 9l9-7 9 7M5 9v10a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1V9",
   };
   return (
     <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style}>
@@ -662,7 +665,7 @@ function LoginScreen({onUnlock}) {
 // ══════════════════════════════════════════════════════════════════════════════
 // HOME (module selection)
 // ══════════════════════════════════════════════════════════════════════════════
-function HomeScreen({onSelect,prowinStats,zumbaStats}) {
+function HomeScreen({onSelect,prowinStats,zumbaStats,flohmarktStats,kleiderschrankStats}) {
   return (
     <main style={{maxWidth:600,margin:"0 auto",padding:"32px 16px 80px",paddingTop:"calc(32px + env(safe-area-inset-top,0px))",paddingBottom:"calc(80px + env(safe-area-inset-bottom,0px))"}}>
       <div style={{textAlign:"center",marginBottom:36}}>
@@ -697,7 +700,7 @@ function HomeScreen({onSelect,prowinStats,zumbaStats}) {
       </div>
 
       {/* Zumba Card */}
-      <div className="module-card" onClick={()=>onSelect("zumba")} style={{background:"#fff",border:`2px solid ${Z[200]}`,borderRadius:24,padding:"28px 24px",cursor:"pointer",transition:"all .2s",boxShadow:`0 4px 24px ${Z[200]}`}}
+      <div className="module-card" onClick={()=>onSelect("zumba")} style={{background:"#fff",border:`2px solid ${Z[200]}`,borderRadius:24,padding:"28px 24px",marginBottom:16,cursor:"pointer",transition:"all .2s",boxShadow:`0 4px 24px ${Z[200]}`}}
         onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow=`0 12px 36px ${Z[300]}`;}}
         onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow=`0 4px 24px ${Z[200]}`;}}
       >
@@ -716,6 +719,56 @@ function HomeScreen({onSelect,prowinStats,zumbaStats}) {
             <div key={lb} style={{background:Z[50],borderRadius:12,padding:"10px 12px",textAlign:"center"}}>
               <div style={{fontSize:10,color:"#94a3b8",fontWeight:700,textTransform:"uppercase",letterSpacing:.4,marginBottom:4}}>{lb}</div>
               <div style={{fontWeight:900,fontSize:15,color:Z[800]}}>{val}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Flohmarkt Card */}
+      <div className="module-card" onClick={()=>onSelect("flohmarkt")} style={{background:"#fff",border:"2px solid #fecdd3",borderRadius:24,padding:"28px 24px",marginBottom:16,cursor:"pointer",transition:"all .2s",boxShadow:"0 4px 24px #fecdd3"}}
+        onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 36px #fda4af";}}
+        onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 4px 24px #fecdd3";}}
+      >
+        <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:16}}>
+          <div style={{width:56,height:56,background:"linear-gradient(135deg,#9f1239,#f43f5e)",borderRadius:18,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 6px 20px #f43f5e50",flexShrink:0}}>
+            <span style={{fontSize:28}}>🏷️</span>
+          </div>
+          <div>
+            <div style={{fontWeight:900,fontSize:20,color:"#1e3a8a"}}>Flohmarkt</div>
+            <div style={{fontSize:13,color:"#94a3b8",fontWeight:600}}>Artikel, Events & Statistik</div>
+          </div>
+          <Ic n="arrow" s={20} style={{color:"#60a5fa",marginLeft:"auto"}}/>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+          {[["Artikel",(flohmarktStats||{artikel:0}).artikel],["Verkauft",(flohmarktStats||{}).verkauft||0],["Einnahmen",chf((flohmarktStats||{}).einnahmen||0)]].map(([lb,val])=>(
+            <div key={lb} style={{background:"#fff1f2",borderRadius:12,padding:"10px 12px",textAlign:"center"}}>
+              <div style={{fontSize:10,color:"#94a3b8",fontWeight:700,textTransform:"uppercase",letterSpacing:.4,marginBottom:4}}>{lb}</div>
+              <div style={{fontWeight:900,fontSize:15,color:"#9f1239"}}>{val}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Kleiderschrank Card */}
+      <div className="module-card" onClick={()=>onSelect("kleiderschrank")} style={{background:"#fff",border:"2px solid #fef08a",borderRadius:24,padding:"28px 24px",cursor:"pointer",transition:"all .2s",boxShadow:"0 4px 24px #fef08a"}}
+        onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 12px 36px #fde047";}}
+        onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 4px 24px #fef08a";}}
+      >
+        <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:16}}>
+          <div style={{width:56,height:56,background:"linear-gradient(135deg,#1e3a8a,#facc15)",borderRadius:18,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 6px 20px #facc1550",flexShrink:0}}>
+            <span style={{fontSize:28}}>👗</span>
+          </div>
+          <div>
+            <div style={{fontWeight:900,fontSize:20,color:"#1e3a8a"}}>Kleiderschrank</div>
+            <div style={{fontSize:13,color:"#94a3b8",fontWeight:600}}>Kleider, Outfits & Swipen</div>
+          </div>
+          <Ic n="arrow" s={20} style={{color:"#facc15",marginLeft:"auto"}}/>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+          {[["Teile",(kleiderschrankStats||{}).teile||0],["Outfits",(kleiderschrankStats||{}).outfits||0]].map(([lb,val])=>(
+            <div key={lb} style={{background:"#fefce8",borderRadius:12,padding:"10px 12px",textAlign:"center"}}>
+              <div style={{fontSize:10,color:"#94a3b8",fontWeight:700,textTransform:"uppercase",letterSpacing:.4,marginBottom:4}}>{lb}</div>
+              <div style={{fontWeight:900,fontSize:15,color:"#1e3a8a"}}>{val}</div>
             </div>
           ))}
         </div>
@@ -2106,18 +2159,1356 @@ function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
+// FLOHMARKT MODULE
+// ══════════════════════════════════════════════════════════════════════════════
+// Flohmarkt blue color palette
+const FM_A = {50:"#fff1f2",100:"#ffe4e6",200:"#fecdd3",300:"#fda4af",400:"#fb7185",500:"#f43f5e",600:"#e11d48",700:"#be123c",800:"#9f1239",900:"#881337"};
+const FM_inp = {width:"100%",padding:"10px 12px",border:"1px solid #fecdd3",borderRadius:10,fontSize:14,background:"#fff1f2",color:"#881337"};
+const FM_DEFAULT_CATS = ["Kleider","Schuhe","Haushalt","Deko","Bücher/Spiele","Elektro","Sonstiges"];
+const FM_KANAELE = ["FB Marketplace","WhatsApp","Flohmarkt","Direkt","Sonstiges"];
+const FM_STATI = [
+  {id:"verfuegbar",label:"Verfügbar",color:"#16a34a",bg:"#f0fdf4",border:"#bbf7d0"},
+  {id:"mitgenommen",label:"Mitgenommen",color:"#0891b2",bg:"#ecfeff",border:"#a5f3fc"},
+  {id:"reserviert",label:"Reserviert",color:"#e11d48",bg:"#fff1f2",border:"#fecdd3"},
+  {id:"online",label:"Online",color:"#2563eb",bg:"#eff6ff",border:"#bfdbfe"},
+  {id:"verkauft",label:"Verkauft ✓",color:"#6b7280",bg:"#f9fafb",border:"#e5e7eb"},
+];
+
+
+const FM_aBtn = (bg,col="#fff") => ({padding:"12px",background:bg,color:col,border:"none",borderRadius:12,fontSize:14,fontWeight:800,cursor:"pointer"});
+function FM_col(sub){ return collection(db,"users",USER_ID,sub); }
+
+function FM_Drawer({children,onClose}) {
+  return (
+    <div style={{position:"fixed",inset:0,background:"rgba(15,23,42,.55)",zIndex:100,display:"flex",alignItems:"flex-end",justifyContent:"center"}}
+      onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="drawer-inner" style={{background:"#fff",borderRadius:"22px 22px 0 0",padding:24,width:"100%",maxWidth:560,maxHeight:"93vh",overflowY:"auto",animation:"slideup .25s ease"}}>
+        <div style={{width:36,height:4,background:"#bfdbfe",borderRadius:4,margin:"0 auto 16px"}}/>
+        <div style={{display:"flex",justifyContent:"flex-end",marginBottom:4}}>
+          <button onClick={onClose} style={{width:32,height:32,borderRadius:16,border:"1px solid #fecdd3",background:"#fff1f2",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"#be123c"}}><Ic n="x" s={15}/></button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function FM_Lbl({t,children}) {
+  return <div><label style={{fontSize:11,color:"#1e40af",fontWeight:700,display:"block",marginBottom:5,textTransform:"uppercase",letterSpacing:.4}}>{t}</label>{children}</div>;
+}
+
+function StatusBadge({status}) {
+  const s = FM_STATI.find(x=>x.id===status)||FM_STATI[0];
+  return <span style={{fontSize:10,fontWeight:800,padding:"2px 8px",borderRadius:20,background:s.bg,color:s.color,border:"1px solid "+s.border,whiteSpace:"nowrap"}}>{s.label}{status==="verkauft"?" checkmark":""}</span>;
+}
+
+function ItemModal({item,flohmärkte,onSave,onClose,onDel,cats,onAddCat}) {
+  const isEdit = !!item;
+  const [f,setF] = useState(item||{name:"",kategorie:"Haushalt",beschreibung:"",wunschpreis:"",status:"verfuegbar",kanal:"",flohmarktId:"",image:"",notizen:""});
+  const [imgErr,setImgErr] = useState(false);
+  const [newCat,setNewCat] = useState("");
+  const s = (k,v) => setF(x=>({...x,[k]:v}));
+  const submit = e => {
+    e.preventDefault();
+    if(!f.name.trim()) return;
+    onSave({...f,wunschpreis:parseFloat(f.wunschpreis)||0});
+  };
+  const handleAddCat = () => {
+    const c = newCat.trim();
+    if(!c||cats.includes(c)) return;
+    onAddCat(c);
+    s("kategorie",c);
+    setNewCat("");
+  };
+  return (
+    <Drawer onClose={onClose}>
+      <h3 style={{margin:"0 0 16px",fontSize:18,fontWeight:900,color:FM_A[900]}}>{isEdit?"Artikel bearbeiten":"Neuer Artikel"}</h3>
+      <form onSubmit={submit}>
+        <div style={{display:"flex",flexDirection:"column",gap:11}}>
+          <Lbl t="Bezeichnung"><input required value={f.name} onChange={e=>s("name",e.target.value)} style={FM_inp} placeholder="z.B. Winterjacke blau"/></Lbl>
+          <Lbl t="Kategorie">
+            <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:6}}>
+              {cats.map(c=>(
+                <div key={c} onClick={()=>s("kategorie",c)}
+                  style={{padding:"6px 12px",borderRadius:20,border:"2px solid "+(f.kategorie===c?FM_A[500]:FM_A[200]),background:f.kategorie===c?FM_A[100]:"#fff",cursor:"pointer",fontSize:12,fontWeight:700,color:f.kategorie===c?FM_A[800]:"#94a3b8",transition:"all .15s"}}>
+                  {c}
+                </div>
+              ))}
+            </div>
+            {/* Add custom category */}
+            <div style={{display:"flex",gap:6}}>
+              <input value={newCat} onChange={e=>setNewCat(e.target.value)}
+                onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();handleAddCat();}}}
+                placeholder="+ Neue Kategorie…" style={{...FM_inp,flex:1,fontSize:12,padding:"7px 12px"}}/>
+              <button type="button" onClick={handleAddCat}
+                style={{padding:"7px 14px",background:FM_A[600],color:"#fff",border:"none",borderRadius:10,fontSize:12,fontWeight:800,cursor:"pointer",flexShrink:0}}>
+                Hinzufügen
+              </button>
+            </div>
+          </Lbl>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            <Lbl t="Wunschpreis CHF"><input type="number" step="0.50" min="0" value={f.wunschpreis} onChange={e=>s("wunschpreis",e.target.value)} style={FM_inp} placeholder="0.00"/></Lbl>
+            <Lbl t="Status">
+              <select value={f.status} onChange={e=>s("status",e.target.value)} style={FM_inp}>
+                {FM_STATI.map(st=><option key={st.id} value={st.id}>{st.label}</option>)}
+              </select>
+            </Lbl>
+          </div>
+          {f.status==="verkauft"&&(
+            <Lbl t="Verkaufspreis CHF">
+              <input type="number" step="0.50" min="0" value={f.verkaufspreis||""} onChange={e=>s("verkaufspreis",parseFloat(e.target.value)||0)} style={FM_inp} placeholder="0.00"/>
+            </Lbl>
+          )}
+          <Lbl t="Kanal">
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {FM_KANAELE.map(k=>(
+                <div key={k} onClick={()=>s("kanal",f.kanal===k?"":k)}
+                  style={{padding:"6px 12px",borderRadius:20,border:"2px solid "+(f.kanal===k?FM_A[500]:FM_A[200]),background:f.kanal===k?FM_A[100]:"#fff",cursor:"pointer",fontSize:12,fontWeight:700,color:f.kanal===k?FM_A[800]:"#94a3b8",transition:"all .15s"}}>
+                  {k==="FB Marketplace"?"FB":k==="WhatsApp"?"WhatsApp":k==="Flohmarkt"?"Flohmarkt":k==="Direkt"?"Direkt":"Sonstiges"}
+                </div>
+              ))}
+            </div>
+          </Lbl>
+          {f.kanal==="Flohmarkt"&&flohmärkte.length>0&&(
+            <Lbl t="Welcher Flohmarkt">
+              <select value={f.flohmarktId||""} onChange={e=>s("flohmarktId",e.target.value)} style={FM_inp}>
+                <option value="">Kein</option>
+                {flohmärkte.map(fm=><option key={fm.id} value={fm.id}>{fm.name} - {dateStr(fm.datum)}</option>)}
+              </select>
+            </Lbl>
+          )}
+          <Lbl t="Foto">
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              {f.image&&!imgErr
+                ?<div style={{width:60,height:60,borderRadius:10,overflow:"hidden",flexShrink:0,border:"1px solid "+FM_A[200]}}><img src={f.image} alt="" onError={()=>setImgErr(true)} style={{width:"100%",height:"100%",objectFit:"cover"}}/></div>
+                :<div style={{width:60,height:60,borderRadius:10,background:FM_A[100],flexShrink:0,border:"2px dashed "+FM_A[300],display:"flex",alignItems:"center",justifyContent:"center"}}><Ic n="img" s={22} style={{color:FM_A[400]}}/></div>
+              }
+              <label style={{flex:1,display:"flex",alignItems:"center",gap:8,padding:"11px 14px",background:FM_A[50],border:"1.5px dashed "+FM_A[400],borderRadius:12,cursor:"pointer",fontSize:13,fontWeight:700,color:FM_A[700]}}>
+                <Ic n="img" s={16}/>{f.image&&!imgErr?"Foto aendern":"Foto hochladen"}
+                <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{s("image",ev.target.result);setImgErr(false);};r.readAsDataURL(file);}}/>
+              </label>
+              {f.image&&<button type="button" onClick={()=>{s("image","");setImgErr(false);}} style={{width:34,height:34,borderRadius:8,background:"#fff5f5",border:"1px solid #fecaca",color:"#dc2626",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Ic n="x" s={14}/></button>}
+            </div>
+          </Lbl>
+          <Lbl t="Notizen"><textarea value={f.notizen} onChange={e=>s("notizen",e.target.value)} rows={2} style={{...FM_inp,resize:"vertical"}} placeholder="z.B. leichter Fleck, VB..."/></Lbl>
+        </div>
+        <div style={{display:"flex",gap:10,marginTop:18}}>
+          {isEdit&&<button type="button" onClick={()=>onDel(item.id)} style={{flex:1,...FM_aBtn("#dc2626")}}>Loeschen</button>}
+          <button type="button" onClick={onClose} style={{flex:1,padding:"12px",background:"#f8faff",color:"#94a3b8",border:"1px solid #e2e8f0",borderRadius:12,fontSize:14,fontWeight:700,cursor:"pointer"}}>Abbrechen</button>
+          <button type="submit" style={{flex:2,...FM_aBtn("linear-gradient(135deg,"+FM_A[800]+","+FM_A[500]+")")}}>Speichern</button>
+        </div>
+      </form>
+    </Drawer>
+  );
+}
+
+function VerkauftModal({item,onSave,onClose}) {
+  const [preis,setPreis] = useState(item.wunschpreis||"");
+  const [kanal,setKanal] = useState(item.kanal||"Flohmarkt");
+  return (
+    <Drawer onClose={onClose}>
+      <h3 style={{margin:"0 0 4px",fontSize:18,fontWeight:900,color:FM_A[900]}}>Verkauft!</h3>
+      <p style={{color:"#1e40af",fontSize:13,marginBottom:16,opacity:.7}}>{item.name}</p>
+      <div style={{display:"flex",flexDirection:"column",gap:11}}>
+        <Lbl t="Tatsaechlicher Preis CHF">
+          <input autoFocus type="number" step="0.50" min="0" value={preis} onChange={e=>setPreis(e.target.value)} style={{...FM_inp,fontSize:24,fontWeight:900,textAlign:"center",padding:"16px"}} placeholder="0.00"/>
+        </Lbl>
+        {item.wunschpreis>0&&parseFloat(preis)!==item.wunschpreis&&(
+          <div style={{textAlign:"center",fontSize:12,color:"#94a3b8"}}>Wunschpreis war {chf(item.wunschpreis)}</div>
+        )}
+        <Lbl t="Verkauft ueber">
+          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+            {FM_KANAELE.map(k=>(
+              <div key={k} onClick={()=>setKanal(k)}
+                style={{padding:"6px 12px",borderRadius:20,border:"2px solid "+(kanal===k?FM_A[500]:FM_A[200]),background:kanal===k?FM_A[100]:"#fff",cursor:"pointer",fontSize:12,fontWeight:700,color:kanal===k?FM_A[800]:"#94a3b8"}}>
+                {k}
+              </div>
+            ))}
+          </div>
+        </Lbl>
+      </div>
+      <div style={{display:"flex",gap:10,marginTop:18}}>
+        <button onClick={onClose} style={{flex:1,padding:"12px",background:"#f8faff",color:"#94a3b8",border:"1px solid #e2e8f0",borderRadius:12,fontSize:14,fontWeight:700,cursor:"pointer"}}>Abbrechen</button>
+        <button onClick={()=>onSave({verkaufspreis:parseFloat(preis)||0,kanal,status:"verkauft",verkauftAm:today()})} style={{flex:2,...FM_aBtn("linear-gradient(135deg,#16a34a,#22c55e)")}}>Bestaetigen</button>
+      </div>
+    </Drawer>
+  );
+}
+
+function FlohmarktModal({fm,onSave,onClose}) {
+  const isEdit = !!fm;
+  const [f,setF] = useState(fm||{name:"Flohmi Pratteln",datum:"",ort:"Pratteln",notizen:"",ausgaben:[]});
+  const s = (k,v) => setF(x=>({...x,[k]:v}));
+
+  // Ausgaben
+  const [newAusgabeBez,setNewAusgabeBez] = useState("");
+  const [newAusgabeBetrag,setNewAusgabeBetrag] = useState("");
+  const addAusgabe = () => {
+    const bez=newAusgabeBez.trim();
+    const betrag=parseFloat(newAusgabeBetrag)||0;
+    if(!bez||betrag<=0) return;
+    s("ausgaben",[...(f.ausgaben||[]),{bez,betrag,id:uid()}]);
+    setNewAusgabeBez("");setNewAusgabeBetrag("");
+  };
+  const delAusgabe = id => s("ausgaben",(f.ausgaben||[]).filter(a=>a.id!==id));
+
+  const submit = e => {e.preventDefault();if(!f.name.trim())return;onSave(f);};
+  return (
+    <Drawer onClose={onClose}>
+      <h3 style={{margin:"0 0 16px",fontSize:18,fontWeight:900,color:FM_A[900]}}>{isEdit?"Flohmarkt bearbeiten":"Neuer Flohmarkt"}</h3>
+      <form onSubmit={submit}>
+        <div style={{display:"flex",flexDirection:"column",gap:11}}>
+          <Lbl t="Name"><input required value={f.name} onChange={e=>s("name",e.target.value)} style={FM_inp} placeholder="z.B. Flohmi Pratteln"/></Lbl>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            <Lbl t="Datum"><input type="date" value={f.datum} onChange={e=>s("datum",e.target.value)} style={FM_inp}/></Lbl>
+            <Lbl t="Ort"><input value={f.ort} onChange={e=>s("ort",e.target.value)} style={FM_inp} placeholder="Pratteln"/></Lbl>
+          </div>
+
+          {/* Ausgaben */}
+          <Lbl t="Ausgaben (z.B. Standgebühr)">
+            <div style={{display:"flex",flexDirection:"column",gap:6}}>
+              {(f.ausgaben||[]).map(a=>(
+                <div key={a.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 12px",background:"#fff5f5",borderRadius:10,border:"1px solid #fecaca"}}>
+                  <span style={{fontSize:13,fontWeight:700,color:"#7f1d1d"}}>{a.bez}</span>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{fontWeight:900,fontSize:13,color:"#dc2626"}}>{chf(a.betrag)}</span>
+                    <button type="button" onClick={()=>delAusgabe(a.id)} style={{width:22,height:22,borderRadius:6,background:"#fff",border:"1px solid #fecaca",color:"#dc2626",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Ic n="x" s={11}/></button>
+                  </div>
+                </div>
+              ))}
+              <div style={{display:"flex",gap:6}}>
+                <input value={newAusgabeBez} onChange={e=>setNewAusgabeBez(e.target.value)}
+                  placeholder="Standgebühr, Transport…" style={{...FM_inp,flex:2,fontSize:13,padding:"8px 10px"}}/>
+                <input type="number" step="0.50" min="0" value={newAusgabeBetrag} onChange={e=>setNewAusgabeBetrag(e.target.value)}
+                  placeholder="CHF" style={{...FM_inp,flex:1,fontSize:13,padding:"8px 10px"}}/>
+                <button type="button" onClick={addAusgabe}
+                  style={{padding:"8px 12px",background:"#fff5f5",color:"#dc2626",border:"1px solid #fecaca",borderRadius:10,fontSize:13,fontWeight:800,cursor:"pointer",flexShrink:0}}>
+                  + Add
+                </button>
+              </div>
+            </div>
+          </Lbl>
+
+          <Lbl t="Notizen"><textarea value={f.notizen} onChange={e=>s("notizen",e.target.value)} rows={2} style={{...FM_inp,resize:"vertical"}}/></Lbl>
+        </div>
+        <div style={{display:"flex",gap:10,marginTop:18}}>
+          {isEdit&&<button type="button" onClick={()=>{if(window.confirm("Flohmarkt löschen?"))onSave({...f,_delete:true});}} style={{flex:1,...FM_aBtn("#dc2626")}}>Löschen</button>}
+          <button type="button" onClick={onClose} style={{flex:1,padding:"12px",background:"#f8faff",color:"#94a3b8",border:"1px solid #e2e8f0",borderRadius:12,fontSize:14,fontWeight:700,cursor:"pointer"}}>Abbrechen</button>
+          <button type="submit" style={{flex:2,...FM_aBtn("linear-gradient(135deg,"+FM_A[800]+","+FM_A[500]+")")}}>Speichern</button>
+        </div>
+      </form>
+    </Drawer>
+  );
+}
+
+function ItemCard({item,flohmärkte,onEdit,onVerkauft,onToggleMitgenommen}) {
+  const fm = flohmärkte.find(f=>f.id===item.flohmarktId);
+  const sold = item.status==="verkauft";
+  const mitg = item.status==="mitgenommen";
+  const st = FM_STATI.find(x=>x.id===item.status)||FM_STATI[0];
+  return (
+    <div style={{background:"#fff",border:"2px solid "+(sold?"#e5e7eb":mitg?"#a5f3fc":FM_A[200]),borderRadius:16,overflow:"hidden",opacity:sold?.75:1}}>
+      <div style={{display:"flex"}}>
+        <div style={{width:82,height:82,flexShrink:0,background:FM_A[100],position:"relative",overflow:"hidden"}}>
+          {item.image
+            ?<img src={item.image} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+            :<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center"}}><Ic n="img" s={28} style={{color:FM_A[300]}}/></div>
+          }
+          {sold&&<div style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22}}>✅</div>}
+          {mitg&&!sold&&<div style={{position:"absolute",bottom:0,left:0,right:0,background:"#0891b2",textAlign:"center",fontSize:9,fontWeight:800,color:"#fff",padding:"2px"}}>DABEI</div>}
+        </div>
+        <div style={{flex:1,padding:"10px 12px",minWidth:0}}>
+          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:6,marginBottom:3}}>
+            <div style={{fontWeight:900,fontSize:14,color:FM_A[900],overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.name}</div>
+            <span style={{fontSize:10,fontWeight:800,padding:"2px 8px",borderRadius:20,background:st.bg,color:st.color,border:"1px solid "+st.border,flexShrink:0}}>{st.label}</span>
+          </div>
+          <div style={{fontSize:11,color:"#94a3b8",marginBottom:4}}>{item.kategorie}{fm?" · "+fm.name:item.kanal?" · "+item.kanal:""}</div>
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            {sold&&item.verkaufspreis!=null
+              ?<span style={{fontWeight:900,fontSize:15,color:"#16a34a"}}>{chf(item.verkaufspreis)}</span>
+              :<span style={{fontWeight:900,fontSize:15,color:FM_A[700]}}>{item.wunschpreis>0?chf(item.wunschpreis):"kein Preis"}</span>
+            }
+            {sold&&item.wunschpreis>0&&item.verkaufspreis!==item.wunschpreis&&(
+              <span style={{fontSize:10,color:"#94a3b8",textDecoration:"line-through"}}>{chf(item.wunschpreis)}</span>
+            )}
+          </div>
+          {item.notizen&&<div style={{fontSize:11,color:"#94a3b8",marginTop:1,fontStyle:"italic",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.notizen}</div>}
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:4,padding:"8px 8px 8px 0",flexShrink:0}}>
+          <button onClick={()=>onEdit(item)} style={{width:32,height:32,borderRadius:8,background:FM_A[100],color:FM_A[700],border:"1px solid "+FM_A[300],cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Ic n="edit" s={13}/></button>
+          {!sold&&<button onClick={()=>onToggleMitgenommen(item)} title={mitg?"Zurück ins Lager":"Als mitgenommen markieren"}
+            style={{width:32,height:32,borderRadius:8,background:mitg?"#ecfeff":"#f0f9ff",color:mitg?"#0891b2":"#94a3b8",border:"1px solid "+(mitg?"#a5f3fc":"#e0f2fe"),cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>
+            {mitg?"🏠":"🎒"}
+          </button>}
+          {!sold&&<button onClick={()=>onVerkauft(item)} style={{width:32,height:32,borderRadius:8,background:"#f0fdf4",color:"#16a34a",border:"1px solid #bbf7d0",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Ic n="check" s={13}/></button>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function printLabels(items, flohmärkte) {
+  if(items.length===0){alert("Keine Artikel ausgewählt.");return;}
+  const cards = items.map(it=>{
+    const fm = flohmärkte.find(f=>f.id===it.flohmarktId);
+    return `
+      <div class="label">
+        <div class="label-name">${it.name}</div>
+        <div class="label-price">${it.wunschpreis>0?"CHF "+Number(it.wunschpreis).toFixed(2):"– VB –"}</div>
+        <div class="label-sub">${it.kategorie}${fm?" · "+fm.name:""}</div>
+      </div>`;
+  }).join("");
+  const win = window.open("","_blank");
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Etiketten</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Helvetica Neue',Arial,sans-serif;background:#fff;padding:10mm}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6mm}
+    .label{border:1.5px solid #1e40af;border-radius:6px;padding:6mm 5mm;min-height:38mm;display:flex;flex-direction:column;justify-content:space-between;page-break-inside:avoid}
+    .label-name{font-size:13pt;font-weight:900;color:#1e3a8a;line-height:1.2;margin-bottom:3mm}
+    .label-price{font-size:22pt;font-weight:900;color:#1e40af;text-align:center;margin:2mm 0;letter-spacing:-0.5px}
+    .label-sub{font-size:8pt;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+    @media print{body{padding:8mm}.grid{gap:5mm}}
+  </style></head><body>
+  <div class="grid">${cards}</div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+// ── Print Selection Modal ─────────────────────────────────────────────────────
+function PrintModal({items, flohmärkte, onClose}) {
+  const printable = items.filter(i=>i.status!=="verkauft");
+  const [selected,setSelected] = useState(new Set());
+
+  const toggle = id => setSelected(prev=>{
+    const s=new Set(prev);
+    s.has(id)?s.delete(id):s.add(id);
+    return s;
+  });
+
+  const selectAll   = ()=>setSelected(new Set(printable.map(i=>i.id)));
+  const selectNone  = ()=>setSelected(new Set());
+  const selectMitg  = ()=>setSelected(new Set(printable.filter(i=>i.status==="mitgenommen").map(i=>i.id)));
+  const selectKat   = kat=>setSelected(new Set(printable.filter(i=>i.kategorie===kat).map(i=>i.id)));
+
+  const uniqueKats  = [...new Set(printable.map(i=>i.kategorie))].sort();
+
+  const doPrint = () => {
+    const toPrint = printable.filter(i=>selected.has(i.id));
+    printLabels(toPrint, flohmärkte);
+  };
+
+  return (
+    <Drawer onClose={onClose}>
+      <h3 style={{margin:"0 0 4px",fontSize:18,fontWeight:900,color:FM_A[900]}}>🖨️ Etiketten drucken</h3>
+      <p style={{color:"#94a3b8",fontSize:13,marginBottom:14}}>{selected.size} von {printable.length} ausgewählt</p>
+
+      {/* Quick-select pills */}
+      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
+        <button onClick={selectAll}
+          style={{padding:"6px 12px",borderRadius:20,background:FM_A[100],border:"1.5px solid "+FM_A[300],fontSize:12,fontWeight:800,color:FM_A[700],cursor:"pointer"}}>
+          Alle ({printable.length})
+        </button>
+        {printable.filter(i=>i.status==="mitgenommen").length>0&&(
+          <button onClick={selectMitg}
+            style={{padding:"6px 12px",borderRadius:20,background:"#ecfeff",border:"1.5px solid #a5f3fc",fontSize:12,fontWeight:800,color:"#0891b2",cursor:"pointer"}}>
+            🎒 Mitgenommen ({printable.filter(i=>i.status==="mitgenommen").length})
+          </button>
+        )}
+        {uniqueKats.map(kat=>(
+          <button key={kat} onClick={()=>selectKat(kat)}
+            style={{padding:"6px 12px",borderRadius:20,background:"#f8faff",border:"1.5px solid #e2e8f0",fontSize:12,fontWeight:700,color:"#64748b",cursor:"pointer"}}>
+            {kat}
+          </button>
+        ))}
+        <button onClick={selectNone}
+          style={{padding:"6px 12px",borderRadius:20,background:"#fff5f5",border:"1.5px solid #fecaca",fontSize:12,fontWeight:700,color:"#dc2626",cursor:"pointer"}}>
+          Keine
+        </button>
+      </div>
+
+      {/* Article list */}
+      <div style={{display:"flex",flexDirection:"column",gap:6,maxHeight:340,overflowY:"auto",marginBottom:16}}>
+        {printable.map(it=>{
+          const sel=selected.has(it.id);
+          const st=FM_STATI.find(x=>x.id===it.status)||FM_STATI[0];
+          return (
+            <div key={it.id} onClick={()=>toggle(it.id)}
+              style={{display:"flex",alignItems:"center",gap:10,padding:"9px 12px",borderRadius:12,border:"2px solid "+(sel?FM_A[400]:"#e2e8f0"),background:sel?FM_A[50]:"#fff",cursor:"pointer",transition:"all .12s"}}>
+              <div style={{width:22,height:22,borderRadius:6,background:sel?FM_A[600]:"#e2e8f0",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:12,fontWeight:900,transition:"all .12s"}}>
+                {sel?"✓":""}
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:800,fontSize:13,color:FM_A[900],overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{it.name}</div>
+                <div style={{fontSize:11,color:"#94a3b8"}}>{it.kategorie} · <span style={{color:st.color,fontWeight:700}}>{st.label}</span></div>
+              </div>
+              <div style={{fontWeight:900,fontSize:13,color:FM_A[700],flexShrink:0}}>{it.wunschpreis>0?chf(it.wunschpreis):"VB"}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div style={{display:"flex",gap:10}}>
+        <button onClick={onClose} style={{flex:1,padding:"12px",background:"#f8faff",color:"#94a3b8",border:"1px solid #e2e8f0",borderRadius:12,fontSize:14,fontWeight:700,cursor:"pointer"}}>Abbrechen</button>
+        <button onClick={doPrint} disabled={selected.size===0}
+          style={{flex:2,padding:"12px",background:selected.size===0?"#e2e8f0":"linear-gradient(135deg,"+FM_A[800]+","+FM_A[500]+")",color:selected.size===0?"#94a3b8":"#fff",border:"none",borderRadius:12,fontSize:14,fontWeight:800,cursor:selected.size===0?"not-allowed":"pointer"}}>
+          🖨️ {selected.size} Etikette{selected.size!==1?"n":""} drucken
+        </button>
+      </div>
+    </Drawer>
+  );
+}
+
+function exportCSV(items,flohmärkte) {
+  const rows=[["Bezeichnung","Kategorie","Status","Wunschpreis","Verkaufspreis","Kanal","Flohmarkt","Verkauft am","Notizen"]];
+  items.forEach(it=>{
+    const fm=flohmärkte.find(f=>f.id===it.flohmarktId);
+    rows.push([it.name,it.kategorie,FM_STATI.find(s=>s.id===it.status)?.label||"",it.wunschpreis||"",it.verkaufspreis||"",it.kanal||"",fm?fm.name:"",it.verkauftAm||"",it.notizen||""]);
+  });
+  const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\n");
+  const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");a.href=url;a.download="Flohmarkt_Artikel.csv";a.click();URL.revokeObjectURL(url);
+}
+function FlohmarktModule({onBack}) {
+  const [items,setItems]     = useState([]);
+  const [flohmärkte,setFm]   = useState([]);
+  const [tab,setTab]=useState("lager");
+  const [modal,setModal]     = useState(null);
+  const [toast,setToast]     = useState(null);
+  const [search,setSearch]   = useState("");
+  const [filterKat,setFilterKat]       = useState("Alle");
+  const [filterStatus,setFilterStatus] = useState("Alle");
+  const [sortBy,setSortBy]             = useState("datum");
+  const [cats,setCats]                 = useState(()=>{
+    try{return JSON.parse(localStorage.getItem("flohmarkt_cats")||"null")||FM_DEFAULT_CATS;}catch{return FM_DEFAULT_CATS;}
+  });
+  const addCat = c => {
+    const next=[...cats,c];
+    setCats(next);
+    localStorage.setItem("flohmarkt_cats",JSON.stringify(next));
+  }; // datum | preis-asc | preis-desc | kat
+
+  useSwipeBack(useCallback(()=>{if(!modal)onBack();},[modal,onBack]));
+  const flash = (msg,ok=true) => {setToast({msg,ok});setTimeout(()=>setToast(null),2800);};
+
+  useEffect(()=>{
+    if(!db) return;
+    const iq=query(FM_col("flohmarkt_items"),orderBy("createdAt","desc"));
+    const fq=query(FM_col("flohmarkt_events"),orderBy("datum","desc"));
+    const ui=onSnapshot(iq,s=>setItems(s.docs.map(d=>({id:d.id,...d.data()}))));
+    const uf=onSnapshot(fq,s=>setFm(s.docs.map(d=>({id:d.id,...d.data()}))));
+    return()=>{ui();uf();};
+  },[]);
+
+  const saveItem = async it => {
+    try{
+      const id=it.id||uid();
+      await setDoc(doc(FM_col("flohmarkt_items"),id),{...it,id,updatedAt:serverTimestamp(),...(!it.id?{createdAt:serverTimestamp()}:{})});
+      flash(it.id?"Aktualisiert":"Artikel hinzugefuegt");
+    }catch{flash("Fehler",false);}
+    setModal(null);
+  };
+
+  const delItem = async id => {
+    if(!window.confirm("Artikel loeschen?")) return;
+    try{await deleteDoc(doc(FM_col("flohmarkt_items"),id));flash("Geloescht",false);}catch{flash("Fehler",false);}
+    setModal(null);
+  };
+
+  const markVerkauft = async (item,opts) => {
+    try{
+      await setDoc(doc(FM_col("flohmarkt_items"),item.id),{...item,...opts,updatedAt:serverTimestamp()});
+      flash("Verkauft fuer "+chf(opts.verkaufspreis));
+    }catch{flash("Fehler",false);}
+    setModal(null);
+  };
+
+  const toggleMitgenommen = async item => {
+    const newStatus = item.status==="mitgenommen"?"verfuegbar":"mitgenommen";
+    try{
+      await setDoc(doc(FM_col("flohmarkt_items"),item.id),{...item,status:newStatus,updatedAt:serverTimestamp()});
+      flash(newStatus==="mitgenommen"?"Mitgenommen 🎒":"Zurück ins Lager 🏠");
+    }catch{flash("Fehler",false);}
+  };
+
+  const saveFm = async fm => {
+    if(fm._delete){
+      try{await deleteDoc(doc(FM_col("flohmarkt_events"),fm.id));flash("Geloescht",false);}catch{flash("Fehler",false);}
+      setModal(null);return;
+    }
+    try{
+      const id=fm.id||uid();
+      await setDoc(doc(FM_col("flohmarkt_events"),id),{...fm,id,updatedAt:serverTimestamp(),...(!fm.id?{createdAt:serverTimestamp()}:{})});
+      flash(fm.id?"Aktualisiert":"Flohmarkt gespeichert");
+    }catch{flash("Fehler",false);}
+    setModal(null);
+  };
+
+  const verkauft    = items.filter(i=>i.status==="verkauft");
+  const verfuegbar  = items.filter(i=>i.status==="verfuegbar");
+  const mitgenommen = items.filter(i=>i.status==="mitgenommen");
+  const online      = items.filter(i=>i.status==="online");
+  const totalEinnahmen = verkauft.reduce((s,i)=>s+(i.verkaufspreis||0),0);
+
+  const filtered = useMemo(()=>{
+    let res = items.filter(it=>{
+      const ms=filterStatus==="Alle"||it.status===filterStatus;
+      const mk=filterKat==="Alle"||it.kategorie===filterKat;
+      const mq=!search.trim()||it.name.toLowerCase().includes(search.toLowerCase());
+      return ms&&mk&&mq;
+    });
+    if(sortBy==="preis-asc")  res=[...res].sort((a,b)=>(a.wunschpreis||0)-(b.wunschpreis||0));
+    if(sortBy==="preis-desc") res=[...res].sort((a,b)=>(b.wunschpreis||0)-(a.wunschpreis||0));
+    if(sortBy==="kat")        res=[...res].sort((a,b)=>a.kategorie.localeCompare(b.kategorie));
+    if(sortBy==="datum")      res=[...res]; // already ordered by createdAt desc from Firebase
+    return res;
+  },[items,filterStatus,filterKat,search,sortBy]);
+
+  const byStatus = useMemo(()=>{
+    const g={verfuegbar:[],mitgenommen:[],reserviert:[],online:[],verkauft:[]};
+    filtered.forEach(it=>{if(g[it.status])g[it.status].push(it);});
+    return g;
+  },[filtered]);
+
+  const nächsterFlohmarkt = flohmärkte.find(fm=>fm.datum>=today());
+
+  return (
+    <div style={{minHeight:"100vh",background:"#fff1f2"}}>
+      <header className="safe-header" style={{background:"linear-gradient(135deg,#1e3a8a,#2563eb)",position:"sticky",top:0,zIndex:50,boxShadow:"0 4px 24px "+FM_A[900]+"50",paddingTop:"env(safe-area-inset-top,0px)"}}>
+        <div style={{maxWidth:960,margin:"0 auto",padding:"0 16px",display:"flex",alignItems:"center",height:56,gap:12}}>
+          <button onClick={onBack} style={{width:36,height:36,borderRadius:12,background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",flexShrink:0}}><Ic n="home" s={16}/></button>
+          <div style={{fontSize:24}}>🏷️</div>
+          <div style={{flex:1}}>
+            <div style={{fontWeight:900,fontSize:16,color:"#fff"}}>Lorena's Flohmarkt</div>
+            <div className="hdr-sub" style={{fontSize:10,color:"rgba(255,255,255,0.65)",fontWeight:700,letterSpacing:.6}}>ARTIKEL & EVENTS</div>
+          </div>
+          <button onClick={()=>exportCSV(items,flohmärkte)} style={{display:"flex",alignItems:"center",gap:5,padding:"6px 12px",background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.3)",borderRadius:10,color:"#fff",fontSize:12,fontWeight:700,cursor:"pointer"}}>
+            <Ic n="dl" s={13}/>CSV
+          </button>
+        </div>
+      </header>
+
+      <nav style={{background:"#fff",borderBottom:"1px solid #fecdd3",position:"sticky",top:"calc(56px + env(safe-area-inset-top,0px))",zIndex:40}}>
+        <div style={{maxWidth:960,margin:"0 auto",padding:"0 4px",display:"flex"}}>
+          {[["lager","Lager","pkg"],["flohmärkte","Flohmärkte","store"],["stats","Statistik","bar"]].map(([id,lb,ic])=>(
+            <button key={id} onClick={()=>setTab(id)} className="nav-btn"
+              style={{display:"flex",alignItems:"center",gap:5,padding:"12px 16px",background:"none",border:"none",cursor:"pointer",fontSize:13,fontWeight:700,color:tab===id?FM_A[700]:"#94a3b8",borderBottom:"2.5px solid "+(tab===id?FM_A[500]:"transparent"),flex:1,justifyContent:"center"}}>
+              <Ic n={ic} s={16}/><span className="nav-label">{lb}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      <main className="main-pad" style={{maxWidth:960,margin:"0 auto",padding:"16px",paddingBottom:"calc(80px + env(safe-area-inset-bottom,0px))"}}>
+
+        {tab==="lager"&&<div style={{animation:"fadein .3s ease"}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:16}}>
+            {[["Artikel",items.length,FM_A[700]],["Verfügbar",verfuegbar.length,"#16a34a"],["Mitgenommen",mitgenommen.length,"#0891b2"],["Verkauft",verkauft.length,"#6b7280"]].map(([label,val,color])=>(
+              <div key={label} style={{background:"#fff",border:"1px solid "+FM_A[200],borderRadius:12,padding:"10px 8px",textAlign:"center"}}>
+                <div style={{fontWeight:900,fontSize:18,color}}>{val}</div>
+                <div style={{fontSize:10,color:"#94a3b8",fontWeight:700,textTransform:"uppercase",letterSpacing:.3}}>{label}</div>
+              </div>
+            ))}
+          </div>
+
+          {nächsterFlohmarkt&&(
+            <div style={{background:"linear-gradient(135deg,"+FM_A[700]+","+FM_A[500]+")",borderRadius:16,padding:"14px 16px",marginBottom:16,color:"#fff",display:"flex",alignItems:"center",gap:12}}>
+              <div style={{fontSize:28}}>🏪</div>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:900,fontSize:14}}>Naechster Flohmarkt</div>
+                <div style={{fontSize:12,opacity:.85}}>{nächsterFlohmarkt.name} · {dateStr(nächsterFlohmarkt.datum)}{nächsterFlohmarkt.ort?" · "+nächsterFlohmarkt.ort:""}</div>
+              </div>
+              <div style={{textAlign:"right",flexShrink:0}}>
+                <div style={{fontWeight:900,fontSize:14}}>{items.filter(i=>i.flohmarktId===nächsterFlohmarkt.id).length} Artikel</div>
+                <div style={{fontSize:11,opacity:.7}}>eingeplant</div>
+              </div>
+            </div>
+          )}
+
+          <div style={{display:"flex",gap:8,marginBottom:12,flexWrap:"wrap"}}>
+            <div style={{flex:1,minWidth:140,position:"relative"}}>
+              <Ic n="search" s={14} style={{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",color:"#94a3b8"}}/>
+              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Suchen..." style={{...FM_inp,paddingLeft:34}}/>
+            </div>
+            <select value={filterStatus} onChange={e=>setFilterStatus(e.target.value)} style={{...FM_inp,width:"auto"}}>
+              <option value="Alle">Alle Status</option>
+              {FM_STATI.map(s=><option key={s.id} value={s.id}>{s.label}</option>)}
+            </select>
+            <select value={filterKat} onChange={e=>setFilterKat(e.target.value)} style={{...FM_inp,width:"auto"}}>
+              <option value="Alle">Alle Kat.</option>
+              {cats.map(c=><option key={c}>{c}</option>)}
+            </select>
+            <select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{...FM_inp,width:"auto"}}>
+              <option value="datum">↕ Datum</option>
+              <option value="preis-asc">↑ Preis</option>
+              <option value="preis-desc">↓ Preis</option>
+              <option value="kat">A-Z Kategorie</option>
+            </select>
+          </div>
+
+          {/* Print + Add buttons */}
+          <div style={{display:"flex",gap:8,marginBottom:16}}>
+            <button onClick={()=>setModal({type:"item"})}
+              style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px",background:"linear-gradient(135deg,"+FM_A[800]+","+FM_A[500]+")",color:"#fff",border:"none",borderRadius:14,fontSize:14,fontWeight:800,cursor:"pointer",boxShadow:"0 4px 16px "+FM_A[600]+"40"}}>
+              <Ic n="plus" s={16}/>Artikel hinzufügen
+            </button>
+            <button onClick={()=>setModal({type:"print"})}
+              style={{display:"flex",alignItems:"center",gap:6,padding:"13px 16px",background:"#fff",border:"2px solid "+FM_A[300],borderRadius:14,fontSize:13,fontWeight:800,color:FM_A[700],cursor:"pointer"}}>
+              🖨️ Etiketten
+            </button>
+          </div>
+
+          {filtered.length===0&&(
+            <div style={{textAlign:"center",padding:48,background:"#fff",borderRadius:16,border:"2px dashed "+FM_A[300]}}>
+              <div style={{fontSize:40,marginBottom:8}}>🏷️</div>
+              <div style={{fontWeight:800,fontSize:15,color:FM_A[800],marginBottom:4}}>Noch keine Artikel</div>
+              <p style={{color:"#94a3b8",fontSize:13}}>Fuege deinen ersten Artikel hinzu</p>
+            </div>
+          )}
+
+          {FM_STATI.map(st=>{
+            const grp=byStatus[st.id]||[];
+            if(grp.length===0) return null;
+            const wert=grp.reduce((s,i)=>s+(st.id==="verkauft"?(i.verkaufspreis||0):(i.wunschpreis||0)),0);
+            return (
+              <div key={st.id} style={{marginBottom:20}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+                  <span style={{fontSize:11,fontWeight:800,padding:"3px 10px",borderRadius:20,background:st.bg,color:st.color,border:"1px solid "+st.border}}>{st.label}</span>
+                  <span style={{fontSize:12,color:"#94a3b8",fontWeight:600}}>{grp.length} Artikel{wert>0?" · "+chf(wert):""}</span>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                  {grp.map(it=>(
+                    <ItemCard key={it.id} item={it} flohmärkte={flohmärkte}
+                      onEdit={item=>setModal({type:"item",item})}
+                      onVerkauft={item=>setModal({type:"verkauft",item})}
+                      onToggleMitgenommen={toggleMitgenommen}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>}
+
+        {tab==="flohmärkte"&&<div style={{animation:"fadein .3s ease"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+            <div>
+              <h2 style={{fontSize:20,fontWeight:900,color:FM_A[900]}}>Flohmärkte</h2>
+              <div style={{fontSize:13,color:"#94a3b8"}}>{flohmärkte.length} Events</div>
+            </div>
+            <button onClick={()=>setModal({type:"flohmarkt"})}
+              style={{display:"flex",alignItems:"center",gap:5,padding:"10px 16px",background:"linear-gradient(135deg,"+FM_A[800]+","+FM_A[500]+")",color:"#fff",border:"none",borderRadius:12,fontSize:13,fontWeight:800,cursor:"pointer"}}>
+              <Ic n="plus" s={14}/>Neu
+            </button>
+          </div>
+
+          {flohmärkte.length===0&&(
+            <div style={{textAlign:"center",padding:48,background:"#fff",borderRadius:16,border:"2px dashed "+FM_A[300]}}>
+              <div style={{fontSize:40,marginBottom:8}}>🏪</div>
+              <div style={{fontWeight:800,fontSize:15,color:FM_A[800],marginBottom:4}}>Noch kein Flohmarkt</div>
+              <p style={{color:"#94a3b8",fontSize:13}}>Plane deinen naechsten Flohmarkt</p>
+            </div>
+          )}
+
+          <div style={{display:"flex",flexDirection:"column",gap:12}}>
+            {flohmärkte.map(fm=>{
+              const fmItems=items.filter(i=>i.flohmarktId===fm.id);
+              const sold=fmItems.filter(i=>i.status==="verkauft");
+              const einnahmen=sold.reduce((s,i)=>s+(i.verkaufspreis||0),0);
+              const fmAusgaben=(fm.ausgaben||[]).reduce((s,a)=>s+(a.betrag||0),0);
+              const gewinn=einnahmen-fmAusgaben;
+              const isPast=fm.datum<today();
+              return (
+                <div key={fm.id} style={{background:"#fff",border:"2px solid "+(isPast?FM_A[200]:FM_A[400]),borderRadius:16,padding:"16px"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
+                    <div>
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:2}}>
+                        <span style={{fontWeight:900,fontSize:16,color:FM_A[900]}}>{fm.name}</span>
+                        <span style={{fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:20,background:isPast?"#f1f5f9":FM_A[100],color:isPast?"#64748b":FM_A[700]}}>{isPast?"Vergangen":"Geplant"}</span>
+                      </div>
+                      <div style={{fontSize:12,color:"#94a3b8"}}>{dateStr(fm.datum)}{fm.ort?" · "+fm.ort:""}</div>
+                    </div>
+                    <button onClick={()=>setModal({type:"flohmarkt",fm})} style={{width:32,height:32,borderRadius:8,background:FM_A[100],color:FM_A[700],border:"1px solid "+FM_A[300],cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Ic n="edit" s={13}/></button>
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:fmItems.length>0||fmAusgaben>0?10:0}}>
+                    {[["Artikel",fmItems.length,FM_A[700]],["Verkauft",sold.length,"#16a34a"],["Einnahmen",chf(einnahmen),"#16a34a"],["Gewinn",chf(gewinn),gewinn>=0?"#16a34a":"#dc2626"]].map(([label,val,color])=>(
+                      <div key={label} style={{background:FM_A[50],borderRadius:10,padding:"8px",textAlign:"center"}}>
+                        <div style={{fontWeight:900,fontSize:12,color}}>{val}</div>
+                        <div style={{fontSize:9,color:"#94a3b8",fontWeight:700,textTransform:"uppercase"}}>{label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Ausgaben */}
+                  {fmAusgaben>0&&(
+                    <div style={{background:"#fff5f5",borderRadius:10,padding:"8px 12px",marginBottom:fmItems.length>0?10:0}}>
+                      <div style={{fontSize:11,fontWeight:700,color:"#94a3b8",marginBottom:4,textTransform:"uppercase",letterSpacing:.3}}>Ausgaben</div>
+                      {(fm.ausgaben||[]).map(a=>(
+                        <div key={a.id} style={{display:"flex",justifyContent:"space-between",fontSize:12,padding:"2px 0"}}>
+                          <span style={{color:"#7f1d1d",fontWeight:600}}>{a.bez}</span>
+                          <span style={{color:"#dc2626",fontWeight:800}}>{chf(a.betrag)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {fmItems.length>0&&(
+                    <div style={{paddingTop:10,borderTop:"1px solid "+FM_A[100]}}>
+                      <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+                        {fmItems.map(it=>(
+                          <span key={it.id} style={{fontSize:11,fontWeight:700,padding:"3px 9px",borderRadius:20,background:it.status==="verkauft"?"#f0fdf4":FM_A[100],color:it.status==="verkauft"?"#16a34a":FM_A[700],border:"1px solid "+(it.status==="verkauft"?"#bbf7d0":FM_A[300])}}>
+                            {it.status==="verkauft"?"✓ ":""}{it.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>}
+
+        {tab==="stats"&&<div style={{animation:"fadein .3s ease"}}>
+          <h2 style={{fontSize:20,fontWeight:900,color:FM_A[900],marginBottom:16}}>Statistik</h2>
+          <div style={{background:"linear-gradient(135deg,"+FM_A[800]+","+FM_A[500]+")",borderRadius:20,padding:"20px",marginBottom:16,color:"#fff"}}>
+            <div style={{fontSize:12,opacity:.75,fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:4}}>Gesamteinnahmen</div>
+            <div style={{fontSize:36,fontWeight:900}}>{chf(totalEinnahmen)}</div>
+            <div style={{fontSize:13,opacity:.8,marginTop:4}}>{verkauft.length} Artikel verkauft von {items.length} total</div>
+          </div>
+
+          <div style={{background:"#fff",border:"1px solid "+FM_A[200],borderRadius:16,padding:16,marginBottom:16}}>
+            <div style={{fontWeight:900,fontSize:15,color:FM_A[900],marginBottom:12}}>Einnahmen pro Kanal</div>
+            {FM_KANAELE.map(k=>{
+              const kItems=verkauft.filter(i=>i.kanal===k);
+              if(kItems.length===0) return null;
+              const total=kItems.reduce((s,i)=>s+(i.verkaufspreis||0),0);
+              const pct=totalEinnahmen>0?Math.round((total/totalEinnahmen)*100):0;
+              return (
+                <div key={k} style={{marginBottom:12}}>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                    <span style={{fontSize:13,fontWeight:700,color:FM_A[800]}}>{k}</span>
+                    <span style={{fontSize:13,fontWeight:900,color:FM_A[700]}}>{chf(total)} · {kItems.length} Stk</span>
+                  </div>
+                  <div style={{height:6,background:FM_A[100],borderRadius:4,overflow:"hidden"}}>
+                    <div style={{height:"100%",width:pct+"%",background:"linear-gradient(90deg,"+FM_A[500]+","+FM_A[300]+")",borderRadius:4}}/>
+                  </div>
+                </div>
+              );
+            })}
+            {verkauft.length===0&&<div style={{textAlign:"center",padding:20,color:"#94a3b8",fontSize:13}}>Noch keine Verkaeufe</div>}
+          </div>
+
+          <div style={{background:"#fff",border:"1px solid "+FM_A[200],borderRadius:16,padding:16,marginBottom:16}}>
+            <div style={{fontWeight:900,fontSize:15,color:FM_A[900],marginBottom:12}}>Pro Kategorie</div>
+            {cats.map(k=>{
+              const all=items.filter(i=>i.kategorie===k);
+              const s=all.filter(i=>i.status==="verkauft");
+              if(all.length===0) return null;
+              return (
+                <div key={k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:"1px solid "+FM_A[100]}}>
+                  <span style={{fontSize:13,fontWeight:700,color:FM_A[800]}}>{k}</span>
+                  <div style={{display:"flex",gap:12,fontSize:12}}>
+                    <span style={{color:"#94a3b8"}}>{all.length} total</span>
+                    <span style={{color:"#16a34a",fontWeight:700}}>{s.length} verk.</span>
+                    <span style={{color:FM_A[700],fontWeight:900}}>{chf(s.reduce((sum,i)=>sum+(i.verkaufspreis||0),0))}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {flohmärkte.length>0&&(
+            <div style={{background:"#fff",border:"1px solid "+FM_A[200],borderRadius:16,padding:16}}>
+              <div style={{fontWeight:900,fontSize:15,color:FM_A[900],marginBottom:12}}>Pro Flohmarkt</div>
+              {flohmärkte.map(fm=>{
+                const fmSold=verkauft.filter(i=>i.flohmarktId===fm.id);
+                const einnahmen=fmSold.reduce((s,i)=>s+(i.verkaufspreis||0),0);
+                const ausgaben=(fm.ausgaben||[]).reduce((s,a)=>s+(a.betrag||0),0);
+                const gewinn=einnahmen-ausgaben;
+                return (
+                  <div key={fm.id} style={{padding:"10px 0",borderBottom:"1px solid "+FM_A[100]}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+                      <div>
+                        <div style={{fontSize:13,fontWeight:700,color:FM_A[800]}}>{fm.name}</div>
+                        <div style={{fontSize:11,color:"#94a3b8"}}>{dateStr(fm.datum)} · {fmSold.length} Artikel</div>
+                      </div>
+                      <div style={{textAlign:"right"}}>
+                        <div style={{fontWeight:900,fontSize:14,color:"#16a34a"}}>{chf(einnahmen)}</div>
+                        {ausgaben>0&&<div style={{fontSize:11,color:"#dc2626"}}>- {chf(ausgaben)} Ausg.</div>}
+                        {ausgaben>0&&<div style={{fontSize:12,fontWeight:900,color:gewinn>=0?"#16a34a":"#dc2626"}}>= {chf(gewinn)} Gewinn</div>}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>}
+
+      </main>
+
+      {modal?.type==="print"&&<PrintModal items={items} flohmärkte={flohmärkte} onClose={()=>setModal(null)}/>}
+      {modal?.type==="item"&&<ItemModal item={modal.item||null} flohmärkte={flohmärkte} onSave={saveItem} onClose={()=>setModal(null)} onDel={delItem} cats={cats} onAddCat={addCat}/>}
+      {modal?.type==="verkauft"&&<VerkauftModal item={modal.item} onSave={opts=>markVerkauft(modal.item,opts)} onClose={()=>setModal(null)}/>}
+      {modal?.type==="flohmarkt"&&<FlohmarktModal fm={modal.fm||null} onSave={saveFm} onClose={()=>setModal(null)}/>}
+
+      {toast&&<div style={{position:"fixed",bottom:"calc(24px + env(safe-area-inset-bottom,0px))",left:"50%",transform:"translateX(-50%)",background:toast.ok?FM_A[800]:"#7f1d1d",color:"#fff",padding:"11px 22px",borderRadius:30,fontSize:13,fontWeight:700,boxShadow:"0 4px 24px rgba(0,0,0,.2)",zIndex:9999,whiteSpace:"nowrap",animation:"fadein .2s ease"}}>{toast.msg}</div>}
+    </div>
+  );
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
 // MAIN APP
 // ══════════════════════════════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════════════════════════════
+// KLEIDERSCHRANK MODULE
+// ══════════════════════════════════════════════════════════════════════════════
+const KSC={50:"#eff6ff",100:"#fef9c3",200:"#bfdbfe",300:"#93c5fd",400:"#facc15",500:"#3b82f6",600:"#2563eb",700:"#1d4ed8",800:"#1e3a8a",900:"#172554"};
+const KS_CATS=["Alle","Kleider","T-Shirts & Tops","Blusen & Hemden","Pullover","Hosen/Röcke","Jacken/Mäntel","Schuhe","Taschen","Strümpfe & Leggings","Schmuck & Accessoires","Zumba Kleider","Sportkleidung"];
+const KS_FARBEN=["–","Schwarz","Weiss","Grau","Beige","Braun","Blau","Grün","Rot","Pink","Lila","Orange","Gelb","Gemustert","Bunt"];
+const KS_SAISON=["Ganzjährig","Frühling/Sommer","Herbst/Winter"];
+const KS_ICONS={"Kleider":"👗","T-Shirts & Tops":"👕","Blusen & Hemden":"👔","Pullover":"🧶","Hosen/Röcke":"👖","Jacken/Mäntel":"🧥","Schuhe":"👠","Taschen":"👜","Strümpfe & Leggings":"🧦","Schmuck & Accessoires":"💍","Zumba Kleider":"💃","Sportkleidung":"🏃","Alle":"✨"};
+
+// uid already defined
+const ks_col=(sub)=>collection(db,"users",USER_ID,sub);
+const ks_inp={width:"100%",padding:"10px 12px",border:`1px solid ${KSC[200]}`,borderRadius:10,fontSize:14,background:"#f8faff",color:"#1e3a8a"};
+//const ks_uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+
+
+function KleidungCard({item,onClick,onFav}) {
+  const [err,setErr]=useState(false);
+  return (
+    <div onClick={onClick} style={{background:"#fff",borderRadius:18,overflow:"hidden",cursor:"pointer",border:`1px solid ${KSC[100]}`,boxShadow:"0 2px 12px rgba(0,0,0,0.06)",transition:"transform .15s",position:"relative"}}
+      onMouseEnter={e=>e.currentTarget.style.transform="translateY(-3px)"}
+      onMouseLeave={e=>e.currentTarget.style.transform=""}>
+      {/* Image area */}
+      <div style={{background:`linear-gradient(145deg,${KSC[50]},${KSC[100]})`,height:160,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
+        {item.image&&!err
+          ?<img src={item.image} alt={item.name} onError={()=>setErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}}/>
+          :<span style={{fontSize:48}}>{KS_ICONS[item.kategorie]||"👗"}</span>
+        }
+        {item.favorite&&<div style={{position:"absolute",top:8,right:8,color:"#ef4444",filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.2))"}}><Ic n="heartFill" s={16}/></div>}
+      </div>
+      {/* Info */}
+      <div style={{padding:"10px 12px"}}>
+        <div style={{fontWeight:800,fontSize:13,color:KSC[900],marginBottom:2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{item.name}</div>
+        <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+          {item.farbe&&item.farbe!=="–"&&<span style={{fontSize:10,fontWeight:700,background:KSC[100],color:KSC[700],padding:"1px 6px",borderRadius:8}}>{item.farbe}</span>}
+          {item.marke&&<span style={{fontSize:10,fontWeight:700,background:"#f1f5f9",color:"#64748b",padding:"1px 6px",borderRadius:8}}>{item.marke}</span>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── KleidungModal ─────────────────────────────────────────────────────────────
+function KleidungModal({item,onSave,onClose,onDel}) {
+  const isEdit=!!item;
+  const [f,setF]=useState(item||{name:"",kategorie:"Kleider",farbe:"–",saison:"Ganzjährig",marke:"",groesse:"",notizen:"",image:"",favorite:false});
+  const [imgErr,setImgErr]=useState(false);
+  const s=(k,v)=>setF(x=>({...x,[k]:v}));
+  const submit=(e)=>{e.preventDefault();if(!f.name.trim())return;onSave(f);};
+  return (
+    <Drawer onClose={onClose}>
+      <h3 style={{margin:"0 0 16px",fontSize:18,fontWeight:900,color:KSC[800]}}>{isEdit?"Bearbeiten":"Neues Teil hinzufügen"}</h3>
+      <form onSubmit={submit}>
+        <div style={{display:"flex",flexDirection:"column",gap:11}}>
+          {/* Image */}
+          <div style={{display:"flex",justifyContent:"center",marginBottom:4}}>
+            <label style={{cursor:"pointer"}}>
+              <div style={{width:130,height:165,borderRadius:16,background:`linear-gradient(145deg,${KSC[50]},${KSC[100]})`,border:`2px dashed ${KSC[400]}`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
+                {f.image&&!imgErr
+                  ?<img src={f.image} alt="" onError={()=>setImgErr(true)} style={{width:"100%",height:"100%",objectFit:"contain"}}/>
+                  :<>
+                    <span style={{fontSize:36,marginBottom:6}}>{KS_ICONS[f.kategorie]||"👗"}</span>
+                    <span style={{fontSize:11,color:KSC[600],fontWeight:700}}>Foto hochladen</span>
+                  </>
+                }
+              </div>
+              <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{
+                const file=e.target.files[0];if(!file)return;
+                const r=new FileReader();r.onload=ev=>{s("image",ev.target.result);setImgErr(false);};r.readAsDataURL(file);
+              }}/>
+            </label>
+          </div>
+          <Lbl t="Bezeichnung *"><input required value={f.name} onChange={e=>s("name",e.target.value)} style={ks_inp} placeholder="z.B. Schwarzes Kleid"/></Lbl>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            <Lbl t="Kategorie">
+              <select value={f.kategorie} onChange={e=>s("kategorie",e.target.value)} style={ks_inp}>
+                {KS_CATS.filter(c=>c!=="Alle").map(c=><option key={c}>{c}</option>)}
+              </select>
+            </Lbl>
+            <Lbl t="Farbe">
+              <select value={f.farbe} onChange={e=>s("farbe",e.target.value)} style={ks_inp}>
+                {KS_FARBEN.map(c=><option key={c}>{c}</option>)}
+              </select>
+            </Lbl>
+            <Lbl t="Marke">
+              <input value={f.marke} onChange={e=>s("marke",e.target.value)} style={ks_inp} placeholder="z.B. Zara"/>
+            </Lbl>
+            <Lbl t="Grösse">
+              <input value={f.groesse} onChange={e=>s("groesse",e.target.value)} style={ks_inp} placeholder="z.B. S, 38"/>
+            </Lbl>
+          </div>
+          <Lbl t="Saison">
+            <div style={{display:"flex",gap:8}}>
+              {KS_SAISON.map(sn=>(
+                <div key={sn} onClick={()=>s("saison",sn)} style={{flex:1,padding:"8px 6px",borderRadius:10,border:`2px solid ${f.saison===sn?"#facc15":KSC[200]}`,background:f.saison===sn?"#fef9c3":KSC[50],cursor:"pointer",textAlign:"center",fontSize:11,fontWeight:700,color:f.saison===sn?KSC[800]:KSC[600]}}>
+                  {sn}
+                </div>
+              ))}
+            </div>
+          </Lbl>
+          <Lbl t="Favorit">
+            <div onClick={()=>s("favorite",!f.favorite)} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",borderRadius:12,border:`2px solid ${f.favorite?"#ef4444":KSC[200]}`,background:f.favorite?"#fff5f5":KSC[50],cursor:"pointer",width:"fit-content"}}>
+              <span style={{color:f.favorite?"#ef4444":KSC[400]}}><Ic n={f.favorite?"heartFill":"heart"} s={18}/></span>
+              <span style={{fontSize:13,fontWeight:700,color:f.favorite?"#ef4444":KSC[700]}}>{f.favorite?"Favorit ❤️":"Als Favorit markieren"}</span>
+            </div>
+          </Lbl>
+          <Lbl t="Notizen"><textarea value={f.notizen} onChange={e=>s("notizen",e.target.value)} rows={2} style={{...ks_inp,resize:"vertical"}} placeholder="z.B. nur für besondere Anlässe…"/></Lbl>
+        </div>
+        <div style={{display:"flex",gap:10,marginTop:18}}>
+          {isEdit&&<button type="button" onClick={()=>onDel(item.id)} style={{flex:1,padding:"12px",background:"#fff5f5",color:"#dc2626",border:"1px solid #fecaca",borderRadius:12,fontSize:14,fontWeight:700,cursor:"pointer"}}>Löschen</button>}
+          <button type="button" onClick={onClose} style={{flex:1,padding:"12px",background:KSC[50],color:KSC[700],border:`1px solid ${KSC[200]}`,borderRadius:12,fontSize:14,fontWeight:700,cursor:"pointer"}}>Abbrechen</button>
+          <button type="submit" style={{flex:2,padding:"12px",background:`linear-gradient(135deg,${KSC[700]},${KSC[500]})`,color:"#fff",border:"none",borderRadius:12,fontSize:14,fontWeight:800,cursor:"pointer"}}>Speichern</button>
+        </div>
+      </form>
+    </Drawer>
+  );
+}
+
+// ── DetailModal ───────────────────────────────────────────────────────────────
+function DetailModal({item,onClose,onEdit,onFav}) {
+  const [err,setErr]=useState(false);
+  return (
+    <Drawer onClose={onClose}>
+      <div style={{textAlign:"center"}}>
+        <div style={{width:"100%",height:260,borderRadius:18,background:`linear-gradient(145deg,${KSC[50]},${KSC[100]})`,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:16,overflow:"hidden"}}>
+          {item.image&&!err
+            ?<img src={item.image} alt={item.name} onError={()=>setErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:12}}/>
+            :<span style={{fontSize:72}}>{KS_ICONS[item.kategorie]||"👗"}</span>
+          }
+        </div>
+        <h3 style={{fontSize:22,fontWeight:900,color:KSC[900],marginBottom:6}}>{item.name}</h3>
+        <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap",marginBottom:16}}>
+          <span style={{fontSize:12,fontWeight:700,background:KSC[100],color:KSC[700],padding:"3px 10px",borderRadius:20}}>{item.kategorie}</span>
+          {item.farbe&&item.farbe!=="–"&&<span style={{fontSize:12,fontWeight:700,background:"#f1f5f9",color:"#64748b",padding:"3px 10px",borderRadius:20}}>{item.farbe}</span>}
+          {item.marke&&<span style={{fontSize:12,fontWeight:700,background:"#f8faff",color:"#475569",padding:"3px 10px",borderRadius:20}}>{item.marke}</span>}
+          {item.groesse&&<span style={{fontSize:12,fontWeight:700,background:KSC[50],color:KSC[600],padding:"3px 10px",borderRadius:20}}>Gr. {item.groesse}</span>}
+          <span style={{fontSize:12,fontWeight:700,background:"#f0fdf4",color:"#16a34a",padding:"3px 10px",borderRadius:20}}>{item.saison}</span>
+        </div>
+        {item.notizen&&<p style={{fontSize:13,color:"#64748b",fontStyle:"italic",marginBottom:16,textAlign:"left",background:KSC[50],padding:"10px 14px",borderRadius:10}}>{item.notizen}</p>}
+        <div style={{display:"flex",gap:10}}>
+          <button onClick={()=>onFav(item)} style={{flex:1,padding:"12px",background:item.favorite?"#fff5f5":KSC[50],color:item.favorite?"#ef4444":KSC[700],border:`1px solid ${item.favorite?"#fecaca":KSC[200]}`,borderRadius:12,fontSize:13,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
+            <Ic n={item.favorite?"heartFill":"heart"} s={16}/>{item.favorite?"Unfavorit":"Favorit"}
+          </button>
+          <button onClick={onEdit} style={{flex:2,padding:"12px",background:`linear-gradient(135deg,${KSC[700]},${KSC[500]})`,color:"#fff",border:"none",borderRadius:12,fontSize:13,fontWeight:700,cursor:"pointer"}}>Bearbeiten</button>
+        </div>
+      </div>
+    </Drawer>
+  );
+}
+
+// ── OutfitModal ───────────────────────────────────────────────────────────────
+function OutfitModal({outfit,allItems,onSave,onClose,onDel}) {
+  const isEdit=!!outfit;
+  const [name,setName]=useState(outfit?.name||"");
+  const [selected,setSelected]=useState(outfit?.itemIds||[]);
+  const [searchQ,setSearchQ]=useState("");
+
+  const toggle=(id)=>setSelected(s=>s.includes(id)?s.filter(x=>x!==id):[...s,id]);
+  const filtered=allItems.filter(i=>!searchQ||i.name.toLowerCase().includes(searchQ.toLowerCase()));
+  const submit=(e)=>{e.preventDefault();if(!name.trim()||selected.length===0)return;onSave({name,itemIds:selected});};
+
+  return (
+    <Drawer onClose={onClose}>
+      <h3 style={{margin:"0 0 16px",fontSize:18,fontWeight:900,color:KSC[800]}}>{isEdit?"Outfit bearbeiten":"Neues Outfit"}</h3>
+      <form onSubmit={submit}>
+        <div style={{display:"flex",flexDirection:"column",gap:12}}>
+          <Lbl t="Outfit Name *"><input required value={name} onChange={e=>setName(e.target.value)} style={ks_inp} placeholder="z.B. Montags-Look, Zumba-Outfit…"/></Lbl>
+          <Lbl t={`Teile auswählen (${selected.length} gewählt)`}>
+            <input value={searchQ} onChange={e=>setSearchQ(e.target.value)} style={{...ks_inp,marginBottom:8}} placeholder="Suchen…"/>
+            <div style={{maxHeight:280,overflowY:"auto",display:"flex",flexDirection:"column",gap:6}}>
+              {filtered.map(item=>{
+                const sel=selected.includes(item.id);
+                return (
+                  <div key={item.id} onClick={()=>toggle(item.id)}
+                    style={{display:"flex",alignItems:"center",gap:10,padding:"8px 12px",borderRadius:12,border:`2px solid ${sel?KSC[500]:KSC[100]}`,background:sel?KSC[50]:"#fff",cursor:"pointer",transition:"all .15s"}}>
+                    <div style={{width:42,height:42,borderRadius:10,background:KSC[100],flexShrink:0,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                      {item.image?<img src={item.image} alt="" style={{width:"100%",height:"100%",objectFit:"contain"}}/>:<span style={{fontSize:22}}>{KS_ICONS[item.kategorie]||"👗"}</span>}
+                    </div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontWeight:700,fontSize:13,color:KSC[900],whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{item.name}</div>
+                      <div style={{fontSize:11,color:"#94a3b8"}}>{item.kategorie}{item.farbe&&item.farbe!=="–"?" · "+item.farbe:""}</div>
+                    </div>
+                    <div style={{width:22,height:22,borderRadius:11,background:sel?KSC[500]:"#e2e8f0",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,color:"#fff"}}>
+                      {sel&&<Ic n="check" s={13}/>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Lbl>
+        </div>
+        <div style={{display:"flex",gap:10,marginTop:18}}>
+          {isEdit&&<button type="button" onClick={()=>onDel(outfit.id)} style={{flex:1,padding:"12px",background:"#fff5f5",color:"#dc2626",border:"1px solid #fecaca",borderRadius:12,fontSize:14,fontWeight:700,cursor:"pointer"}}>Löschen</button>}
+          <button type="button" onClick={onClose} style={{flex:1,padding:"12px",background:KSC[50],color:KSC[700],border:`1px solid ${KSC[200]}`,borderRadius:12,fontSize:14,fontWeight:700,cursor:"pointer"}}>Abbrechen</button>
+          <button type="submit" disabled={!name.trim()||selected.length===0} style={{flex:2,padding:"12px",background:name.trim()&&selected.length>0?`linear-gradient(135deg,${KSC[700]},${KSC[500]})`:"#e2e8f0",color:name.trim()&&selected.length>0?"#fff":"#94a3b8",border:"none",borderRadius:12,fontSize:14,fontWeight:800,cursor:"pointer"}}>Speichern</button>
+        </div>
+      </form>
+    </Drawer>
+  );
+}
+
+// ── OutfitCard ────────────────────────────────────────────────────────────────
+function OutfitCard({outfit,allItems,onClick}) {
+  const items=allItems.filter(i=>outfit.itemIds.includes(i.id)).slice(0,4);
+  return (
+    <div onClick={onClick} style={{background:"#fff",borderRadius:18,padding:16,border:`1px solid ${KSC[100]}`,cursor:"pointer",boxShadow:"0 2px 12px rgba(0,0,0,0.06)",transition:"transform .15s"}}
+      onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"}
+      onMouseLeave={e=>e.currentTarget.style.transform=""}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10,height:120}}>
+        {items.map((item,i)=>{
+          return (
+            <div key={item.id} style={{borderRadius:10,background:KSC[50],display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+              {item.image?<img src={item.image} alt="" style={{width:"100%",height:"100%",objectFit:"contain",padding:4}}/>:<span style={{fontSize:28}}>{KS_ICONS[item.kategorie]||"👗"}</span>}
+            </div>
+          );
+        })}
+        {items.length<4&&Array(4-items.length).fill(0).map((_,i)=>(
+          <div key={i} style={{borderRadius:10,background:"#f8faff",border:"2px dashed #e2e8f0"}}/>
+        ))}
+      </div>
+      <div style={{fontWeight:800,fontSize:14,color:KSC[900],marginBottom:4}}>{outfit.name}</div>
+      <div style={{fontSize:12,color:"#94a3b8"}}>{outfit.itemIds.length} Teile</div>
+    </div>
+  );
+}
+
+// ── SwipeView ─────────────────────────────────────────────────────────────────
+function SwipeView({items}) {
+  const [idx,setIdx]=useState(0);
+  const [anim,setAnim]=useState(null);
+  const [filterCat,setFilterCat]=useState("Alle");
+
+  const filtered=filterCat==="Alle"?items:items.filter(i=>i.kategorie===filterCat);
+  const current=filtered[idx];
+  const [err,setErr]=useState(false);
+
+  const go=(dir)=>{
+    setAnim(dir);
+    setTimeout(()=>{
+      setAnim(null);
+      setErr(false);
+      setIdx(i=>(i+1)%Math.max(1,filtered.length));
+    },350);
+  };
+
+  const reset=()=>{setIdx(0);setErr(false);};
+
+  if(filtered.length===0) return (
+    <div style={{textAlign:"center",padding:60,color:"#94a3b8"}}>
+      <div style={{fontSize:48,marginBottom:12}}>👗</div>
+      <div style={{fontWeight:700,fontSize:16}}>Keine Kleider in dieser Kategorie</div>
+    </div>
+  );
+
+  return (
+    <div style={{animation:"fadein .3s ease"}}>
+      {/* Category filter */}
+      <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:20,scrollbarWidth:"none"}}>
+        {KS_CATS.map(c=>(
+          <button key={c} onClick={()=>{setFilterCat(c);setIdx(0);}} style={{flexShrink:0,padding:"6px 14px",borderRadius:20,border:`2px solid ${filterCat===c?KSC[500]:KSC[200]}`,background:filterCat===c?KSC[500]:"#fff",color:filterCat===c?"#fff":KSC[700],fontSize:12,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
+            {KS_ICONS[c]} {c}
+          </button>
+        ))}
+      </div>
+
+      {/* Counter */}
+      <div style={{textAlign:"center",fontSize:13,color:"#94a3b8",fontWeight:600,marginBottom:16}}>
+        {idx+1} / {filtered.length}
+        <button onClick={reset} style={{marginLeft:8,fontSize:11,color:KSC[600],background:"none",border:"none",cursor:"pointer",fontWeight:700}}>↺ Neustart</button>
+      </div>
+
+      {/* Swipe card */}
+      <div style={{display:"flex",justifyContent:"center",marginBottom:24}}>
+        <div className={anim==="left"?"swipe-left":anim==="right"?"swipe-right":""}
+          style={{width:280,borderRadius:28,background:"#fff",boxShadow:"0 12px 40px rgba(0,0,0,0.12)",overflow:"hidden",animation:!anim?"popIn .3s ease":undefined}}>
+          <div style={{height:340,background:`linear-gradient(145deg,${KSC[50]},${KSC[100]})`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
+            {current.image&&!err
+              ?<img src={current.image} alt={current.name} onError={()=>setErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:20}}/>
+              :<span style={{fontSize:80}}>{KS_ICONS[current.kategorie]||"👗"}</span>
+            }
+            {current.favorite&&<div style={{position:"absolute",top:16,right:16,color:"#ef4444"}}><Ic n="heartFill" s={22}/></div>}
+          </div>
+          <div style={{padding:"16px 20px 20px"}}>
+            <div style={{fontWeight:900,fontSize:18,color:KSC[900],marginBottom:6}}>{current.name}</div>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              <span style={{fontSize:11,fontWeight:700,background:KSC[100],color:KSC[700],padding:"2px 8px",borderRadius:10}}>{current.kategorie}</span>
+              {current.farbe&&current.farbe!=="–"&&<span style={{fontSize:11,fontWeight:700,background:"#f1f5f9",color:"#64748b",padding:"2px 8px",borderRadius:10}}>{current.farbe}</span>}
+              {current.marke&&<span style={{fontSize:11,fontWeight:700,background:"#f8faff",color:"#475569",padding:"2px 8px",borderRadius:10}}>{current.marke}</span>}
+              {current.groesse&&<span style={{fontSize:11,fontWeight:700,background:KSC[50],color:KSC[600],padding:"2px 8px",borderRadius:10}}>Gr. {current.groesse}</span>}
+            </div>
+            {current.notizen&&<p style={{fontSize:12,color:"#94a3b8",fontStyle:"italic",marginTop:8}}>{current.notizen}</p>}
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation buttons */}
+      <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:20}}>
+        <button onClick={()=>go("left")} style={{width:64,height:64,borderRadius:32,background:"#fff",border:`2px solid ${KSC[200]}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,boxShadow:"0 4px 16px rgba(0,0,0,0.08)",color:KSC[600]}}>
+          ←
+        </button>
+        <div style={{fontSize:13,color:"#94a3b8",fontWeight:600,textAlign:"center",lineHeight:1.4}}>
+          Wische oder klicke<br/>um zu navigieren
+        </div>
+        <button onClick={()=>go("right")} style={{width:64,height:64,borderRadius:32,background:"linear-gradient(135deg,#facc15,#fde047)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,boxShadow:"0 4px 16px #facc1560",color:"#fff"}}>
+          →
+        </button>
+      </div>
+
+      {/* Progress dots */}
+      <div style={{display:"flex",justifyContent:"center",gap:4,marginTop:20,flexWrap:"wrap"}}>
+        {filtered.slice(0,20).map((_,i)=>(
+          <div key={i} onClick={()=>setIdx(i)} style={{width:i===idx?20:6,height:6,borderRadius:3,background:i===idx?KSC[500]:KSC[200],cursor:"pointer",transition:"all .2s"}}/>
+        ))}
+        {filtered.length>20&&<span style={{fontSize:11,color:"#94a3b8",marginLeft:4}}>+{filtered.length-20}</span>}
+      </div>
+    </div>
+  );
+}
+
+// ── Main App ──────────────────────────────────────────────────────────────────
+function KleiderschrankModule({onBack}) {
+  const [items,setItems]=useState([]);
+  const [outfits,setOutfits]=useState([]);
+  const [tab,setTab]=useState("schrank");
+  const [modal,setModal]=useState(null);
+  const [toast,setToast]=useState(null);
+  const [search,setSearch]=useState("");
+  const [filterCat,setFilterCat]=useState("Alle");
+  const [filterFav,setFilterFav]=useState(false);
+
+  const flash=(msg,ok=true)=>{setToast({msg,ok});setTimeout(()=>setToast(null),2800);};
+
+  useEffect(()=>{
+    if(!db)return;
+    const iq=query(ks_col("ks_items"),orderBy("createdAt","desc"));
+    const oq=query(ks_col("ks_outfits"),orderBy("createdAt","desc"));
+    const ui=onSnapshot(iq,s=>setItems(s.docs.map(d=>({id:d.id,...d.data()}))));
+    const uo=onSnapshot(oq,s=>setOutfits(s.docs.map(d=>({id:d.id,...d.data()}))));
+    return()=>{ui();uo();};
+  },[]);
+
+  const saveItem=async(f)=>{
+    try{
+      const id=f.id||uid();
+      await setDoc(doc(ks_col("ks_items"),id),{...f,id,...(!f.id?{createdAt:serverTimestamp()}:{updatedAt:serverTimestamp()})});
+      flash(f.id?"Aktualisiert ✓":"Hinzugefügt ✓");
+    }catch{flash("Fehler",false);}
+    setModal(null);
+  };
+
+  const delItem=async(id)=>{
+    if(!window.confirm("Löschen?"))return;
+    try{await deleteDoc(doc(ks_col("ks_items"),id));flash("Gelöscht",false);}catch{flash("Fehler",false);}
+    setModal(null);
+  };
+
+  const toggleFav=async(item)=>{
+    try{await setDoc(doc(ks_col("ks_items"),item.id),{...item,favorite:!item.favorite,updatedAt:serverTimestamp()});flash(item.favorite?"Aus Favoriten":"Als Favorit gespeichert ❤️");}
+    catch{flash("Fehler",false);}
+    setModal(null);
+  };
+
+  const saveOutfit=async(f)=>{
+    try{
+      const id=f.id||uid();
+      await setDoc(doc(ks_col("ks_outfits"),id),{...f,id,...(!f.id?{createdAt:serverTimestamp()}:{updatedAt:serverTimestamp()})});
+      flash(f.id?"Outfit aktualisiert ✓":"Outfit gespeichert ✓");
+    }catch{flash("Fehler",false);}
+    setModal(null);
+  };
+
+  const delOutfit=async(id)=>{
+    if(!window.confirm("Outfit löschen?"))return;
+    try{await deleteDoc(doc(ks_col("ks_outfits"),id));flash("Gelöscht",false);}catch{flash("Fehler",false);}
+    setModal(null);
+  };
+
+  const filtered=useMemo(()=>{
+    let r=items;
+    if(filterCat!=="Alle")r=r.filter(i=>i.kategorie===filterCat);
+    if(filterFav)r=r.filter(i=>i.favorite);
+    if(search.trim())r=r.filter(i=>i.name.toLowerCase().includes(search.toLowerCase())||(i.marke||"").toLowerCase().includes(search.toLowerCase()));
+    return r;
+  },[items,filterCat,filterFav,search]);
+
+  // Group by category for schrank view
+  const byCat=useMemo(()=>{
+    const g={};
+    filtered.forEach(i=>{
+      if(!g[i.kategorie])g[i.kategorie]=[];
+      g[i.kategorie].push(i);
+    });
+    return g;
+  },[filtered]);
+
+  const totalBycat=useMemo(()=>{
+    const g={};
+    items.forEach(i=>{g[i.kategorie]=(g[i.kategorie]||0)+1;});
+    return g;
+  },[items]);
+
+  return (
+    <div style={{minHeight:"100vh",background:"#fffbeb"}}>
+      {/* Header */}
+      <header style={{background:`linear-gradient(135deg,${KSC[800]},#facc15)`,position:"sticky",top:0,zIndex:50,boxShadow:`0 4px 24px ${KSC[900]}50`}}>
+        <div style={{maxWidth:960,margin:"0 auto",padding:"0 16px",display:"flex",alignItems:"center",height:56,gap:12}}>
+          <button onClick={onBack} style={{width:36,height:36,borderRadius:12,background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",flexShrink:0}}><Ic n="home" s={16}/></button>
+          <span style={{fontSize:24}}>👗</span>
+          <div style={{flex:1}}>
+            <div style={{fontWeight:900,fontSize:16,color:"#fff"}}>Lorena's Kleiderschrank</div>
+            <div className="hdr-sub" style={{fontSize:10,color:"rgba(255,255,255,0.65)",fontWeight:700,letterSpacing:.6}}>{items.length} TEILE · {outfits.length} OUTFITS</div>
+          </div>
+          <button onClick={()=>setModal({type:"add"})} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 13px",background:"rgba(255,255,255,0.2)",border:"1px solid rgba(255,255,255,0.35)",borderRadius:20,color:"#fff",fontSize:13,fontWeight:800,cursor:"pointer"}}>
+            <Ic n="plus" s={14}/>Neu
+          </button>
+        </div>
+      </header>
+
+      {/* Nav */}
+      <nav style={{background:"#fff",borderBottom:`1px solid ${KSC[100]}`,position:"sticky",top:56,zIndex:40}}>
+        <div style={{maxWidth:960,margin:"0 auto",padding:"0 4px",display:"flex"}}>
+          {[["schrank","Schrank","grid"],["outfits","Outfits","star"],["swipen","Swipen","swap"]].map(([id,lb,ic])=>(
+            <button key={id} onClick={()=>setTab(id)} className="nav-btn" style={{display:"flex",alignItems:"center",gap:5,padding:"12px 16px",background:"none",border:"none",cursor:"pointer",fontSize:13,fontWeight:700,color:tab===id?KSC[700]:"#94a3b8",borderBottom:`2.5px solid ${tab===id?KSC[500]:"transparent"}`,flex:1,justifyContent:"center"}}>
+              <Ic n={ic} s={15}/><span className="nav-label">{lb}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      <main className="main-pad" style={{maxWidth:960,margin:"0 auto",padding:"20px 16px 80px"}}>
+
+        {/* SCHRANK TAB */}
+        {tab==="schrank"&&<div style={{animation:"fadein .3s ease"}}>
+          {/* Stats row */}
+          <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:8,marginBottom:16,scrollbarWidth:"none"}}>
+            {KS_CATS.filter(c=>c!=="Alle").map(c=>(
+              <div key={c} onClick={()=>setFilterCat(filterCat===c?"Alle":c)}
+                style={{flexShrink:0,background:filterCat===c?`linear-gradient(135deg,${KSC[700]},#facc15)`:"#fff",border:`1px solid ${filterCat===c?KSC[500]:KSC[200]}`,borderRadius:14,padding:"8px 12px",cursor:"pointer",textAlign:"center",minWidth:72}}>
+                <div style={{fontSize:20,marginBottom:2}}>{KS_ICONS[c]}</div>
+                <div style={{fontSize:10,fontWeight:700,color:filterCat===c?"#fff":KSC[700],whiteSpace:"nowrap"}}>{c.split("/")[0]}</div>
+                <div style={{fontSize:12,fontWeight:900,color:filterCat===c?"#fff":KSC[600]}}>{totalBycat[c]||0}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Search + Fav filter */}
+          <div style={{display:"flex",gap:8,marginBottom:16,alignItems:"center"}}>
+            <div style={{flex:1,position:"relative"}}>
+              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Suchen nach Name oder Marke…" style={{...ks_inp,paddingLeft:12}}/>
+            </div>
+            <button onClick={()=>setFilterFav(x=>!x)} style={{padding:"10px 14px",borderRadius:12,border:`2px solid ${filterFav?"#ef4444":KSC[200]}`,background:filterFav?"#fff5f5":"#fff",color:filterFav?"#ef4444":KSC[600],cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontWeight:700,fontSize:13,flexShrink:0}}>
+              <Ic n={filterFav?"heartFill":"heart"} s={15}/>
+            </button>
+          </div>
+
+          {filtered.length===0&&(
+            <div style={{textAlign:"center",padding:60,background:"#fff",borderRadius:20,border:`2px dashed ${KSC[200]}`}}>
+              <div style={{fontSize:48,marginBottom:12}}>👗</div>
+              <div style={{fontWeight:800,fontSize:16,color:KSC[800],marginBottom:6}}>Noch nichts im Schrank</div>
+              <p style={{color:"#94a3b8",fontSize:13,marginBottom:16}}>Füge dein erstes Kleidungsstück hinzu</p>
+              <button onClick={()=>setModal({type:"add"})} style={{padding:"11px 22px",background:`linear-gradient(135deg,${KSC[700]},${KSC[500]})`,color:"#fff",border:"none",borderRadius:14,fontSize:14,fontWeight:800,cursor:"pointer"}}>+ Hinzufügen</button>
+            </div>
+          )}
+
+          {/* Grouped by category */}
+          {Object.entries(byCat).map(([cat,catItems])=>(
+            <div key={cat} style={{marginBottom:24}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+                <span style={{fontSize:20}}>{KS_ICONS[cat]||"👗"}</span>
+                <span style={{fontWeight:900,fontSize:16,color:KSC[800]}}>{cat}</span>
+                <span style={{fontSize:12,color:"#94a3b8",fontWeight:600}}>({catItems.length})</span>
+              </div>
+              <div className="grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>
+                {catItems.map(item=>(
+                  <KleidungCard key={item.id} item={item}
+                    onClick={()=>setModal({type:"detail",item})}
+                    onFav={()=>toggleFav(item)}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>}
+
+        {/* OUTFITS TAB */}
+        {tab==="outfits"&&<div style={{animation:"fadein .3s ease"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+            <div>
+              <h2 style={{fontSize:20,fontWeight:900,color:KSC[900]}}>Meine Outfits</h2>
+              <div style={{fontSize:13,color:"#94a3b8"}}>{outfits.length} gespeicherte Outfits</div>
+            </div>
+            <button onClick={()=>setModal({type:"outfit"})} style={{display:"flex",alignItems:"center",gap:5,padding:"10px 16px",background:`linear-gradient(135deg,${KSC[700]},${KSC[500]})`,color:"#fff",border:"none",borderRadius:12,fontSize:13,fontWeight:800,cursor:"pointer"}}>
+              <Ic n="plus" s={14}/>Neu
+            </button>
+          </div>
+
+          {outfits.length===0&&(
+            <div style={{textAlign:"center",padding:60,background:"#fff",borderRadius:20,border:`2px dashed ${KSC[200]}`}}>
+              <div style={{fontSize:48,marginBottom:12}}>✨</div>
+              <div style={{fontWeight:800,fontSize:16,color:KSC[800],marginBottom:6}}>Noch kein Outfit</div>
+              <p style={{color:"#94a3b8",fontSize:13,marginBottom:16}}>Kombiniere Teile aus deinem Schrank</p>
+              <button onClick={()=>setModal({type:"outfit"})} style={{padding:"11px 22px",background:`linear-gradient(135deg,${KSC[700]},${KSC[500]})`,color:"#fff",border:"none",borderRadius:14,fontSize:14,fontWeight:800,cursor:"pointer"}}>+ Outfit erstellen</button>
+            </div>
+          )}
+
+          <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:14}}>
+            {outfits.map(outfit=>(
+              <OutfitCard key={outfit.id} outfit={outfit} allItems={items}
+                onClick={()=>setModal({type:"outfit",outfit})}
+              />
+            ))}
+          </div>
+        </div>}
+
+        {/* SWIPE TAB */}
+        {tab==="swipen"&&<div style={{animation:"fadein .3s ease"}}>
+          <div style={{textAlign:"center",marginBottom:20}}>
+            <h2 style={{fontSize:20,fontWeight:900,color:KSC[900],marginBottom:4}}>Schrank durchblättern</h2>
+            <p style={{fontSize:13,color:"#94a3b8"}}>Navigiere durch deine Kleider wie eine Diashow</p>
+          </div>
+          <SwipeView items={items}/>
+        </div>}
+
+      </main>
+
+      {/* Modals */}
+      {modal?.type==="add"&&<KleidungModal onSave={saveItem} onClose={()=>setModal(null)} onDel={delItem}/>}
+      {modal?.type==="edit"&&<KleidungModal item={modal.item} onSave={saveItem} onClose={()=>setModal(null)} onDel={delItem}/>}
+      {modal?.type==="detail"&&<DetailModal item={modal.item} onClose={()=>setModal(null)} onEdit={()=>setModal({type:"edit",item:modal.item})} onFav={toggleFav}/>}
+      {modal?.type==="outfit"&&<OutfitModal outfit={modal.outfit||null} allItems={items} onSave={saveOutfit} onClose={()=>setModal(null)} onDel={delOutfit}/>}
+
+      {toast&&<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:toast.ok?KSC[800]:"#7f1d1d",color:"#fff",padding:"11px 22px",borderRadius:30,fontSize:13,fontWeight:700,boxShadow:"0 4px 24px rgba(0,0,0,.2)",zIndex:9999,whiteSpace:"nowrap",animation:"fadein .2s ease"}}>{toast.msg}</div>}
+    </div>
+  );
+}
 function App() {
   const [unlocked,setUnlocked]=useState(!!localStorage.getItem(STORAGE_KEY));
   const [splash,setSplash]=useState(true);
-  const [module,setModule]=useState(null); // null=home, "prowin", "zumba"
+  const [module,setModule]=useState(null); // null=home, "prowin", "zumba", "flohmarkt"
   const [syncing,setSyncing]=useState(false);
   const [toast,setToast]=useState(null);
 
   // Aggregated stats for home screen
   const [prowinStats,setProwinStats]=useState({products:0,revenue:0,out:0});
   const [zumbaStats,setZumbaStats]=useState({members:0,income:0,classes:0});
+  const [flohmarktStats,setFlohmarktStats]=useState({artikel:0,verkauft:0,einnahmen:0});
+  const [kleiderschrankStats,setKleiderschrankStats]=useState({teile:0,outfits:0});
 
   const col=(sub)=>collection(db,"users",USER_ID,sub);
   const flash=(msg,ok=true)=>{setToast({msg,ok});setTimeout(()=>setToast(null),2800);};
@@ -2148,7 +3539,19 @@ function App() {
     const uc=onSnapshot(cq,s=>{
       setZumbaStats(x=>({...x,classes:s.docs.length}));
     });
-    return()=>{up();us();um();ui();uc();};
+    // Flohmarkt stats
+    const fiq=query(col("flohmarkt_items"),orderBy("createdAt","desc"));
+    const ufi=onSnapshot(fiq,s=>{
+      const its=s.docs.map(d=>d.data());
+      const sold=its.filter(i=>i.status==="verkauft");
+      setFlohmarktStats({artikel:its.length,verkauft:sold.length,einnahmen:sold.reduce((a,b)=>a+(b.verkaufspreis||0),0)});
+    });
+    // Kleiderschrank stats
+    const ksq=query(col("ks_items"),orderBy("createdAt","desc"));
+    const koq=query(col("ks_outfits"),orderBy("createdAt","desc"));
+    const uks=onSnapshot(ksq,s=>setKleiderschrankStats(x=>({...x,teile:s.docs.length})));
+    const uko=onSnapshot(koq,s=>setKleiderschrankStats(x=>({...x,outfits:s.docs.length})));
+    return()=>{up();us();um();ui();uc();ufi();uks();uko();};
   },[unlocked]);
 
   if(splash) return <SplashScreen onDone={()=>setSplash(false)}/>;
@@ -2167,7 +3570,7 @@ function App() {
       )}
 
       {module===null&&(
-        <HomeScreen onSelect={setModule} prowinStats={prowinStats} zumbaStats={zumbaStats}/>
+        <HomeScreen onSelect={setModule} prowinStats={prowinStats} zumbaStats={zumbaStats} flohmarktStats={flohmarktStats} kleiderschrankStats={kleiderschrankStats}/>
       )}
 
       {module==="prowin"&&(
@@ -2176,6 +3579,14 @@ function App() {
 
       {module==="zumba"&&(
         <ZumbaModule col={col} flash={flash} syncing={syncing} setSyncing={setSyncing} onBack={()=>setModule(null)}/>
+      )}
+
+      {module==="flohmarkt"&&(
+        <FlohmarktModule onBack={()=>setModule(null)}/>
+      )}
+
+      {module==="kleiderschrank"&&(
+        <KleiderschrankModule onBack={()=>setModule(null)}/>
       )}
 
       {toast&&<div style={{position:"fixed",bottom:"calc(24px + env(safe-area-inset-bottom,0px))",left:"50%",transform:"translateX(-50%)",background:toast.ok?B[800]:"#7f1d1d",color:"#fff",padding:"11px 22px",borderRadius:30,fontSize:13,fontWeight:700,boxShadow:"0 4px 24px rgba(0,0,0,.2)",zIndex:9999,whiteSpace:"nowrap",animation:"fadein .2s ease"}}>{toast.msg}</div>}
