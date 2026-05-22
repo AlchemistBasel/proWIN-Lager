@@ -508,6 +508,27 @@ const CAT_STYLE = {
 
 const uid  = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
 const chf  = (n) => `CHF ${(+n||0).toFixed(2)}`;
+
+// Compress image to max 800px and ~200KB before storing
+const compressImage = (file, maxPx=800, quality=0.75) => new Promise((resolve)=>{
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      let w = img.width, h = img.height;
+      if(w > maxPx || h > maxPx) {
+        if(w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
+        else { w = Math.round(w * maxPx / h); h = maxPx; }
+      }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL("image/jpeg", quality));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+});
 const ini  = (s) => (s||"?").slice(0,2).toUpperCase();
 const dateStr = (d) => d ? new Date(d).toLocaleDateString("de-CH",{day:"2-digit",month:"short",year:"numeric"}) : "–";
 const today = () => new Date().toISOString().slice(0,10);
@@ -881,7 +902,7 @@ function ProdModal({product,onSave,onClose,onDel}) {
               }
               <label style={{flex:1,display:"flex",alignItems:"center",gap:8,padding:"11px 14px",background:B[50],border:`1.5px dashed ${B[300]}`,borderRadius:12,cursor:"pointer",fontSize:13,fontWeight:700,color:B[600]}}>
                 <Ic n="dl" s={16}/>{f.image&&!imgErr?"Foto ändern":"Foto hochladen"}
-                <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{s("image",ev.target.result);setImgErr(false);};r.readAsDataURL(file);}}/>
+                <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files[0];if(!file)return;compressImage(file).then(compressed=>{s("image",compressed);setImgErr(false);});}}/>
               </label>
               {f.image&&<button type="button" onClick={()=>{s("image","");setImgErr(false);}} style={{width:34,height:34,borderRadius:8,background:"#fff5f5",border:"1px solid #fecaca",color:"#dc2626",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Ic n="x" s={14}/></button>}
             </div>
@@ -2285,7 +2306,7 @@ function ItemModal({item,flohmärkte,onSave,onClose,onDel,cats,onAddCat}) {
               }
               <label style={{flex:1,display:"flex",alignItems:"center",gap:8,padding:"11px 14px",background:FM_A[50],border:"1.5px dashed "+FM_A[400],borderRadius:12,cursor:"pointer",fontSize:13,fontWeight:700,color:FM_A[700]}}>
                 <Ic n="img" s={16}/>{f.image&&!imgErr?"Foto aendern":"Foto hochladen"}
-                <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{s("image",ev.target.result);setImgErr(false);};r.readAsDataURL(file);}}/>
+                <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files[0];if(!file)return;compressImage(file).then(compressed=>{s("image",compressed);setImgErr(false);});}}/>
               </label>
               {f.image&&<button type="button" onClick={()=>{s("image","");setImgErr(false);}} style={{width:34,height:34,borderRadius:8,background:"#fff5f5",border:"1px solid #fecaca",color:"#dc2626",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Ic n="x" s={14}/></button>}
             </div>
@@ -3030,7 +3051,7 @@ function KleidungModal({item,onSave,onClose,onDel}) {
               </div>
               <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{
                 const file=e.target.files[0];if(!file)return;
-                const r=new FileReader();r.onload=ev=>{s("image",ev.target.result);setImgErr(false);};r.readAsDataURL(file);
+                compressImage(file).then(compressed=>{s("image",compressed);setImgErr(false);});
               }}/>
             </label>
           </div>
