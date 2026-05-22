@@ -23,6 +23,7 @@
     @keyframes logoIn{from{opacity:0;transform:scale(0.7) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
     @keyframes textIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     @keyframes shimmer{0%,100%{opacity:0.6}50%{opacity:1}}
+    .ks-grid-card:hover img{transform:scale(1.06)!important}
     @keyframes ringPulse{0%{transform:scale(1);opacity:0.4}100%{transform:scale(1.6);opacity:0}}
     .spinner{width:28px;height:28px;border:3px solid #bfdbfe;border-top:3px solid #3b82f6;border-radius:50%;animation:spin 1s linear infinite;margin:16px auto 0}
     @media(max-width:600px){
@@ -3005,30 +3006,36 @@ const KS_ICONS={"Kleider":"👗","T-Shirts & Tops":"👕","Blusen & Hemden":"�
 
 // uid already defined
 const ks_col=(sub)=>collection(db,"users",USER_ID,sub);
-const ks_inp={width:"100%",padding:"10px 12px",border:`1px solid ${KSC[200]}`,borderRadius:10,fontSize:14,background:"#f8faff",color:"#1e3a8a"};
+const ks_inp={width:"100%",padding:"10px 12px",border:"1px solid rgba(255,255,255,0.1)",borderRadius:8,fontSize:14,background:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.85)"};
 //const ks_uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
 
 
 function KleidungCard({item,onClick,onFav}) {
   const [err,setErr]=useState(false);
+  const [hov,setHov]=useState(false);
   return (
-    <div onClick={onClick} style={{background:"#fff",borderRadius:18,overflow:"hidden",cursor:"pointer",border:`1px solid ${KSC[100]}`,boxShadow:"0 2px 12px rgba(0,0,0,0.06)",transition:"transform .15s",position:"relative"}}
-      onMouseEnter={e=>e.currentTarget.style.transform="translateY(-3px)"}
-      onMouseLeave={e=>e.currentTarget.style.transform=""}>
+    <div onClick={onClick}
+      onMouseEnter={()=>setHov(true)}
+      onMouseLeave={()=>setHov(false)}
+      style={{background:"#16162a",borderRadius:4,overflow:"hidden",cursor:"pointer",border:"1px solid rgba(255,255,255,0.08)",boxShadow:hov?"0 8px 32px rgba(0,0,0,0.5)":"0 2px 8px rgba(0,0,0,0.3)",transition:"all .2s",position:"relative",transform:hov?"translateY(-4px)":""}}>
       {/* Image area */}
-      <div style={{background:`linear-gradient(145deg,${KSC[50]},${KSC[100]})`,height:160,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
+      <div style={{background:"#0f0f1e",height:170,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
         {item.image&&!err
-          ?<img src={item.image} alt={item.name} onError={()=>setErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}}/>
-          :<span style={{fontSize:48}}>{KS_ICONS[item.kategorie]||"👗"}</span>
+          ?<img src={item.image} alt={item.name} onError={()=>setErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:8,transform:hov?"scale(1.06)":"scale(1)",transition:"transform .3s"}}/>
+          :<span style={{fontSize:52,opacity:.6}}>{KS_ICONS[item.kategorie]||"👗"}</span>
         }
-        {item.favorite&&<div style={{position:"absolute",top:8,right:8,color:"#ef4444",filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.2))"}}><Ic n="heartFill" s={16}/></div>}
+        {item.favorite&&<div style={{position:"absolute",top:8,right:8,color:"#f472b6",filter:"drop-shadow(0 0 6px #f472b680)"}}><Ic n="heartFill" s={15}/></div>}
+        {item.marke&&<div style={{position:"absolute",bottom:8,left:8,background:"rgba(0,0,0,0.65)",color:"rgba(255,255,255,0.75)",fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:3,letterSpacing:.5,textTransform:"uppercase"}}>{item.marke}</div>}
       </div>
       {/* Info */}
-      <div style={{padding:"10px 12px"}}>
-        <div style={{fontWeight:800,fontSize:13,color:KSC[900],marginBottom:2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{item.name}</div>
-        <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
-          {item.farbe&&item.farbe!=="–"&&<span style={{fontSize:10,fontWeight:700,background:KSC[100],color:KSC[700],padding:"1px 6px",borderRadius:8}}>{item.farbe}</span>}
-          {item.marke&&<span style={{fontSize:10,fontWeight:700,background:"#f1f5f9",color:"#64748b",padding:"1px 6px",borderRadius:8}}>{item.marke}</span>}
+      <div style={{padding:"10px 11px 11px"}}>
+        <div style={{fontWeight:700,fontSize:12,color:"rgba(255,255,255,0.9)",marginBottom:5,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",letterSpacing:.2}}>{item.name}</div>
+        <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
+          {item.farbe&&item.farbe!=="–"&&<span style={{display:"inline-flex",alignItems:"center",gap:3,fontSize:10,fontWeight:600,color:"rgba(255,255,255,0.4)",letterSpacing:.3}}>
+            <span style={{width:5,height:5,borderRadius:"50%",background:"#a78bfa",display:"inline-block"}}/>
+            {item.farbe}
+          </span>}
+          {item.groesse&&<span style={{fontSize:10,color:"rgba(255,255,255,0.28)",fontWeight:600}}>Gr. {item.groesse}</span>}
         </div>
       </div>
     </div>
@@ -3044,7 +3051,7 @@ function KleidungModal({item,onSave,onClose,onDel}) {
   const submit=(e)=>{e.preventDefault();if(!f.name.trim())return;onSave(f);};
   return (
     <Drawer onClose={onClose}>
-      <h3 style={{margin:"0 0 16px",fontSize:18,fontWeight:900,color:KSC[800]}}>{isEdit?"Bearbeiten":"Neues Teil hinzufügen"}</h3>
+      <h3 style={{margin:"0 0 16px",fontSize:17,fontWeight:800,color:"#1e1e3a",letterSpacing:.2}}>{isEdit?"Bearbeiten":"Neues Teil hinzufügen"}</h3>
       <form onSubmit={submit}>
         <div style={{display:"flex",flexDirection:"column",gap:11}}>
           <Lbl t="Foto">
@@ -3183,23 +3190,23 @@ function OutfitModal({outfit,allItems,onSave,onClose,onDel}) {
 function OutfitCard({outfit,allItems,onClick}) {
   const items=allItems.filter(i=>outfit.itemIds.includes(i.id)).slice(0,4);
   return (
-    <div onClick={onClick} style={{background:"#fff",borderRadius:18,padding:16,border:`1px solid ${KSC[100]}`,cursor:"pointer",boxShadow:"0 2px 12px rgba(0,0,0,0.06)",transition:"transform .15s"}}
+    <div onClick={onClick} style={{background:"#16162a",borderRadius:6,padding:14,border:"1px solid rgba(255,255,255,0.08)",cursor:"pointer",boxShadow:"0 2px 12px rgba(0,0,0,0.3)",transition:"all .15s"}}
       onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"}
       onMouseLeave={e=>e.currentTarget.style.transform=""}>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10,height:120}}>
         {items.map((item,i)=>{
           return (
-            <div key={item.id} style={{borderRadius:10,background:KSC[50],display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+            <div key={item.id} style={{borderRadius:4,background:"#0f0f1e",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
               {item.image?<img src={item.image} alt="" style={{width:"100%",height:"100%",objectFit:"contain",padding:4}}/>:<span style={{fontSize:28}}>{KS_ICONS[item.kategorie]||"👗"}</span>}
             </div>
           );
         })}
         {items.length<4&&Array(4-items.length).fill(0).map((_,i)=>(
-          <div key={i} style={{borderRadius:10,background:"#f8faff",border:"2px dashed #e2e8f0"}}/>
+          <div key={i} style={{borderRadius:4,background:"#0a0a18",border:"1px dashed rgba(255,255,255,0.08)"}}/>
         ))}
       </div>
-      <div style={{fontWeight:800,fontSize:14,color:KSC[900],marginBottom:4}}>{outfit.name}</div>
-      <div style={{fontSize:12,color:"#94a3b8"}}>{outfit.itemIds.length} Teile</div>
+      <div style={{fontWeight:700,fontSize:13,color:"rgba(255,255,255,0.85)",marginBottom:4,letterSpacing:.2}}>{outfit.name}</div>
+      <div style={{fontSize:11,color:"rgba(255,255,255,0.3)"}}>{outfit.itemIds.length} Teile</div>
     </div>
   );
 }
@@ -3237,33 +3244,33 @@ function SwipeView({items}) {
       {/* Category filter */}
       <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:20,scrollbarWidth:"none"}}>
         {KS_CATS.map(c=>(
-          <button key={c} onClick={()=>{setFilterCat(c);setIdx(0);}} style={{flexShrink:0,padding:"6px 14px",borderRadius:20,border:`2px solid ${filterCat===c?KSC[500]:KSC[200]}`,background:filterCat===c?KSC[500]:"#fff",color:filterCat===c?"#fff":KSC[700],fontSize:12,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
+          <button key={c} onClick={()=>{setFilterCat(c);setIdx(0);}} style={{flexShrink:0,padding:"5px 12px",borderRadius:4,border:`1px solid ${filterCat===c?"rgba(167,139,250,0.6)":"rgba(255,255,255,0.08)"}`,background:filterCat===c?"rgba(167,139,250,0.15)":"rgba(255,255,255,0.04)",color:filterCat===c?"#c4b5fd":"rgba(255,255,255,0.4)",fontSize:11,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
             {KS_ICONS[c]} {c}
           </button>
         ))}
       </div>
 
       {/* Counter */}
-      <div style={{textAlign:"center",fontSize:13,color:"#94a3b8",fontWeight:600,marginBottom:16}}>
+      <div style={{textAlign:"center",fontSize:12,color:"rgba(255,255,255,0.3)",fontWeight:600,marginBottom:16}}>
         {idx+1} / {filtered.length}
-        <button onClick={reset} style={{marginLeft:8,fontSize:11,color:KSC[600],background:"none",border:"none",cursor:"pointer",fontWeight:700}}>↺ Neustart</button>
+        <button onClick={reset} style={{marginLeft:8,fontSize:11,color:"rgba(167,139,250,0.7)",background:"none",border:"none",cursor:"pointer",fontWeight:700}}>↺ Neustart</button>
       </div>
 
       {/* Swipe card */}
       <div style={{display:"flex",justifyContent:"center",marginBottom:24}}>
         <div className={anim==="left"?"swipe-left":anim==="right"?"swipe-right":""}
-          style={{width:280,borderRadius:28,background:"#fff",boxShadow:"0 12px 40px rgba(0,0,0,0.12)",overflow:"hidden",animation:!anim?"popIn .3s ease":undefined}}>
-          <div style={{height:340,background:`linear-gradient(145deg,${KSC[50]},${KSC[100]})`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
+          style={{width:280,borderRadius:8,background:"#16162a",boxShadow:"0 16px 48px rgba(0,0,0,0.6)",overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)",animation:!anim?"popIn .3s ease":undefined}}>
+          <div style={{height:340,background:"#0f0f1e",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
             {current.image&&!err
               ?<img src={current.image} alt={current.name} onError={()=>setErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:20}}/>
               :<span style={{fontSize:80}}>{KS_ICONS[current.kategorie]||"👗"}</span>
             }
-            {current.favorite&&<div style={{position:"absolute",top:16,right:16,color:"#ef4444"}}><Ic n="heartFill" s={22}/></div>}
+            {current.favorite&&<div style={{position:"absolute",top:16,right:16,color:"#f472b6",filter:"drop-shadow(0 0 8px #f472b680)"}}><Ic n="heartFill" s={22}/></div>}
           </div>
           <div style={{padding:"16px 20px 20px"}}>
-            <div style={{fontWeight:900,fontSize:18,color:KSC[900],marginBottom:6}}>{current.name}</div>
+            <div style={{fontWeight:700,fontSize:16,color:"rgba(255,255,255,0.9)",marginBottom:6,letterSpacing:.2}}>{current.name}</div>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-              <span style={{fontSize:11,fontWeight:700,background:KSC[100],color:KSC[700],padding:"2px 8px",borderRadius:10}}>{current.kategorie}</span>
+              <span style={{fontSize:10,fontWeight:600,background:"rgba(167,139,250,0.15)",color:"#c4b5fd",padding:"2px 8px",borderRadius:3,letterSpacing:.3}}>{current.kategorie}</span>
               {current.farbe&&current.farbe!=="–"&&<span style={{fontSize:11,fontWeight:700,background:"#f1f5f9",color:"#64748b",padding:"2px 8px",borderRadius:10}}>{current.farbe}</span>}
               {current.marke&&<span style={{fontSize:11,fontWeight:700,background:"#f8faff",color:"#475569",padding:"2px 8px",borderRadius:10}}>{current.marke}</span>}
               {current.groesse&&<span style={{fontSize:11,fontWeight:700,background:KSC[50],color:KSC[600],padding:"2px 8px",borderRadius:10}}>Gr. {current.groesse}</span>}
@@ -3275,13 +3282,13 @@ function SwipeView({items}) {
 
       {/* Navigation buttons */}
       <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:20}}>
-        <button onClick={()=>go("left")} style={{width:64,height:64,borderRadius:32,background:"#fff",border:`2px solid ${KSC[200]}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,boxShadow:"0 4px 16px rgba(0,0,0,0.08)",color:KSC[600]}}>
+        <button onClick={()=>go("left")} style={{width:56,height:56,borderRadius:4,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,color:"rgba(255,255,255,0.5)"}}>
           ←
         </button>
-        <div style={{fontSize:13,color:"#94a3b8",fontWeight:600,textAlign:"center",lineHeight:1.4}}>
+        <div style={{fontSize:12,color:"rgba(255,255,255,0.25)",fontWeight:600,textAlign:"center",lineHeight:1.4}}>
           Wische oder klicke<br/>um zu navigieren
         </div>
-        <button onClick={()=>go("right")} style={{width:64,height:64,borderRadius:32,background:"linear-gradient(135deg,#facc15,#fde047)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,boxShadow:"0 4px 16px #facc1560",color:"#fff"}}>
+        <button onClick={()=>go("right")} style={{width:56,height:56,borderRadius:4,background:"linear-gradient(135deg,#7c3aed,#a78bfa)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,color:"#fff",boxShadow:"0 4px 20px rgba(124,58,237,0.4)"}}>
           →
         </button>
       </div>
@@ -3289,7 +3296,7 @@ function SwipeView({items}) {
       {/* Progress dots */}
       <div style={{display:"flex",justifyContent:"center",gap:4,marginTop:20,flexWrap:"wrap"}}>
         {filtered.slice(0,20).map((_,i)=>(
-          <div key={i} onClick={()=>setIdx(i)} style={{width:i===idx?20:6,height:6,borderRadius:3,background:i===idx?KSC[500]:KSC[200],cursor:"pointer",transition:"all .2s"}}/>
+          <div key={i} onClick={()=>setIdx(i)} style={{width:i===idx?20:6,height:6,borderRadius:3,background:i===idx?"#a78bfa":"rgba(255,255,255,0.12)",cursor:"pointer",transition:"all .2s"}}/>
         ))}
         {filtered.length>20&&<span style={{fontSize:11,color:"#94a3b8",marginLeft:4}}>+{filtered.length-20}</span>}
       </div>
@@ -3380,34 +3387,34 @@ function KleiderschrankModule({onBack}) {
   },[items]);
 
   return (
-    <div style={{minHeight:"100vh",background:"#fffbeb"}}>
+    <div style={{minHeight:"100vh",background:"#0d0d1a"}}>
       {/* Header */}
-      <header style={{background:`linear-gradient(135deg,${KSC[800]},#facc15)`,position:"sticky",top:0,zIndex:50,boxShadow:`0 4px 24px ${KSC[900]}50`}}>
+      <header style={{background:"linear-gradient(135deg,#0d0d1a,#1a1a2e)",position:"sticky",top:0,zIndex:50,boxShadow:"0 1px 0 rgba(255,255,255,0.07)",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
         <div style={{maxWidth:960,margin:"0 auto",padding:"0 16px",display:"flex",alignItems:"center",height:56,gap:12}}>
           <button onClick={onBack} style={{width:36,height:36,borderRadius:12,background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",flexShrink:0}}><Ic n="home" s={16}/></button>
           <span style={{fontSize:24}}>👗</span>
           <div style={{flex:1}}>
             <div style={{fontWeight:900,fontSize:16,color:"#fff"}}>Lorena's Kleiderschrank</div>
-            <div className="hdr-sub" style={{fontSize:10,color:"rgba(255,255,255,0.65)",fontWeight:700,letterSpacing:.6}}>{items.length} TEILE · {outfits.length} OUTFITS</div>
+            <div className="hdr-sub" style={{fontSize:10,color:"rgba(255,255,255,0.4)",fontWeight:600,letterSpacing:1.2}}>{items.length} TEILE · {outfits.length} OUTFITS</div>
           </div>
-          <button onClick={()=>setModal({type:"add"})} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 13px",background:"rgba(255,255,255,0.2)",border:"1px solid rgba(255,255,255,0.35)",borderRadius:20,color:"#fff",fontSize:13,fontWeight:800,cursor:"pointer"}}>
+          <button onClick={()=>setModal({type:"add"})} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 15px",background:"linear-gradient(135deg,#7c3aed,#a78bfa)",border:"none",borderRadius:6,color:"#fff",fontSize:12,fontWeight:800,cursor:"pointer",letterSpacing:.4}}>
             <Ic n="plus" s={14}/>Neu
           </button>
         </div>
       </header>
 
       {/* Nav */}
-      <nav style={{background:"#fff",borderBottom:`1px solid ${KSC[100]}`,position:"sticky",top:56,zIndex:40}}>
+      <nav style={{background:"#12122a",borderBottom:"1px solid rgba(255,255,255,0.07)",position:"sticky",top:56,zIndex:40}}>
         <div style={{maxWidth:960,margin:"0 auto",padding:"0 4px",display:"flex"}}>
           {[["schrank","Schrank","grid"],["outfits","Outfits","star"],["swipen","Swipen","swap"]].map(([id,lb,ic])=>(
-            <button key={id} onClick={()=>setTab(id)} className="nav-btn" style={{display:"flex",alignItems:"center",gap:5,padding:"12px 16px",background:"none",border:"none",cursor:"pointer",fontSize:13,fontWeight:700,color:tab===id?KSC[700]:"#94a3b8",borderBottom:`2.5px solid ${tab===id?KSC[500]:"transparent"}`,flex:1,justifyContent:"center"}}>
+            <button key={id} onClick={()=>setTab(id)} className="nav-btn" style={{display:"flex",alignItems:"center",gap:5,padding:"12px 16px",background:"none",border:"none",cursor:"pointer",fontSize:13,fontWeight:700,color:tab===id?"#a78bfa":"rgba(255,255,255,0.35)",borderBottom:`2.5px solid ${tab===id?"#a78bfa":"transparent"}`,flex:1,justifyContent:"center"}}>
               <Ic n={ic} s={15}/><span className="nav-label">{lb}</span>
             </button>
           ))}
         </div>
       </nav>
 
-      <main className="main-pad" style={{maxWidth:960,margin:"0 auto",padding:"20px 16px 80px"}}>
+      <main className="main-pad" style={{maxWidth:960,margin:"0 auto",padding:"20px 16px 80px",background:"#0d0d1a"}}>
 
         {/* SCHRANK TAB */}
         {tab==="schrank"&&<div style={{animation:"fadein .3s ease"}}>
@@ -3415,10 +3422,10 @@ function KleiderschrankModule({onBack}) {
           <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:8,marginBottom:16,scrollbarWidth:"none"}}>
             {KS_CATS.filter(c=>c!=="Alle").map(c=>(
               <div key={c} onClick={()=>setFilterCat(filterCat===c?"Alle":c)}
-                style={{flexShrink:0,background:filterCat===c?`linear-gradient(135deg,${KSC[700]},#facc15)`:"#fff",border:`1px solid ${filterCat===c?KSC[500]:KSC[200]}`,borderRadius:14,padding:"8px 12px",cursor:"pointer",textAlign:"center",minWidth:72}}>
+                style={{flexShrink:0,background:filterCat===c?"rgba(167,139,250,0.15)":"rgba(255,255,255,0.04)",border:`1px solid ${filterCat===c?"rgba(167,139,250,0.6)":"rgba(255,255,255,0.08)"}`,borderRadius:8,padding:"8px 12px",cursor:"pointer",textAlign:"center",minWidth:72,transition:"all .15s"}}>
                 <div style={{fontSize:20,marginBottom:2}}>{KS_ICONS[c]}</div>
-                <div style={{fontSize:10,fontWeight:700,color:filterCat===c?"#fff":KSC[700],whiteSpace:"nowrap"}}>{c.split("/")[0]}</div>
-                <div style={{fontSize:12,fontWeight:900,color:filterCat===c?"#fff":KSC[600]}}>{totalBycat[c]||0}</div>
+                <div style={{fontSize:10,fontWeight:700,color:filterCat===c?"#c4b5fd":"rgba(255,255,255,0.5)",whiteSpace:"nowrap"}}>{c.split("/")[0]}</div>
+                <div style={{fontSize:12,fontWeight:900,color:filterCat===c?"#a78bfa":"rgba(255,255,255,0.7)"}}>{totalBycat[c]||0}</div>
               </div>
             ))}
           </div>
@@ -3428,17 +3435,17 @@ function KleiderschrankModule({onBack}) {
             <div style={{flex:1,position:"relative"}}>
               <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Suchen nach Name oder Marke…" style={{...ks_inp,paddingLeft:12}}/>
             </div>
-            <button onClick={()=>setFilterFav(x=>!x)} style={{padding:"10px 14px",borderRadius:12,border:`2px solid ${filterFav?"#ef4444":KSC[200]}`,background:filterFav?"#fff5f5":"#fff",color:filterFav?"#ef4444":KSC[600],cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontWeight:700,fontSize:13,flexShrink:0}}>
+            <button onClick={()=>setFilterFav(x=>!x)} style={{padding:"10px 14px",borderRadius:8,border:`2px solid ${filterFav?"#f472b6":"rgba(255,255,255,0.1)"}`,background:filterFav?"rgba(244,114,182,0.1)":"rgba(255,255,255,0.04)",color:filterFav?"#f472b6":"rgba(255,255,255,0.4)",cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontWeight:700,fontSize:13,flexShrink:0}}>
               <Ic n={filterFav?"heartFill":"heart"} s={15}/>
             </button>
           </div>
 
           {filtered.length===0&&(
-            <div style={{textAlign:"center",padding:60,background:"#fff",borderRadius:20,border:`2px dashed ${KSC[200]}`}}>
+            <div style={{textAlign:"center",padding:60,background:"rgba(255,255,255,0.03)",borderRadius:12,border:"2px dashed rgba(255,255,255,0.1)"}}>
               <div style={{fontSize:48,marginBottom:12}}>👗</div>
-              <div style={{fontWeight:800,fontSize:16,color:KSC[800],marginBottom:6}}>Noch nichts im Schrank</div>
+              <div style={{fontWeight:800,fontSize:16,color:"rgba(255,255,255,0.7)",marginBottom:6}}>Noch nichts im Schrank</div>
               <p style={{color:"#94a3b8",fontSize:13,marginBottom:16}}>Füge dein erstes Kleidungsstück hinzu</p>
-              <button onClick={()=>setModal({type:"add"})} style={{padding:"11px 22px",background:`linear-gradient(135deg,${KSC[700]},${KSC[500]})`,color:"#fff",border:"none",borderRadius:14,fontSize:14,fontWeight:800,cursor:"pointer"}}>+ Hinzufügen</button>
+              <button onClick={()=>setModal({type:"add"})} style={{padding:"11px 22px",background:"linear-gradient(135deg,#7c3aed,#a78bfa)",color:"#fff",border:"none",borderRadius:8,fontSize:14,fontWeight:800,cursor:"pointer",letterSpacing:.3}}>+ Hinzufügen</button>
             </div>
           )}
 
@@ -3446,9 +3453,9 @@ function KleiderschrankModule({onBack}) {
           {Object.entries(byCat).map(([cat,catItems])=>(
             <div key={cat} style={{marginBottom:24}}>
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
-                <span style={{fontSize:20}}>{KS_ICONS[cat]||"👗"}</span>
-                <span style={{fontWeight:900,fontSize:16,color:KSC[800]}}>{cat}</span>
-                <span style={{fontSize:12,color:"#94a3b8",fontWeight:600}}>({catItems.length})</span>
+                <span style={{fontSize:18}}>{KS_ICONS[cat]||"👗"}</span>
+                <span style={{fontWeight:800,fontSize:13,color:"rgba(255,255,255,0.7)",letterSpacing:1.2,textTransform:"uppercase"}}>{cat}</span>
+                <span style={{fontSize:11,color:"rgba(255,255,255,0.25)",fontWeight:600}}>({catItems.length})</span>
               </div>
               <div className="grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>
                 {catItems.map(item=>(
@@ -3466,18 +3473,18 @@ function KleiderschrankModule({onBack}) {
         {tab==="outfits"&&<div style={{animation:"fadein .3s ease"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
             <div>
-              <h2 style={{fontSize:20,fontWeight:900,color:KSC[900]}}>Meine Outfits</h2>
-              <div style={{fontSize:13,color:"#94a3b8"}}>{outfits.length} gespeicherte Outfits</div>
+              <h2 style={{fontSize:18,fontWeight:800,color:"rgba(255,255,255,0.85)",letterSpacing:.3}}>Meine Outfits</h2>
+              <div style={{fontSize:12,color:"rgba(255,255,255,0.35)"}}>{outfits.length} gespeicherte Outfits</div>
             </div>
-            <button onClick={()=>setModal({type:"outfit"})} style={{display:"flex",alignItems:"center",gap:5,padding:"10px 16px",background:`linear-gradient(135deg,${KSC[700]},${KSC[500]})`,color:"#fff",border:"none",borderRadius:12,fontSize:13,fontWeight:800,cursor:"pointer"}}>
+            <button onClick={()=>setModal({type:"outfit"})} style={{display:"flex",alignItems:"center",gap:5,padding:"10px 16px",background:"linear-gradient(135deg,#7c3aed,#a78bfa)",color:"#fff",border:"none",borderRadius:6,fontSize:12,fontWeight:800,cursor:"pointer",letterSpacing:.4}}>
               <Ic n="plus" s={14}/>Neu
             </button>
           </div>
 
           {outfits.length===0&&(
-            <div style={{textAlign:"center",padding:60,background:"#fff",borderRadius:20,border:`2px dashed ${KSC[200]}`}}>
+            <div style={{textAlign:"center",padding:60,background:"rgba(255,255,255,0.03)",borderRadius:10,border:"2px dashed rgba(255,255,255,0.1)"}}>
               <div style={{fontSize:48,marginBottom:12}}>✨</div>
-              <div style={{fontWeight:800,fontSize:16,color:KSC[800],marginBottom:6}}>Noch kein Outfit</div>
+              <div style={{fontWeight:800,fontSize:16,color:"rgba(255,255,255,0.7)",marginBottom:6}}>Noch kein Outfit</div>
               <p style={{color:"#94a3b8",fontSize:13,marginBottom:16}}>Kombiniere Teile aus deinem Schrank</p>
               <button onClick={()=>setModal({type:"outfit"})} style={{padding:"11px 22px",background:`linear-gradient(135deg,${KSC[700]},${KSC[500]})`,color:"#fff",border:"none",borderRadius:14,fontSize:14,fontWeight:800,cursor:"pointer"}}>+ Outfit erstellen</button>
             </div>
@@ -3495,14 +3502,14 @@ function KleiderschrankModule({onBack}) {
         {/* SWIPE TAB */}
         {tab==="swipen"&&<div style={{animation:"fadein .3s ease"}}>
           <div style={{textAlign:"center",marginBottom:20}}>
-            <h2 style={{fontSize:20,fontWeight:900,color:KSC[900],marginBottom:4}}>Schrank durchblättern</h2>
-            <p style={{fontSize:13,color:"#94a3b8"}}>Navigiere durch deine Kleider wie eine Diashow</p>
+            <h2 style={{fontSize:18,fontWeight:800,color:"rgba(255,255,255,0.85)",marginBottom:4,letterSpacing:.3}}>Schrank durchblättern</h2>
+            <p style={{fontSize:13,color:"rgba(255,255,255,0.35)"}}>Navigiere durch deine Kleider wie eine Diashow</p>
           </div>
           <SwipeView items={items}/>
         </div>}
 
         {/* Reset Schrank */}
-        <div style={{marginTop:32,padding:"16px",background:"#fff5f5",border:"1px solid #fecaca",borderRadius:16,textAlign:"center"}}>
+        <div style={{marginTop:32,padding:"16px",background:"rgba(220,38,38,0.05)",border:"1px solid rgba(220,38,38,0.2)",borderRadius:8,textAlign:"center"}}>
           <div style={{fontWeight:800,fontSize:14,color:"#7f1d1d",marginBottom:6}}>⚠️ Kleiderschrank zurücksetzen</div>
           <p style={{fontSize:12,color:"#94a3b8",marginBottom:12}}>Alle {items.length} Kleider und {outfits.length} Outfits werden unwiderruflich gelöscht</p>
           <button onClick={async()=>{
@@ -3526,7 +3533,7 @@ function KleiderschrankModule({onBack}) {
       {modal?.type==="detail"&&<DetailModal item={modal.item} onClose={()=>setModal(null)} onEdit={()=>setModal({type:"edit",item:modal.item})} onFav={toggleFav}/>}
       {modal?.type==="outfit"&&<OutfitModal outfit={modal.outfit||null} allItems={items} onSave={saveOutfit} onClose={()=>setModal(null)} onDel={delOutfit}/>}
 
-      {toast&&<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:toast.ok?KSC[800]:"#7f1d1d",color:"#fff",padding:"11px 22px",borderRadius:30,fontSize:13,fontWeight:700,boxShadow:"0 4px 24px rgba(0,0,0,.2)",zIndex:9999,whiteSpace:"nowrap",animation:"fadein .2s ease"}}>{toast.msg}</div>}
+      {toast&&<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:toast.ok?"#4c1d95":"#7f1d1d",color:"#fff",padding:"11px 22px",borderRadius:30,fontSize:13,fontWeight:700,boxShadow:"0 4px 24px rgba(0,0,0,.2)",zIndex:9999,whiteSpace:"nowrap",animation:"fadein .2s ease"}}>{toast.msg}</div>}
     </div>
   );
 }
