@@ -8,8 +8,59 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="Lorena's Portal"/>
   <meta name="theme-color" content="#1e3a8a"/>
-  <link rel="manifest" href="manifest.json"/>
+  <link rel="manifest" id="pwa-manifest"/>
+  <link rel="apple-touch-icon" id="pwa-apple-icon"/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <script>
+    // PWA: Icon zur Laufzeit als PNG-Canvas → data-URL erzeugen, dann Manifest verknüpfen
+    (function(){
+      function makeIcon(size){
+        const c=document.createElement("canvas");
+        c.width=size;c.height=size;
+        const ctx=c.getContext("2d");
+        // Gradient-Background
+        const g=ctx.createLinearGradient(0,0,size,size);
+        g.addColorStop(0,"#1e3a8a");
+        g.addColorStop(0.5,"#0891b2");
+        g.addColorStop(1,"#0f766e");
+        ctx.fillStyle=g;
+        // Rundes Rechteck (iOS-Style)
+        const r=size*0.22;
+        ctx.beginPath();
+        ctx.moveTo(r,0);ctx.lineTo(size-r,0);ctx.quadraticCurveTo(size,0,size,r);
+        ctx.lineTo(size,size-r);ctx.quadraticCurveTo(size,size,size-r,size);
+        ctx.lineTo(r,size);ctx.quadraticCurveTo(0,size,0,size-r);
+        ctx.lineTo(0,r);ctx.quadraticCurveTo(0,0,r,0);
+        ctx.closePath();ctx.fill();
+        // "L"
+        ctx.fillStyle="#fff";
+        ctx.font="900 "+(size*0.65)+"px 'Nunito',sans-serif";
+        ctx.textAlign="center";ctx.textBaseline="middle";
+        ctx.fillText("L",size/2,size*0.54);
+        return c.toDataURL("image/png");
+      }
+      const icon192=makeIcon(192);
+      const icon512=makeIcon(512);
+      const icon180=makeIcon(180);
+      const manifest={
+        name:"Lorena's Portal",
+        short_name:"Lorena",
+        description:"proWIN, Zumba, Flohmarkt & Kleiderschrank",
+        start_url:".",
+        display:"standalone",
+        background_color:"#eef3fc",
+        theme_color:"#1e3a8a",
+        orientation:"portrait",
+        icons:[
+          {src:icon192,sizes:"192x192",type:"image/png",purpose:"any maskable"},
+          {src:icon512,sizes:"512x512",type:"image/png",purpose:"any maskable"}
+        ]
+      };
+      const blob=new Blob([JSON.stringify(manifest)],{type:"application/json"});
+      document.getElementById("pwa-manifest").href=URL.createObjectURL(blob);
+      document.getElementById("pwa-apple-icon").href=icon180;
+    })();
+  </script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Nunito','Segoe UI',sans-serif;background:#eef3fc;min-height:100vh;-webkit-tap-highlight-color:transparent}
@@ -31,7 +82,7 @@
       .nav-btn{padding:10px 4px!important;flex:1;justify-content:center!important}
       .main-pad{padding:12px 10px 90px!important}
       .stat-val{font-size:18px!important}
-      .prod-row-btn{width:34px!important;height:34px!important}
+      .prod-row-btn{width:30px!important;height:30px!important}
       .prod-row-btns{gap:3px!important}
       .drawer-inner{padding:20px 16px 32px!important;border-radius:20px 20px 0 0!important;max-height:90vh!important}
       .module-card{padding:20px 16px!important}
@@ -665,14 +716,32 @@ function LoginScreen({onUnlock}) {
 // ══════════════════════════════════════════════════════════════════════════════
 // HOME (module selection)
 // ══════════════════════════════════════════════════════════════════════════════
-function HomeScreen({onSelect,prowinStats,zumbaStats,flohmarktStats,kleiderschrankStats}) {
+function HomeScreen({onSelect,prowinStats,zumbaStats,flohmarktStats,kleiderschrankStats,monthSaldo}) {
+  const monthName=new Date().toLocaleDateString("de-CH",{month:"long"});
   return (
     <main style={{maxWidth:600,margin:"0 auto",padding:"32px 16px 80px",paddingTop:"calc(32px + env(safe-area-inset-top,0px))",paddingBottom:"calc(80px + env(safe-area-inset-bottom,0px))"}}>
-      <div style={{textAlign:"center",marginBottom:36}}>
+      <div style={{textAlign:"center",marginBottom:24}}>
         <div style={{fontSize:48,marginBottom:8}}>✨</div>
         <h1 style={{fontSize:26,fontWeight:900,color:B[900],marginBottom:6}}>Hallo Lorena!</h1>
         <p style={{color:"#94a3b8",fontSize:14,fontWeight:600}}>Wähle dein Modul</p>
       </div>
+
+      {/* Monats-Saldo */}
+      {monthSaldo&&(monthSaldo.prowinRev>0||monthSaldo.zumIn>0||monthSaldo.zumOut>0||monthSaldo.flohIn>0||monthSaldo.flohOut>0)&&(
+        <div style={{background:"#fff",border:`1px solid ${B[100]}`,borderRadius:18,padding:"14px 18px",marginBottom:20,boxShadow:`0 2px 12px ${B[100]}`}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:8}}>
+            <div style={{fontSize:11,fontWeight:800,color:"#94a3b8",textTransform:"uppercase",letterSpacing:.6}}>{monthName} · Saldo</div>
+            <div style={{fontWeight:900,fontSize:17,color:monthSaldo.netto>=0?"#16a34a":"#dc2626"}}>{monthSaldo.netto>=0?"+":""}{chf(monthSaldo.netto)}</div>
+          </div>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+            {monthSaldo.zumIn>0&&<span style={{fontSize:11,fontWeight:700,background:Z[50],color:Z[700],padding:"3px 9px",borderRadius:20}}>💃 +{chf(monthSaldo.zumIn)}</span>}
+            {monthSaldo.zumOut>0&&<span style={{fontSize:11,fontWeight:700,background:"#fff5f5",color:"#dc2626",padding:"3px 9px",borderRadius:20}}>🏠 −{chf(monthSaldo.zumOut)}</span>}
+            {monthSaldo.prowinRev>0&&<span style={{fontSize:11,fontWeight:700,background:B[50],color:B[700],padding:"3px 9px",borderRadius:20}}>📦 +{chf(monthSaldo.prowinRev)}</span>}
+            {monthSaldo.flohIn>0&&<span style={{fontSize:11,fontWeight:700,background:"#fff1f2",color:"#9f1239",padding:"3px 9px",borderRadius:20}}>🏷️ +{chf(monthSaldo.flohIn)}</span>}
+            {monthSaldo.flohOut>0&&<span style={{fontSize:11,fontWeight:700,background:"#fff5f5",color:"#dc2626",padding:"3px 9px",borderRadius:20}}>🏷️ −{chf(monthSaldo.flohOut)}</span>}
+          </div>
+        </div>
+      )}
 
       {/* ProWin Card */}
       <div className="module-card" onClick={()=>onSelect("prowin")} style={{background:"#fff",border:`2px solid ${B[200]}`,borderRadius:24,padding:"28px 24px",marginBottom:16,cursor:"pointer",transition:"all .2s",boxShadow:`0 4px 24px ${B[200]}`}}
@@ -781,7 +850,7 @@ function HomeScreen({onSelect,prowinStats,zumbaStats,flohmarktStats,kleiderschra
 // PROWIN MODULE (adapted from original)
 // ══════════════════════════════════════════════════════════════════════════════
 
-function ProdRow({p,onIn,onSale,onEdit,onDel}) {
+function ProdRow({p,onIn,onSale,onQuickSale,onEdit,onDel}) {
   const st=statusOf(p);
   const cs=CAT_STYLE[p.category]||{bg:B[50],color:B[700],border:B[200]};
   const [e,se]=useState(false);
@@ -802,10 +871,11 @@ function ProdRow({p,onIn,onSale,onEdit,onDel}) {
         <div style={{fontSize:10,fontWeight:700,color:st.color}}>{st.label}</div>
       </div>
       <div className="prod-row-btns" style={{display:"flex",gap:5,flexShrink:0}}>
-        <button onClick={onIn}   className="prod-row-btn" style={{width:34,height:34,background:B[50],color:B[600],border:`1px solid ${B[100]}`,borderRadius:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Ic n="up" s={13}/></button>
-        <button onClick={onSale} className="prod-row-btn" style={{width:34,height:34,background:"#fff7ed",color:"#c2410c",border:"1px solid #fed7aa",borderRadius:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Ic n="down" s={13}/></button>
-        <button onClick={onEdit} className="prod-row-btn" style={{width:34,height:34,background:"#f8faff",color:"#94a3b8",border:`1px solid ${B[100]}`,borderRadius:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Ic n="edit" s={13}/></button>
-        <button onClick={onDel}  className="prod-row-btn" style={{width:34,height:34,background:"#fff5f5",color:"#dc2626",border:"1px solid #fecaca",borderRadius:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Ic n="trash" s={13}/></button>
+        <button onClick={onIn}   className="prod-row-btn" style={{width:34,height:34,background:B[50],color:B[600],border:`1px solid ${B[100]}`,borderRadius:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} title="Wareneingang"><Ic n="up" s={13}/></button>
+        <button onClick={onQuickSale} disabled={!p.stock||!p.sellPrice} className="prod-row-btn" style={{width:34,height:34,background:p.stock&&p.sellPrice?"#f0fdf4":"#f1f5f9",color:p.stock&&p.sellPrice?"#16a34a":"#cbd5e1",border:`1px solid ${p.stock&&p.sellPrice?"#bbf7d0":"#e2e8f0"}`,borderRadius:8,cursor:p.stock&&p.sellPrice?"pointer":"not-allowed",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,fontSize:11}} title="1× direkt verkaufen">1×</button>
+        <button onClick={onSale} className="prod-row-btn" style={{width:34,height:34,background:"#fff7ed",color:"#c2410c",border:"1px solid #fed7aa",borderRadius:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} title="Verkauf (Menge/Preis)"><Ic n="down" s={13}/></button>
+        <button onClick={onEdit} className="prod-row-btn" style={{width:34,height:34,background:"#f8faff",color:"#94a3b8",border:`1px solid ${B[100]}`,borderRadius:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} title="Bearbeiten"><Ic n="edit" s={13}/></button>
+        <button onClick={onDel}  className="prod-row-btn" style={{width:34,height:34,background:"#fff5f5",color:"#dc2626",border:"1px solid #fecaca",borderRadius:8,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}} title="Löschen"><Ic n="trash" s={13}/></button>
       </div>
     </div>
   );
@@ -894,6 +964,71 @@ function ProdModal({product,onSave,onClose,onDel}) {
           <button type="submit" style={{flex:2,...aBtn(B[600])}}>Speichern</button>
         </div>
       </form>
+    </Drawer>
+  );
+}
+
+function OrderListModal({products,onClose}) {
+  const lowStock=useMemo(()=>{
+    return products
+      .filter(p=>p.stock<=p.minStock)
+      .map(p=>{
+        const needed=Math.max(1,(p.minStock||1)*2-p.stock);
+        return {...p,_needed:needed,_cost:needed*(p.buyPrice||0)};
+      })
+      .sort((a,b)=>(a.stock-a.minStock)-(b.stock-b.minStock));
+  },[products]);
+  const total=lowStock.reduce((s,p)=>s+p._cost,0);
+  const [copied,setCopied]=useState(false);
+
+  const textVersion=useMemo(()=>{
+    const lines=lowStock.map(p=>`${p._needed}× ${p.name}${p.buyPrice?` (CHF ${(p.buyPrice).toFixed(2)})`:""}`);
+    lines.push("");
+    lines.push(`Total ${lowStock.length} Positionen · CHF ${total.toFixed(2)}`);
+    return lines.join("\n");
+  },[lowStock,total]);
+
+  const copy=async()=>{
+    try{await navigator.clipboard.writeText(textVersion);setCopied(true);setTimeout(()=>setCopied(false),2000);}catch{}
+  };
+
+  return (
+    <Drawer onClose={onClose}>
+      <h3 style={{margin:"0 0 4px",fontSize:18,fontWeight:900,color:B[900]}}>📋 Bestelliste</h3>
+      <p style={{color:"#94a3b8",fontSize:13,marginBottom:16}}>
+        {lowStock.length===0?"Alle Produkte über Mindestbestand 🎉":`${lowStock.length} Produkt${lowStock.length!==1?"e":""} unter Mindestbestand · Total: ${chf(total)}`}
+      </p>
+
+      {lowStock.length>0&&<>
+        <div style={{background:"#f8faff",border:`1px solid ${B[100]}`,borderRadius:12,padding:"12px",marginBottom:12,maxHeight:300,overflowY:"auto"}}>
+          {lowStock.map(p=>(
+            <div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:`1px solid ${B[50]}`}}>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:800,fontSize:13,color:B[900]}}>{p._needed}× {p.name}</div>
+                <div style={{fontSize:11,color:"#94a3b8"}}>Bestand: {p.stock}/{p.minStock} · {p.buyPrice?`Einkauf ${chf(p.buyPrice)}`:"Kein Einkaufspreis"}</div>
+              </div>
+              {p._cost>0&&<div style={{fontWeight:800,fontSize:13,color:B[700],flexShrink:0,marginLeft:10}}>{chf(p._cost)}</div>}
+            </div>
+          ))}
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0 0",fontWeight:900,fontSize:14,color:B[800]}}>
+            <span>Total</span><span>{chf(total)}</span>
+          </div>
+        </div>
+        <button onClick={copy} style={{width:"100%",padding:"12px",background:copied?"#16a34a":B[600],color:"#fff",border:"none",borderRadius:12,fontSize:14,fontWeight:800,cursor:"pointer",marginBottom:8}}>
+          {copied?"✓ In Zwischenablage kopiert":"📋 Als Text kopieren"}
+        </button>
+        <div style={{fontSize:11,color:"#94a3b8",textAlign:"center"}}>Vorschlag: doppelter Mindestbestand minus aktueller Bestand</div>
+      </>}
+
+      {lowStock.length===0&&(
+        <div style={{textAlign:"center",padding:40,background:"#f0fdf4",borderRadius:14,border:"1px solid #bbf7d0",marginBottom:12}}>
+          <div style={{fontSize:48,marginBottom:8}}>✅</div>
+          <div style={{fontWeight:800,fontSize:15,color:"#15803d"}}>Alles gut!</div>
+          <p style={{color:"#86efac",fontSize:13,marginTop:4}}>Keine Produkte müssen aktuell nachbestellt werden.</p>
+        </div>
+      )}
+
+      <button onClick={onClose} style={{width:"100%",padding:"12px",background:"#f8faff",color:"#94a3b8",border:`1px solid ${B[100]}`,borderRadius:12,fontSize:14,fontWeight:700,cursor:"pointer"}}>Schliessen</button>
     </Drawer>
   );
 }
@@ -1036,6 +1171,19 @@ function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
     }catch{flash("Fehler",false);}
     setSyncing(false);setModal(null);
   };
+  // Quick-Sale: 1× direkt zum Standardpreis, ohne Modal
+  const quickSale=async(product)=>{
+    if(!product.stock){flash("Kein Bestand",false);return;}
+    if(!product.sellPrice){flash("Kein Verkaufspreis hinterlegt",false);return;}
+    setSyncing(true);
+    try{
+      await setDoc(doc(col("products"),product.id),{...product,stock:Math.max(0,product.stock-1),updatedAt:serverTimestamp()});
+      const sid=uid();
+      await setDoc(doc(col("sales"),sid),{id:sid,date:new Date().toISOString(),productId:product.id,productName:product.name,qty:1,sellPrice:product.sellPrice,buyPrice:product.buyPrice,profit:product.sellPrice-product.buyPrice,revenue:product.sellPrice,createdAt:serverTimestamp()});
+      flash(`1× ${product.name} verkauft ✓ · ${chf(product.sellPrice)}`);
+    }catch{flash("Fehler",false);}
+    setSyncing(false);
+  };
 
   const filtered=useMemo(()=>{
     let ps=cat!=="Alle"?products.filter(p=>p.category===cat):products;
@@ -1078,6 +1226,16 @@ function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
       <main className="main-pad" style={{maxWidth:960,margin:"0 auto",padding:"20px 16px",paddingBottom:"calc(80px + env(safe-area-inset-bottom,0px))"}}>
 
         {tab==="products"&&<div>
+          {(aus>0||wenig>0)&&(
+            <div onClick={()=>setModal({type:"orderlist"})} style={{background:"linear-gradient(135deg,#fffbeb,#fff)",border:"1px solid #fde68a",borderRadius:14,padding:"12px 16px",marginBottom:14,cursor:"pointer",display:"flex",alignItems:"center",gap:12}}>
+              <div style={{fontSize:28}}>📋</div>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:900,fontSize:14,color:"#92400e"}}>Bestelliste bereit</div>
+                <div style={{fontSize:12,color:"#a16207"}}>{aus+wenig} Produkt{aus+wenig!==1?"e":""} müssten nachbestellt werden</div>
+              </div>
+              <Ic n="arrow" s={18} style={{color:"#d97706"}}/>
+            </div>
+          )}
           <div style={{display:"flex",gap:10,marginBottom:16,alignItems:"center"}}>
             <div style={{flex:1,position:"relative"}}>
               <Ic n="info" s={14} style={{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",color:"#94a3b8"}}/>
@@ -1092,6 +1250,7 @@ function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
             {filtered.map(p=>(
               <ProdRow key={p.id} p={p}
                 onIn={()=>setModal({type:"stock",product:{...p,_mode:"in"}})}
+                onQuickSale={()=>quickSale(p)}
                 onSale={()=>setModal({type:"stock",product:{...p,_mode:"sale"}})}
                 onEdit={()=>setModal({type:"edit",product:p})}
                 onDel={()=>{if(window.confirm("Produkt löschen?"))delProduct(p.id);}}
@@ -1167,6 +1326,61 @@ function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
             <div style={{fontSize:13,color:"#94a3b8",marginBottom:4}}>Aktuelles Passwort: <strong style={{color:B[800],letterSpacing:1}}>Lorenasunshine</strong></div>
             <div style={{fontSize:12,color:"#94a3b8"}}>Um das Passwort zu ändern, muss es in der HTML-Datei angepasst werden (APP_PASSWORD).</div>
           </div>
+          <div style={{background:"linear-gradient(135deg,#f0fdf4,#fff)",border:"1px solid #bbf7d0",borderRadius:14,padding:16,marginBottom:12}}>
+            <div style={{fontWeight:800,fontSize:14,color:"#15803d",marginBottom:3}}>💾 Backup aller Daten</div>
+            <div style={{fontSize:13,color:"#94a3b8",marginBottom:12}}>Lädt alle Daten (proWIN, Zumba, Flohmarkt, Kleiderschrank) als JSON-Datei herunter. Empfehlung: 1× pro Monat als Sicherheit.</div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              <button onClick={async()=>{
+                setSyncing(true);
+                try{
+                  const cols=["products","sales","zumba_members","zumba_income","zumba_expenses","zumba_classes","flohmarkt_items","flohmarkt_events","ks_items","ks_outfits"];
+                  const data={_version:1,_exportedAt:new Date().toISOString()};
+                  for(const c of cols){
+                    const snap=await getDocs(col(c));
+                    data[c]=snap.docs.map(d=>({id:d.id,...d.data()}));
+                  }
+                  // Firestore-Timestamps in ISO konvertieren
+                  const replacer=(k,v)=>{
+                    if(v&&typeof v==="object"&&typeof v.toDate==="function")return v.toDate().toISOString();
+                    return v;
+                  };
+                  const blob=new Blob([JSON.stringify(data,replacer,2)],{type:"application/json"});
+                  const url=URL.createObjectURL(blob);
+                  const a=document.createElement("a");
+                  a.href=url;a.download=`Lorena-Portal-Backup-${today()}.json`;a.click();
+                  URL.revokeObjectURL(url);
+                  flash("Backup heruntergeladen ✓");
+                }catch(e){flash("Fehler beim Backup",false);console.error(e);}
+                setSyncing(false);
+              }} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"9px 16px",background:"#16a34a",color:"#fff",border:"none",borderRadius:10,fontSize:13,fontWeight:700,cursor:"pointer"}}><Ic n="dl" s={14}/>Backup herunterladen</button>
+              <label style={{display:"inline-flex",alignItems:"center",gap:6,padding:"9px 16px",background:"#fff",color:"#15803d",border:"1px solid #bbf7d0",borderRadius:10,fontSize:13,fontWeight:700,cursor:"pointer"}}>
+                <Ic n="up" s={14}/>Backup einspielen
+                <input type="file" accept="application/json,.json" style={{display:"none"}} onChange={async(e)=>{
+                  const f=e.target.files[0];if(!f)return;
+                  if(!window.confirm("Backup einspielen? Bestehende Daten mit gleicher ID werden überschrieben. Fortfahren?"))return;
+                  setSyncing(true);
+                  try{
+                    const text=await f.text();
+                    const data=JSON.parse(text);
+                    const cols=["products","sales","zumba_members","zumba_income","zumba_expenses","zumba_classes","flohmarkt_items","flohmarkt_events","ks_items","ks_outfits"];
+                    let restored=0;
+                    for(const c of cols){
+                      const items=data[c]||[];
+                      for(const it of items){
+                        if(!it.id)continue;
+                        const {id,...rest}=it;
+                        await setDoc(doc(col(c),id),{...rest,id,_restoredAt:serverTimestamp()});
+                        restored++;
+                      }
+                    }
+                    flash(`✓ ${restored} Einträge wiederhergestellt`);
+                  }catch(err){flash("Backup ungültig oder fehlerhaft",false);console.error(err);}
+                  setSyncing(false);
+                  e.target.value="";
+                }}/>
+              </label>
+            </div>
+          </div>
           <div style={{background:"#fff",border:`1px solid ${B[100]}`,borderRadius:14,padding:16,marginBottom:12}}>
             <div style={{fontWeight:800,fontSize:14,color:B[900],marginBottom:3}}>Verkäufe zurücksetzen</div>
             <div style={{fontSize:13,color:"#94a3b8",marginBottom:12}}>Alle {sales.length} Verkäufe unwiderruflich löschen</div>
@@ -1186,6 +1400,7 @@ function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
       {modal?.type==="add"&&<ProdModal onSave={saveProduct} onClose={()=>setModal(null)}/>}
       {modal?.type==="edit"&&<ProdModal product={modal.product} onSave={saveProduct} onClose={()=>setModal(null)} onDel={delProduct}/>}
       {modal?.type==="stock"&&<StockModal product={modal.product} onApply={applyStock} onClose={()=>setModal(null)}/>}
+      {modal?.type==="orderlist"&&<OrderListModal products={products} onClose={()=>setModal(null)}/>}
     </div>
   );
 }
@@ -1308,7 +1523,7 @@ function getAboSessions(type) {
 // Member modal – neu: kombiniert mit Einnahme + Mehrfach-Datum-Auswahl
 function MemberModal({member,onSave,onClose,prices}) {
   const isEdit=!!member;
-  const [f,setF]=useState(member||{name:"",phone:"",email:"",notes:"",aboType:"einzel",aboStart:today(),sessionsLeft:1,active:true});
+  const [f,setF]=useState(member||{name:"",phone:"",email:"",notes:"",birthday:"",aboType:"einzel",aboStart:today(),sessionsLeft:1,active:true});
   const s=(k,v)=>setF(x=>({...x,[k]:v}));
 
   // Mehrere Daten (nur bei neuem Teilnehmer, für Nachtragseinnahmen)
@@ -1364,6 +1579,7 @@ function MemberModal({member,onSave,onClose,prices}) {
             <Lbl t="Telefon"><input value={f.phone} onChange={e=>s("phone",e.target.value)} style={inp} placeholder="+41…"/></Lbl>
             <Lbl t="E-Mail"><input value={f.email} onChange={e=>s("email",e.target.value)} style={inp} placeholder="name@…"/></Lbl>
           </div>
+          <Lbl t="Geburtstag (optional)"><input type="date" value={f.birthday||""} onChange={e=>s("birthday",e.target.value)} style={inp}/></Lbl>
           <Lbl t="Abo-Typ">
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
               {ABO_TYPES.map(a=>(
@@ -1660,7 +1876,7 @@ function ClassModal({onSave,onClose,members}) {
                     <div style={{fontWeight:800,fontSize:13,color:Z[900]}}>{m.name}</div>
                     <div style={{fontSize:11,color:"#94a3b8"}}>{getAboLabel(m.aboType)} · {m.sessionsLeft} Std. übrig</div>
                   </div>
-                  {m.sessionsLeft<=1&&m.sessionsLeft>0&&<span style={{fontSize:10,fontWeight:700,color:"#d97706",background:"#fffbeb",padding:"2px 7px",borderRadius:20,border:"1px solid #fde68a"}}>Fast leer</span>}
+                  {m.sessionsLeft<=2&&m.sessionsLeft>0&&<span style={{fontSize:10,fontWeight:700,color:"#d97706",background:"#fffbeb",padding:"2px 7px",borderRadius:20,border:"1px solid #fde68a"}}>Fast leer</span>}
                   {m.sessionsLeft===0&&<span style={{fontSize:10,fontWeight:700,color:"#dc2626",background:"#fff5f5",padding:"2px 7px",borderRadius:20,border:"1px solid #fecaca"}}>Leer!</span>}
                 </div>
               ))}
@@ -1861,7 +2077,34 @@ function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
   const totalExpenses=expenses.reduce((s,x)=>s+(x.amount||0),0);
   const netResult=totalIncome-totalExpenses;
   const activeMembers=members.filter(m=>m.active).length;
-  const lowAbo=members.filter(m=>m.active&&m.sessionsLeft<=1&&(m.aboType==="abo5"||m.aboType==="abo10")).length;
+  const lowAbo=members.filter(m=>m.active&&m.sessionsLeft<=2&&(m.aboType==="abo5"||m.aboType==="abo10")).length;
+
+  // Anwesenheits-Statistik pro Mitglied
+  const memberStats=useMemo(()=>{
+    const map={};
+    members.forEach(m=>{map[m.id]={count:0,lastDate:null};});
+    classes.forEach(c=>{
+      (c.attendees||[]).forEach(mid=>{
+        if(!map[mid])return;
+        map[mid].count++;
+        if(!map[mid].lastDate||c.date>map[mid].lastDate) map[mid].lastDate=c.date;
+      });
+    });
+    return map;
+  },[members,classes]);
+
+  const daysAgo=(dateStr)=>{
+    if(!dateStr)return null;
+    const diff=Math.floor((new Date()-new Date(dateStr+"T00:00:00Z"))/86400000);
+    if(diff<0)return null;
+    if(diff===0)return "heute";
+    if(diff===1)return "gestern";
+    if(diff<7)return `vor ${diff} Tagen`;
+    if(diff<14)return "letzte Woche";
+    if(diff<30)return `vor ${Math.floor(diff/7)} Wochen`;
+    if(diff<60)return "letzten Monat";
+    return `vor ${Math.floor(diff/30)} Monaten`;
+  };
 
   // Next Monday calculation
   const nextMonday=useMemo(()=>{
@@ -1903,6 +2146,23 @@ function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
 
         {/* DASHBOARD */}
         {tab==="dashboard"&&<div style={{animation:"fadein .3s ease"}}>
+          {/* Birthday banner (nur wenn jemand heute Geburtstag hat) */}
+          {(() => {
+            const todayDate=new Date();
+            const todayKey=`${String(todayDate.getMonth()+1).padStart(2,"0")}-${String(todayDate.getDate()).padStart(2,"0")}`;
+            const birthdayPeople=members.filter(m=>m.birthday&&m.birthday.slice(5)===todayKey);
+            if(birthdayPeople.length===0)return null;
+            return (
+              <div style={{background:"linear-gradient(135deg,#db2777,#f472b6)",borderRadius:20,padding:"16px 20px",marginBottom:14,color:"#fff",display:"flex",alignItems:"center",gap:14,boxShadow:"0 6px 24px #db277750"}}>
+                <div style={{fontSize:32}}>🎂</div>
+                <div style={{flex:1}}>
+                  <div style={{fontWeight:900,fontSize:15}}>Heute Geburtstag!</div>
+                  <div style={{fontSize:13,opacity:.95,marginTop:2}}>{birthdayPeople.map(p=>p.name).join(", ")} feiert heute 🎉</div>
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Next class banner */}
           <div style={{background:`linear-gradient(135deg,${Z[700]},${Z[500]})`,borderRadius:20,padding:"18px 20px",marginBottom:20,color:"#fff",display:"flex",alignItems:"center",gap:14}}>
             <div style={{fontSize:36}}>💃</div>
@@ -1928,10 +2188,10 @@ function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
           <MonthlyChart income={income} expenses={expenses}/>
 
           {/* Abo-Warnungen – nur für 5er/10er-Abo */}
-          {members.filter(m=>m.active&&m.sessionsLeft<=1&&(m.aboType==="abo5"||m.aboType==="abo10")).length>0&&(
+          {members.filter(m=>m.active&&m.sessionsLeft<=2&&(m.aboType==="abo5"||m.aboType==="abo10")).length>0&&(
             <div style={{background:"#fffbeb",border:"1px solid #fde68a",borderRadius:16,padding:"14px 16px",marginBottom:20}}>
               <div style={{fontWeight:900,fontSize:14,color:"#92400e",marginBottom:10}}>⚠️ Abo fast leer</div>
-              {members.filter(m=>m.active&&m.sessionsLeft<=1&&(m.aboType==="abo5"||m.aboType==="abo10")).map(m=>(
+              {members.filter(m=>m.active&&m.sessionsLeft<=2&&(m.aboType==="abo5"||m.aboType==="abo10")).map(m=>(
                 <div key={m.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:"1px solid #fde68a"}}>
                   <span style={{fontWeight:700,color:"#92400e"}}>{m.name}</span>
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
@@ -2005,7 +2265,7 @@ function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
             {[...members].sort((a,b)=>b.active-a.active||a.name.localeCompare(b.name)).map(m=>{
               const aboInfo=ABO_TYPES.find(x=>x.id===m.aboType);
-              const sessionColor=m.sessionsLeft===0?"#dc2626":m.sessionsLeft<=1?"#d97706":"#16a34a";
+              const sessionColor=m.sessionsLeft===0?"#dc2626":m.sessionsLeft<=2?"#d97706":"#16a34a";
               return (
                 <div key={m.id} style={{background:"#fff",border:`2px solid ${m.active?Z[100]:"#e2e8f0"}`,borderRadius:16,padding:"14px 16px",opacity:m.active?1:.7}}>
                   <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
@@ -2018,6 +2278,12 @@ function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
                         <span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:20,background:m.active?Z[100]:"#f1f5f9",color:m.active?Z[700]:"#64748b"}}>{m.active?"Aktiv":"Inaktiv"}</span>
                       </div>
                       <div style={{fontSize:12,color:"#94a3b8",marginBottom:6}}>{getAboLabel(m.aboType)}{aboInfo?.bonus?` (+${aboInfo.bonus} gratis)`:""}</div>
+                      {memberStats[m.id]&&memberStats[m.id].count>0&&(
+                        <div style={{fontSize:11,color:Z[700],marginBottom:6,fontWeight:600}}>
+                          🎯 {memberStats[m.id].count} Kurs{memberStats[m.id].count!==1?"e":""}
+                          {memberStats[m.id].lastDate&&<span style={{color:"#94a3b8",fontWeight:500}}> · zuletzt {daysAgo(memberStats[m.id].lastDate)}</span>}
+                        </div>
+                      )}
                       {(m.aboType==="abo5"||m.aboType==="abo10")&&(
                       <div style={{display:"flex",alignItems:"center",gap:8}}>
                         <div style={{flex:1,height:6,background:"#f1f5f9",borderRadius:4,overflow:"hidden"}}>
@@ -2034,7 +2300,7 @@ function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
                     </div>
                   </div>
                   {/* Abo erneuern Button – nur für 5er/10er wenn leer oder fast leer */}
-                  {m.active&&(m.aboType==="abo5"||m.aboType==="abo10")&&m.sessionsLeft<=1&&(
+                  {m.active&&(m.aboType==="abo5"||m.aboType==="abo10")&&m.sessionsLeft<=2&&(
                     <div style={{marginTop:12,paddingTop:12,borderTop:`1px solid ${Z[50]}`}}>
                       <button onClick={()=>setModal({type:"renew",member:m})}
                         style={{width:"100%",padding:"9px 14px",background:`linear-gradient(135deg,${Z[600]},${Z[400]})`,color:"#fff",border:"none",borderRadius:10,fontSize:13,fontWeight:800,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
@@ -3541,6 +3807,29 @@ function App() {
   const [flohmarktStats,setFlohmarktStats]=useState({artikel:0,verkauft:0,einnahmen:0});
   const [kleiderschrankStats,setKleiderschrankStats]=useState({teile:0,outfits:0});
 
+  // Rohdaten für Monats-Saldo
+  const [_sales,setSales_]=useState([]);
+  const [_zincome,setZincome_]=useState([]);
+  const [_zexp,setZexp_]=useState([]);
+  const [_fitems,setFitems_]=useState([]);
+  const [_fevents,setFevents_]=useState([]);
+
+  // Aktueller Monat (Year-Month-Präfix)
+  const monthSaldo=useMemo(()=>{
+    const now=new Date();
+    const prefix=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
+    const inMonth=(d)=>typeof d==="string"&&d.startsWith(prefix);
+    const prowinRev=_sales.filter(s=>{const d=s.date||"";return d.slice(0,7)===prefix;}).reduce((a,s)=>a+(s.revenue||0),0);
+    const zumIn=_zincome.filter(x=>inMonth(x.date)).reduce((a,x)=>a+(x.amount||0),0);
+    const zumOut=_zexp.filter(x=>inMonth(x.date)).reduce((a,x)=>a+(x.amount||0),0);
+    const flohIn=_fitems.filter(i=>i.status==="verkauft"&&inMonth(i.verkauftAm)).reduce((a,i)=>a+(i.verkaufspreis||0),0);
+    const flohOut=_fevents.reduce((a,e)=>{
+      if(!inMonth(e.datum))return a;
+      return a+(e.ausgaben||[]).reduce((s,x)=>s+(x.betrag||0),0);
+    },0);
+    return {prowinRev,zumIn,zumOut,flohIn,flohOut,netto:prowinRev+zumIn-zumOut+flohIn-flohOut};
+  },[_sales,_zincome,_zexp,_fitems,_fevents]);
+
   const col=(sub)=>collection(db,"users",USER_ID,sub);
   const flash=(msg,ok=true)=>{setToast({msg,ok});setTimeout(()=>setToast(null),2800);};
 
@@ -3560,29 +3849,38 @@ function App() {
     const us=onSnapshot(sq,s=>{
       const ss=s.docs.map(d=>d.data());
       setProwinStats(x=>({...x,revenue:ss.reduce((a,b)=>a+(b.revenue||0),0)}));
+      setSales_(ss);
     });
     const um=onSnapshot(mq,s=>{
       setZumbaStats(x=>({...x,members:s.docs.filter(d=>d.data().active).length}));
     });
     const ui=onSnapshot(iq,s=>{
-      setZumbaStats(x=>({...x,income:s.docs.reduce((a,d)=>a+(d.data().amount||0),0)}));
+      const arr=s.docs.map(d=>d.data());
+      setZumbaStats(x=>({...x,income:arr.reduce((a,b)=>a+(b.amount||0),0)}));
+      setZincome_(arr);
     });
     const uc=onSnapshot(cq,s=>{
       setZumbaStats(x=>({...x,classes:s.docs.length}));
     });
+    // Zumba Ausgaben für Saldo
+    const zeq=query(col("zumba_expenses"),orderBy("date","desc"));
+    const uze=onSnapshot(zeq,s=>setZexp_(s.docs.map(d=>d.data())));
     // Flohmarkt stats
     const fiq=query(col("flohmarkt_items"),orderBy("createdAt","desc"));
     const ufi=onSnapshot(fiq,s=>{
       const its=s.docs.map(d=>d.data());
       const sold=its.filter(i=>i.status==="verkauft");
       setFlohmarktStats({artikel:its.length,verkauft:sold.length,einnahmen:sold.reduce((a,b)=>a+(b.verkaufspreis||0),0)});
+      setFitems_(its);
     });
+    const feq=query(col("flohmarkt_events"),orderBy("datum","desc"));
+    const ufe=onSnapshot(feq,s=>setFevents_(s.docs.map(d=>d.data())));
     // Kleiderschrank stats
     const ksq=query(col("ks_items"),orderBy("createdAt","desc"));
     const koq=query(col("ks_outfits"),orderBy("createdAt","desc"));
     const uks=onSnapshot(ksq,s=>setKleiderschrankStats(x=>({...x,teile:s.docs.length})));
     const uko=onSnapshot(koq,s=>setKleiderschrankStats(x=>({...x,outfits:s.docs.length})));
-    return()=>{up();us();um();ui();uc();ufi();uks();uko();};
+    return()=>{up();us();um();ui();uc();uze();ufi();ufe();uks();uko();};
   },[unlocked]);
 
   if(splash) return <SplashScreen onDone={()=>setSplash(false)}/>;
@@ -3601,7 +3899,7 @@ function App() {
       )}
 
       {module===null&&(
-        <HomeScreen onSelect={setModule} prowinStats={prowinStats} zumbaStats={zumbaStats} flohmarktStats={flohmarktStats} kleiderschrankStats={kleiderschrankStats}/>
+        <HomeScreen onSelect={setModule} prowinStats={prowinStats} zumbaStats={zumbaStats} flohmarktStats={flohmarktStats} kleiderschrankStats={kleiderschrankStats} monthSaldo={monthSaldo}/>
       )}
 
       {module==="prowin"&&(
