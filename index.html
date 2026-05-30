@@ -23,7 +23,6 @@
     @keyframes logoIn{from{opacity:0;transform:scale(0.7) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
     @keyframes textIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     @keyframes shimmer{0%,100%{opacity:0.6}50%{opacity:1}}
-    .ks-grid-card:hover img{transform:scale(1.06)!important}
     @keyframes ringPulse{0%{transform:scale(1);opacity:0.4}100%{transform:scale(1.6);opacity:0}}
     .spinner{width:28px;height:28px;border:3px solid #bfdbfe;border-top:3px solid #3b82f6;border-radius:50%;animation:spin 1s linear infinite;margin:16px auto 0}
     @media(max-width:600px){
@@ -509,53 +508,6 @@ const CAT_STYLE = {
 
 const uid  = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
 const chf  = (n) => `CHF ${(+n||0).toFixed(2)}`;
-
-// Compress image to max 800px and ~200KB before storing
-const compressImage = (file, maxPx=800, quality=0.75) => new Promise((resolve)=>{
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      let w = img.width, h = img.height;
-      if(w > maxPx || h > maxPx) {
-        if(w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
-        else { w = Math.round(w * maxPx / h); h = maxPx; }
-      }
-      canvas.width = w; canvas.height = h;
-      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL("image/jpeg", quality));
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-});
-
-function ImageUpload({image,onImage,onClear,accent,icon="pkg",imgErr,setImgErr}) {
-  const AC=accent||B;
-  const [drag,setDrag]=useState(false);
-  const handleFile=(file)=>{if(!file||!file.type.startsWith("image/"))return;compressImage(file).then(c=>{onImage(c);if(setImgErr)setImgErr(false);});};
-  const onDrop=(e)=>{e.preventDefault();setDrag(false);handleFile(e.dataTransfer.files[0]);};
-  return (
-    <div style={{display:"flex",alignItems:"center",gap:10}}>
-      {image&&!imgErr
-        ?<div style={{width:56,height:56,borderRadius:10,overflow:"hidden",flexShrink:0,border:`1px solid ${AC[100]}`}}>
-            <img src={image} alt="" onError={()=>setImgErr&&setImgErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:4}}/>
-          </div>
-        :<div style={{width:56,height:56,borderRadius:10,background:AC[50],flexShrink:0,border:`2px dashed ${AC[200]}`,display:"flex",alignItems:"center",justifyContent:"center"}}>
-            <Ic n={icon} s={22} style={{color:AC[300]}}/>
-          </div>
-      }
-      <label onDragOver={e=>{e.preventDefault();setDrag(true);}} onDragLeave={()=>setDrag(false)} onDrop={onDrop}
-        style={{flex:1,display:"flex",alignItems:"center",gap:8,padding:"11px 14px",background:drag?AC[100]:AC[50],border:`1.5px dashed ${drag?AC[500]:AC[300]}`,borderRadius:12,cursor:"pointer",fontSize:13,fontWeight:700,color:AC[600],transition:"all .15s"}}>
-        <Ic n="dl" s={16}/>{image&&!imgErr?"Foto ändern":"📂 Hochladen oder hierher ziehen"}
-        <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const f=e.target.files[0];if(f)handleFile(f);}}/>
-      </label>
-      {image&&<button type="button" onClick={onClear} style={{width:34,height:34,borderRadius:8,background:"#fff5f5",border:"1px solid #fecaca",color:"#dc2626",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Ic n="x" s={14}/></button>}
-    </div>
-  );
-}
-
 const ini  = (s) => (s||"?").slice(0,2).toUpperCase();
 const dateStr = (d) => d ? new Date(d).toLocaleDateString("de-CH",{day:"2-digit",month:"short",year:"numeric"}) : "–";
 const today = () => new Date().toISOString().slice(0,10);
@@ -923,7 +875,15 @@ function ProdModal({product,onSave,onClose,onDel}) {
           {margin&&<div style={{background:B[50],border:`1px solid ${B[200]}`,borderRadius:8,padding:"7px 12px",fontSize:12,color:B[700],fontWeight:700,textAlign:"center"}}>Marge {margin}% · Gewinn/Stk: CHF {(f.sellPrice-f.buyPrice).toFixed(2)}</div>}
           <Lbl t="Produktbild">
             <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <ImageUpload image={f.image} onImage={v=>s("image",v)} onClear={()=>{s("image","");setImgErr(false);}} accent={B} icon="pkg" imgErr={imgErr} setImgErr={setImgErr}/>
+              {f.image&&!imgErr
+                ?<div style={{width:56,height:56,borderRadius:10,overflow:"hidden",flexShrink:0,border:`1px solid ${B[100]}`}}><img src={f.image} alt="" onError={()=>setImgErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:4}}/></div>
+                :<div style={{width:56,height:56,borderRadius:10,background:B[50],flexShrink:0,border:`2px dashed ${B[200]}`,display:"flex",alignItems:"center",justifyContent:"center"}}><Ic n="pkg" s={22} style={{color:B[300]}}/></div>
+              }
+              <label style={{flex:1,display:"flex",alignItems:"center",gap:8,padding:"11px 14px",background:B[50],border:`1.5px dashed ${B[300]}`,borderRadius:12,cursor:"pointer",fontSize:13,fontWeight:700,color:B[600]}}>
+                <Ic n="dl" s={16}/>{f.image&&!imgErr?"Foto ändern":"Foto hochladen"}
+                <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{s("image",ev.target.result);setImgErr(false);};r.readAsDataURL(file);}}/>
+              </label>
+              {f.image&&<button type="button" onClick={()=>{s("image","");setImgErr(false);}} style={{width:34,height:34,borderRadius:8,background:"#fff5f5",border:"1px solid #fecaca",color:"#dc2626",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Ic n="x" s={14}/></button>}
             </div>
           </Lbl>
           <Lbl t="Notizen"><textarea value={f.notes} onChange={e=>s("notes",e.target.value)} rows={2} style={{...inp,resize:"vertical"}}/></Lbl>
@@ -1234,19 +1194,20 @@ function ProwinModule({col,flash,syncing,setSyncing,onBack}) {
 function MonthlyChart({income,expenses}) {
   const [selected,setSelected]=useState(null);
   const MONTHS=["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"];
+  const currentYear=new Date().getFullYear();
   const currentMonth=new Date().getMonth();
 
   const data=useMemo(()=>{
     return MONTHS.map((_,i)=>{
       const inc=income.filter(x=>{
-        const d=new Date(x.date); return d.getFullYear()===2026&&d.getMonth()===i;
+        const d=new Date(x.date); return d.getFullYear()===currentYear&&d.getMonth()===i;
       }).reduce((s,x)=>s+(x.amount||0),0);
       const exp=expenses.filter(x=>{
-        const d=new Date(x.date); return d.getFullYear()===2026&&d.getMonth()===i;
+        const d=new Date(x.date); return d.getFullYear()===currentYear&&d.getMonth()===i;
       }).reduce((s,x)=>s+(x.amount||0),0);
       return {inc,exp,net:inc-exp};
     });
-  },[income,expenses]);
+  },[income,expenses,currentYear]);
 
   const maxVal=Math.max(...data.map(d=>d.inc),1);
   const totalYear=data.reduce((s,d)=>s+d.inc,0);
@@ -1257,7 +1218,7 @@ function MonthlyChart({income,expenses}) {
       {/* Header */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4}}>
         <div>
-          <div style={{fontWeight:900,fontSize:15,color:Z[900]}}>Einnahmen 2026</div>
+          <div style={{fontWeight:900,fontSize:15,color:Z[900]}}>Einnahmen {currentYear}</div>
           <div style={{fontSize:12,color:"#94a3b8",marginTop:2}}>Total: <strong style={{color:Z[700]}}>{chf(totalYear)}</strong></div>
         </div>
         {selected!==null&&(
@@ -1354,17 +1315,18 @@ function MemberModal({member,onSave,onClose,prices}) {
   const [selectedDates,setSelectedDates]=useState([]);
   const [showCalendar,setShowCalendar]=useState(false);
 
-  // Kalender: Montage von 01.01 bis heute
+  // Kalender: Montage von 01.01 bis heute (FIX: UTC-basiert, sonst DST-Bug ab März)
   const mondaysSinceJan=useMemo(()=>{
     const mondays=[];
-    const d=new Date("2026-01-05"); // erster Montag 2026
-    const today_=new Date();
-    today_.setHours(23,59,59,999);
-    while(d<=today_){
+    const year=new Date().getFullYear();
+    let d=new Date(Date.UTC(year,0,1));
+    while(d.getUTCDay()!==1) d.setUTCDate(d.getUTCDate()+1);
+    const t=new Date();
+    while(d<=t){
       mondays.push(d.toISOString().slice(0,10));
-      d.setDate(d.getDate()+7);
+      d.setUTCDate(d.getUTCDate()+7);
     }
-    return mondays.reverse(); // neueste zuerst
+    return mondays.reverse();
   },[]);
 
   const toggleDate=(dt)=>setSelectedDates(prev=>prev.includes(dt)?prev.filter(x=>x!==dt):[...prev,dt]);
@@ -1418,7 +1380,7 @@ function MemberModal({member,onSave,onClose,prices}) {
           {showDatePicker&&(
             <div>
               <label style={{fontSize:11,color:"#94a3b8",fontWeight:700,display:"block",marginBottom:5,textTransform:"uppercase",letterSpacing:.4}}>
-                {isAbo?"Bereits besuchte Lektionen (seit Jan. 2026)":"Besuchte Lektionen (seit Jan. 2026)"}
+                {isAbo?"Bereits besuchte Lektionen (seit Jahresbeginn)":"Besuchte Lektionen (seit Jahresbeginn)"}
               </label>
               <button type="button" onClick={()=>setShowCalendar(v=>!v)}
                 style={{width:"100%",padding:"10px 14px",background:Z[50],border:`1.5px solid ${Z[200]}`,borderRadius:12,fontSize:13,fontWeight:700,color:Z[700],cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -1429,8 +1391,8 @@ function MemberModal({member,onSave,onClose,prices}) {
                 <div style={{marginTop:8,background:"#fff",border:`1px solid ${Z[100]}`,borderRadius:12,maxHeight:220,overflowY:"auto",padding:8,display:"flex",flexDirection:"column",gap:4}}>
                   {mondaysSinceJan.map(dt=>{
                     const sel=selectedDates.includes(dt);
-                    const d=new Date(dt);
-                    const lbl=d.toLocaleDateString("de-CH",{day:"2-digit",month:"short",year:"numeric"});
+                    const d=new Date(dt+"T00:00:00Z");
+                    const lbl=d.toLocaleDateString("de-CH",{day:"2-digit",month:"short",year:"numeric",timeZone:"UTC"});
                     return (
                       <div key={dt} onClick={()=>toggleDate(dt)}
                         style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:8,background:sel?Z[50]:"transparent",border:`1px solid ${sel?Z[300]:"transparent"}`,cursor:"pointer",transition:"all .1s"}}>
@@ -1499,9 +1461,11 @@ function ExpenseModal({onSave,onClose,defaultMiete=40}) {
 
   const mondaysSinceJan=useMemo(()=>{
     const mondays=[];
-    const d=new Date("2026-01-05");
-    const t=new Date(); t.setHours(23,59,59,999);
-    while(d<=t){mondays.push(d.toISOString().slice(0,10));d.setDate(d.getDate()+7);}
+    const year=new Date().getFullYear();
+    let d=new Date(Date.UTC(year,0,1));
+    while(d.getUTCDay()!==1) d.setUTCDate(d.getUTCDate()+1);
+    const t=new Date();
+    while(d<=t){mondays.push(d.toISOString().slice(0,10));d.setUTCDate(d.getUTCDate()+7);}
     return mondays.reverse();
   },[]);
 
@@ -1553,8 +1517,8 @@ function ExpenseModal({onSave,onClose,defaultMiete=40}) {
                 <div style={{marginTop:8,background:"#fff",border:"1px solid #fecaca",borderRadius:12,maxHeight:220,overflowY:"auto",padding:8,display:"flex",flexDirection:"column",gap:4}}>
                   {mondaysSinceJan.map(dt=>{
                     const sel=selectedDates.includes(dt);
-                    const d=new Date(dt);
-                    const lbl=d.toLocaleDateString("de-CH",{day:"2-digit",month:"short",year:"numeric"});
+                    const d=new Date(dt+"T00:00:00Z");
+                    const lbl=d.toLocaleDateString("de-CH",{day:"2-digit",month:"short",year:"numeric",timeZone:"UTC"});
                     return (
                       <div key={dt} onClick={()=>toggleDate(dt)}
                         style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:8,background:sel?"#fff5f5":"transparent",border:`1px solid ${sel?"#fecaca":"transparent"}`,cursor:"pointer",transition:"all .1s"}}>
@@ -1598,7 +1562,14 @@ function IncomeModal({onSave,onClose,members,prices}) {
   const handleMember=(id)=>{
     const m=members.find(x=>x.id===id);
     s("memberId",id);
-    if(m){s("memberName",m.name);s("type",m.aboType||"einzel");s("amount",getAboPrice(m.aboType||"einzel",prices));}
+    if(m){
+      s("memberName",m.name);
+      const t=m.aboType||"einzel";
+      s("type",t);
+      // FIX: Abo-Mitglieder zahlen NICHT pro Lektion (Abo bereits bezahlt)
+      const isAbo=t==="abo5"||t==="abo10";
+      s("amount",isAbo?0:getAboPrice(t,prices));
+    }
   };
   const handleType=(type)=>{s("type",type);s("amount",getAboPrice(type,prices));};
   const submit=(e)=>{e.preventDefault();onSave({...f,amount:parseFloat(f.amount)||0});};
@@ -1618,6 +1589,15 @@ function IncomeModal({onSave,onClose,members,prices}) {
             </select>
           </Lbl>
           {!f.memberId&&<Lbl t="Name (manuell)"><input value={f.memberName} onChange={e=>s("memberName",e.target.value)} style={inp} placeholder="Name…"/></Lbl>}
+          {(() => {
+            const m=members.find(x=>x.id===f.memberId);
+            if(!m||(m.aboType!=="abo5"&&m.aboType!=="abo10"))return null;
+            return (
+              <div style={{background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:10,padding:"10px 12px",fontSize:12,color:"#9a3412",fontWeight:600}}>
+                ℹ️ {m.name} hat ein {getAboLabel(m.aboType)}. Die Lektion ist bereits bezahlt — Betrag steht auf 0. Für Abo-Erneuerung den 🔄-Button beim Teilnehmer nutzen.
+              </div>
+            );
+          })()}
           <Lbl t="Typ">
             <select value={f.type} onChange={e=>handleType(e.target.value)} style={inp}>
               {ABO_TYPES.map(a=><option key={a.id} value={a.id}>{a.label} – {chf(getAboPrice(a.id,prices))}</option>)}
@@ -1836,33 +1816,43 @@ function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
     try{
       const id=uid();
       await setDoc(doc(col("zumba_classes"),id),{...cls,id,createdAt:serverTimestamp()});
-      // Deduct 1 session from each attendee
+      // FIX: Lektion abziehen, leere Abos sammeln
+      let emptyNames=[];
       for(const mid of (cls.attendees||[])){
         const m=members.find(x=>x.id===mid);
-        if(m&&m.sessionsLeft>0){
+        if(!m)continue;
+        if(m.sessionsLeft>0){
           await setDoc(doc(col("zumba_members"),m.id),{...m,sessionsLeft:Math.max(0,m.sessionsLeft-1),updatedAt:serverTimestamp()});
+        } else if(m.aboType==="abo5"||m.aboType==="abo10"){
+          emptyNames.push(m.name);
         }
       }
-      // Auto-add rent expense
-      const expId=uid();
-      await setDoc(doc(col("zumba_expenses"),expId),{id:expId,date:cls.date,category:"Raummiete",amount:prices.miete,notes:`Automatisch: Kurs ${dateStr(cls.date)}`,createdAt:serverTimestamp()});
-      flash(`Kurs gespeichert ✓ · Raummiete CHF ${prices.miete} verbucht`);
+      // FIX: Miete nur einmal pro Datum
+      const existingRent=expenses.find(e=>e.date===cls.date&&e.category==="Raummiete");
+      if(!existingRent){
+        const expId=uid();
+        await setDoc(doc(col("zumba_expenses"),expId),{id:expId,date:cls.date,category:"Raummiete",amount:prices.miete,notes:`Automatisch: Kurs ${dateStr(cls.date)}`,createdAt:serverTimestamp()});
+      }
+      let msg=existingRent?`Kurs gespeichert ✓ · Miete bereits erfasst`:`Kurs gespeichert ✓ · Raummiete CHF ${prices.miete} verbucht`;
+      if(emptyNames.length>0)msg+=` ⚠️ Leeres Abo: ${emptyNames.join(", ")}`;
+      flash(msg);
     }catch{flash("Fehler",false);}
     setSyncing(false);setModal(null);
   };
 
   const exportCSV=(inc,exp)=>{
+    const header=["Datum","Typ","Name/Kategorie","Betrag CHF","Zahlungsart","Notiz"];
     const rows=[];
-    rows.push(["Datum","Typ","Name/Kategorie","Betrag CHF","Zahlungsart","Notiz"]);
     inc.forEach(x=>rows.push([x.date,getAboLabel(x.type),x.memberName||"",x.amount.toFixed(2),x.payment||"",x.notes||""]));
     exp.forEach(x=>rows.push([x.date,"Ausgabe",x.category,"-"+x.amount.toFixed(2),"",x.notes||""]));
     rows.sort((a,b)=>a[0]<b[0]?-1:1);
+    rows.unshift(header);
     const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
-    const bom="\uFEFF"; // UTF-8 BOM für Excel
+    const bom="\uFEFF";
     const blob=new Blob([bom+csv],{type:"text/csv;charset=utf-8;"});
     const url=URL.createObjectURL(blob);
     const a=document.createElement("a");
-    a.href=url;a.download=`Zumba_Finanzen_2026.csv`;a.click();
+    a.href=url;a.download=`Zumba_Finanzen_${new Date().getFullYear()}.csv`;a.click();
     URL.revokeObjectURL(url);
     flash("CSV exportiert ✓");
   };
@@ -1877,7 +1867,8 @@ function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
   const nextMonday=useMemo(()=>{
     const d=new Date();
     const day=d.getDay();
-    const diff=day===1?7:(8-day)%7;
+    // FIX: Wenn heute Montag, ist der "nächste Kurs" heute (nicht in 7 Tagen)
+    const diff=day===1?0:(8-day)%7;
     d.setDate(d.getDate()+diff);
     return d.toLocaleDateString("de-CH",{day:"2-digit",month:"long"});
   },[]);
@@ -2012,7 +2003,7 @@ function ZumbaModule({col,flash,syncing,setSyncing,onBack}) {
           </div>}
 
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            {members.sort((a,b)=>b.active-a.active||a.name.localeCompare(b.name)).map(m=>{
+            {[...members].sort((a,b)=>b.active-a.active||a.name.localeCompare(b.name)).map(m=>{
               const aboInfo=ABO_TYPES.find(x=>x.id===m.aboType);
               const sessionColor=m.sessionsLeft===0?"#dc2626":m.sessionsLeft<=1?"#d97706":"#16a34a";
               return (
@@ -2319,7 +2310,15 @@ function ItemModal({item,flohmärkte,onSave,onClose,onDel,cats,onAddCat}) {
           )}
           <Lbl t="Foto">
             <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <ImageUpload image={f.image} onImage={v=>s("image",v)} onClear={()=>{s("image","");setImgErr(false);}} accent={FM_A} icon="img" imgErr={imgErr} setImgErr={setImgErr}/>
+              {f.image&&!imgErr
+                ?<div style={{width:60,height:60,borderRadius:10,overflow:"hidden",flexShrink:0,border:"1px solid "+FM_A[200]}}><img src={f.image} alt="" onError={()=>setImgErr(true)} style={{width:"100%",height:"100%",objectFit:"cover"}}/></div>
+                :<div style={{width:60,height:60,borderRadius:10,background:FM_A[100],flexShrink:0,border:"2px dashed "+FM_A[300],display:"flex",alignItems:"center",justifyContent:"center"}}><Ic n="img" s={22} style={{color:FM_A[400]}}/></div>
+              }
+              <label style={{flex:1,display:"flex",alignItems:"center",gap:8,padding:"11px 14px",background:FM_A[50],border:"1.5px dashed "+FM_A[400],borderRadius:12,cursor:"pointer",fontSize:13,fontWeight:700,color:FM_A[700]}}>
+                <Ic n="img" s={16}/>{f.image&&!imgErr?"Foto aendern":"Foto hochladen"}
+                <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{s("image",ev.target.result);setImgErr(false);};r.readAsDataURL(file);}}/>
+              </label>
+              {f.image&&<button type="button" onClick={()=>{s("image","");setImgErr(false);}} style={{width:34,height:34,borderRadius:8,background:"#fff5f5",border:"1px solid #fecaca",color:"#dc2626",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Ic n="x" s={14}/></button>}
             </div>
           </Lbl>
           <Lbl t="Notizen"><textarea value={f.notizen} onChange={e=>s("notizen",e.target.value)} rows={2} style={{...FM_inp,resize:"vertical"}} placeholder="z.B. leichter Fleck, VB..."/></Lbl>
@@ -3000,42 +2999,36 @@ function FlohmarktModule({onBack}) {
 // ══════════════════════════════════════════════════════════════════════════════
 const KSC={50:"#eff6ff",100:"#fef9c3",200:"#bfdbfe",300:"#93c5fd",400:"#facc15",500:"#3b82f6",600:"#2563eb",700:"#1d4ed8",800:"#1e3a8a",900:"#172554"};
 const KS_CATS=["Alle","Kleider","T-Shirts & Tops","Blusen & Hemden","Pullover","Hosen/Röcke","Jacken/Mäntel","Schuhe","Taschen","Strümpfe & Leggings","Schmuck & Accessoires","Zumba Kleider","Sportkleidung"];
-const KS_FARBEN=["–","Schwarz","Weiss","Grau","Beige","Braun","Blau","Grün","Rot","Pink","Lila","Orange","Gelb","Gemustert","Bunt","Mehrfarbig"];
+const KS_FARBEN=["–","Schwarz","Weiss","Grau","Beige","Braun","Blau","Grün","Rot","Pink","Lila","Orange","Gelb","Gemustert","Bunt"];
 const KS_SAISON=["Ganzjährig","Frühling/Sommer","Herbst/Winter"];
-const KS_ICONS={"Kleider":"👗","T-Shirts & Tops":"👕","Blusen & Hemden":"👔","Pullover":"🧶","Hosen/Röcke":"👖","Jacken/Mäntel":"🧥","Schuhe":"👠","Taschen":"👜","Strümpfe & Leggings":"🧦","Schmuck & Accessoires":"💍","Zumba Kleider":"💃","Sportkleidung":"🏃","Pyjama":"🌙","Alle":"✨"};
+const KS_ICONS={"Kleider":"👗","T-Shirts & Tops":"👕","Blusen & Hemden":"👔","Pullover":"🧶","Hosen/Röcke":"👖","Jacken/Mäntel":"🧥","Schuhe":"👠","Taschen":"👜","Strümpfe & Leggings":"🧦","Schmuck & Accessoires":"💍","Zumba Kleider":"💃","Sportkleidung":"🏃","Alle":"✨"};
 
 // uid already defined
 const ks_col=(sub)=>collection(db,"users",USER_ID,sub);
-const ks_inp={width:"100%",padding:"10px 12px",border:"1px solid rgba(255,255,255,0.1)",borderRadius:8,fontSize:14,background:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.85)"};
+const ks_inp={width:"100%",padding:"10px 12px",border:`1px solid ${KSC[200]}`,borderRadius:10,fontSize:14,background:"#f8faff",color:"#1e3a8a"};
 //const ks_uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
 
 
 function KleidungCard({item,onClick,onFav}) {
   const [err,setErr]=useState(false);
-  const [hov,setHov]=useState(false);
   return (
-    <div onClick={onClick}
-      onMouseEnter={()=>setHov(true)}
-      onMouseLeave={()=>setHov(false)}
-      style={{background:"#16162a",borderRadius:4,overflow:"hidden",cursor:"pointer",border:"1px solid rgba(255,255,255,0.08)",boxShadow:hov?"0 8px 32px rgba(0,0,0,0.5)":"0 2px 8px rgba(0,0,0,0.3)",transition:"all .2s",position:"relative",transform:hov?"translateY(-4px)":""}}>
+    <div onClick={onClick} style={{background:"#fff",borderRadius:18,overflow:"hidden",cursor:"pointer",border:`1px solid ${KSC[100]}`,boxShadow:"0 2px 12px rgba(0,0,0,0.06)",transition:"transform .15s",position:"relative"}}
+      onMouseEnter={e=>e.currentTarget.style.transform="translateY(-3px)"}
+      onMouseLeave={e=>e.currentTarget.style.transform=""}>
       {/* Image area */}
-      <div style={{background:"#0f0f1e",height:170,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
+      <div style={{background:`linear-gradient(145deg,${KSC[50]},${KSC[100]})`,height:160,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
         {item.image&&!err
-          ?<img src={item.image} alt={item.name} onError={()=>setErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:8,transform:hov?"scale(1.06)":"scale(1)",transition:"transform .3s"}}/>
-          :<span style={{fontSize:52,opacity:.6}}>{KS_ICONS[item.kategorie]||"👗"}</span>
+          ?<img src={item.image} alt={item.name} onError={()=>setErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}}/>
+          :<span style={{fontSize:48}}>{KS_ICONS[item.kategorie]||"👗"}</span>
         }
-        {item.favorite&&<div style={{position:"absolute",top:8,right:8,color:"#f472b6",filter:"drop-shadow(0 0 6px #f472b680)"}}><Ic n="heartFill" s={15}/></div>}
-        {item.marke&&<div style={{position:"absolute",bottom:8,left:8,background:"rgba(0,0,0,0.65)",color:"rgba(255,255,255,0.75)",fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:3,letterSpacing:.5,textTransform:"uppercase"}}>{item.marke}</div>}
+        {item.favorite&&<div style={{position:"absolute",top:8,right:8,color:"#ef4444",filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.2))"}}><Ic n="heartFill" s={16}/></div>}
       </div>
       {/* Info */}
-      <div style={{padding:"10px 11px 11px"}}>
-        <div style={{fontWeight:700,fontSize:12,color:"rgba(255,255,255,0.9)",marginBottom:5,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",letterSpacing:.2}}>{item.name}</div>
-        <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
-          {item.farbe&&item.farbe!=="–"&&<span style={{display:"inline-flex",alignItems:"center",gap:3,fontSize:10,fontWeight:600,color:"rgba(255,255,255,0.4)",letterSpacing:.3}}>
-            <span style={{width:5,height:5,borderRadius:"50%",background:"#a78bfa",display:"inline-block"}}/>
-            {item.farbe}
-          </span>}
-          {item.groesse&&<span style={{fontSize:10,color:"rgba(255,255,255,0.28)",fontWeight:600}}>Gr. {item.groesse}</span>}
+      <div style={{padding:"10px 12px"}}>
+        <div style={{fontWeight:800,fontSize:13,color:KSC[900],marginBottom:2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{item.name}</div>
+        <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+          {item.farbe&&item.farbe!=="–"&&<span style={{fontSize:10,fontWeight:700,background:KSC[100],color:KSC[700],padding:"1px 6px",borderRadius:8}}>{item.farbe}</span>}
+          {item.marke&&<span style={{fontSize:10,fontWeight:700,background:"#f1f5f9",color:"#64748b",padding:"1px 6px",borderRadius:8}}>{item.marke}</span>}
         </div>
       </div>
     </div>
@@ -3051,12 +3044,27 @@ function KleidungModal({item,onSave,onClose,onDel}) {
   const submit=(e)=>{e.preventDefault();if(!f.name.trim())return;onSave(f);};
   return (
     <Drawer onClose={onClose}>
-      <h3 style={{margin:"0 0 16px",fontSize:17,fontWeight:800,color:"#1e1e3a",letterSpacing:.2}}>{isEdit?"Bearbeiten":"Neues Teil hinzufügen"}</h3>
+      <h3 style={{margin:"0 0 16px",fontSize:18,fontWeight:900,color:KSC[800]}}>{isEdit?"Bearbeiten":"Neues Teil hinzufügen"}</h3>
       <form onSubmit={submit}>
         <div style={{display:"flex",flexDirection:"column",gap:11}}>
-          <Lbl t="Foto">
-            <ImageUpload image={f.image} onImage={v=>s("image",v)} onClear={()=>{s("image","");setImgErr(false);}} accent={KSC} icon="shirt" imgErr={imgErr} setImgErr={setImgErr}/>
-          </Lbl>
+          {/* Image */}
+          <div style={{display:"flex",justifyContent:"center",marginBottom:4}}>
+            <label style={{cursor:"pointer"}}>
+              <div style={{width:130,height:165,borderRadius:16,background:`linear-gradient(145deg,${KSC[50]},${KSC[100]})`,border:`2px dashed ${KSC[400]}`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
+                {f.image&&!imgErr
+                  ?<img src={f.image} alt="" onError={()=>setImgErr(true)} style={{width:"100%",height:"100%",objectFit:"contain"}}/>
+                  :<>
+                    <span style={{fontSize:36,marginBottom:6}}>{KS_ICONS[f.kategorie]||"👗"}</span>
+                    <span style={{fontSize:11,color:KSC[600],fontWeight:700}}>Foto hochladen</span>
+                  </>
+                }
+              </div>
+              <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{
+                const file=e.target.files[0];if(!file)return;
+                const r=new FileReader();r.onload=ev=>{s("image",ev.target.result);setImgErr(false);};r.readAsDataURL(file);
+              }}/>
+            </label>
+          </div>
           <Lbl t="Bezeichnung *"><input required value={f.name} onChange={e=>s("name",e.target.value)} style={ks_inp} placeholder="z.B. Schwarzes Kleid"/></Lbl>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
             <Lbl t="Kategorie">
@@ -3106,64 +3114,32 @@ function KleidungModal({item,onSave,onClose,onDel}) {
 // ── DetailModal ───────────────────────────────────────────────────────────────
 function DetailModal({item,onClose,onEdit,onFav}) {
   const [err,setErr]=useState(false);
-  const [zoom,setZoom]=useState(false);
-
-  if(zoom) return (
-    <div onClick={()=>setZoom(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.95)",zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",cursor:"zoom-out"}}>
-      <img src={item.image} alt={item.name} style={{maxWidth:"92vw",maxHeight:"88vh",objectFit:"contain",borderRadius:4}}/>
-      <div style={{position:"absolute",top:20,right:20,background:"rgba(255,255,255,0.12)",border:"1px solid rgba(255,255,255,0.2)",borderRadius:6,padding:"6px 12px",color:"rgba(255,255,255,0.7)",fontSize:12,fontWeight:600}}>✕ Schliessen</div>
-    </div>
-  );
-
   return (
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.75)",zIndex:100,display:"flex",alignItems:"flex-end",justifyContent:"center"}} onClick={e=>e.target===e.currentTarget&&onClose()}>
-      <div style={{background:"#13132b",borderRadius:"20px 20px 0 0",padding:"0 0 32px",width:"100%",maxWidth:540,maxHeight:"93vh",overflowY:"auto",animation:"slideup .25s ease",border:"1px solid rgba(255,255,255,0.08)",borderBottom:"none"}}>
-        {/* Drag handle */}
-        <div style={{width:36,height:4,background:"rgba(255,255,255,0.15)",borderRadius:4,margin:"14px auto 0"}}/>
-        {/* Close button */}
-        <div style={{display:"flex",justifyContent:"flex-end",padding:"10px 16px 0"}}>
-          <button onClick={onClose} style={{width:32,height:32,borderRadius:8,border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.06)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"rgba(255,255,255,0.5)"}}><Ic n="x" s={14}/></button>
+    <Drawer onClose={onClose}>
+      <div style={{textAlign:"center"}}>
+        <div style={{width:"100%",height:260,borderRadius:18,background:`linear-gradient(145deg,${KSC[50]},${KSC[100]})`,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:16,overflow:"hidden"}}>
+          {item.image&&!err
+            ?<img src={item.image} alt={item.name} onError={()=>setErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:12}}/>
+            :<span style={{fontSize:72}}>{KS_ICONS[item.kategorie]||"👗"}</span>
+          }
         </div>
-
-        <div style={{padding:"0 20px 0"}}>
-          {/* Big image — click to zoom */}
-          <div onClick={()=>item.image&&!err&&setZoom(true)}
-            style={{width:"100%",height:300,borderRadius:10,background:"#0a0a1a",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:20,overflow:"hidden",position:"relative",cursor:item.image&&!err?"zoom-in":"default",border:"1px solid rgba(255,255,255,0.06)"}}>
-            {item.image&&!err
-              ?<img src={item.image} alt={item.name} onError={()=>setErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:16}}/>
-              :<span style={{fontSize:80,opacity:.5}}>{KS_ICONS[item.kategorie]||"👗"}</span>
-            }
-            {item.image&&!err&&<div style={{position:"absolute",bottom:10,right:10,background:"rgba(0,0,0,0.55)",borderRadius:5,padding:"4px 9px",fontSize:10,color:"rgba(255,255,255,0.6)",fontWeight:600,display:"flex",alignItems:"center",gap:4}}>
-              🔍 Vergrössern
-            </div>}
-            {item.favorite&&<div style={{position:"absolute",top:12,right:12,color:"#f472b6",filter:"drop-shadow(0 0 8px #f472b6aa)"}}><Ic n="heartFill" s={20}/></div>}
-          </div>
-
-          {/* Name */}
-          <h3 style={{fontSize:20,fontWeight:800,color:"rgba(255,255,255,0.92)",marginBottom:12,letterSpacing:.2}}>{item.name}</h3>
-
-          {/* Tags */}
-          <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:16}}>
-            <span style={{fontSize:11,fontWeight:700,background:"rgba(167,139,250,0.15)",color:"#c4b5fd",padding:"4px 10px",borderRadius:4,letterSpacing:.3}}>{item.kategorie}</span>
-            {item.farbe&&item.farbe!=="–"&&<span style={{fontSize:11,fontWeight:700,background:"rgba(255,255,255,0.07)",color:"rgba(255,255,255,0.5)",padding:"4px 10px",borderRadius:4,letterSpacing:.3}}>⬤ {item.farbe}</span>}
-            {item.marke&&<span style={{fontSize:11,fontWeight:700,background:"rgba(255,255,255,0.07)",color:"rgba(255,255,255,0.5)",padding:"4px 10px",borderRadius:4,letterSpacing:.3}}>{item.marke}</span>}
-            {item.groesse&&<span style={{fontSize:11,fontWeight:700,background:"rgba(255,255,255,0.07)",color:"rgba(255,255,255,0.5)",padding:"4px 10px",borderRadius:4,letterSpacing:.3}}>Gr. {item.groesse}</span>}
-            {item.saison&&<span style={{fontSize:11,fontWeight:700,background:"rgba(52,211,153,0.12)",color:"#6ee7b7",padding:"4px 10px",borderRadius:4,letterSpacing:.3}}>{item.saison}</span>}
-          </div>
-
-          {/* Notes */}
-          {item.notizen&&<p style={{fontSize:13,color:"rgba(255,255,255,0.4)",fontStyle:"italic",marginBottom:16,background:"rgba(255,255,255,0.04)",padding:"10px 14px",borderRadius:8,lineHeight:1.5}}>{item.notizen}</p>}
-
-          {/* Buttons */}
-          <div style={{display:"flex",gap:10,marginTop:4}}>
-            <button onClick={()=>onFav(item)} style={{flex:1,padding:"13px",background:item.favorite?"rgba(244,114,182,0.1)":"rgba(255,255,255,0.05)",color:item.favorite?"#f472b6":"rgba(255,255,255,0.45)",border:`1px solid ${item.favorite?"rgba(244,114,182,0.4)":"rgba(255,255,255,0.1)"}`,borderRadius:8,fontSize:13,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
-              <Ic n={item.favorite?"heartFill":"heart"} s={15}/>{item.favorite?"Unfavorit":"Favorit"}
-            </button>
-            <button onClick={onEdit} style={{flex:2,padding:"13px",background:"linear-gradient(135deg,#7c3aed,#a78bfa)",color:"#fff",border:"none",borderRadius:8,fontSize:13,fontWeight:800,cursor:"pointer",letterSpacing:.3}}>Bearbeiten</button>
-          </div>
+        <h3 style={{fontSize:22,fontWeight:900,color:KSC[900],marginBottom:6}}>{item.name}</h3>
+        <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap",marginBottom:16}}>
+          <span style={{fontSize:12,fontWeight:700,background:KSC[100],color:KSC[700],padding:"3px 10px",borderRadius:20}}>{item.kategorie}</span>
+          {item.farbe&&item.farbe!=="–"&&<span style={{fontSize:12,fontWeight:700,background:"#f1f5f9",color:"#64748b",padding:"3px 10px",borderRadius:20}}>{item.farbe}</span>}
+          {item.marke&&<span style={{fontSize:12,fontWeight:700,background:"#f8faff",color:"#475569",padding:"3px 10px",borderRadius:20}}>{item.marke}</span>}
+          {item.groesse&&<span style={{fontSize:12,fontWeight:700,background:KSC[50],color:KSC[600],padding:"3px 10px",borderRadius:20}}>Gr. {item.groesse}</span>}
+          <span style={{fontSize:12,fontWeight:700,background:"#f0fdf4",color:"#16a34a",padding:"3px 10px",borderRadius:20}}>{item.saison}</span>
+        </div>
+        {item.notizen&&<p style={{fontSize:13,color:"#64748b",fontStyle:"italic",marginBottom:16,textAlign:"left",background:KSC[50],padding:"10px 14px",borderRadius:10}}>{item.notizen}</p>}
+        <div style={{display:"flex",gap:10}}>
+          <button onClick={()=>onFav(item)} style={{flex:1,padding:"12px",background:item.favorite?"#fff5f5":KSC[50],color:item.favorite?"#ef4444":KSC[700],border:`1px solid ${item.favorite?"#fecaca":KSC[200]}`,borderRadius:12,fontSize:13,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
+            <Ic n={item.favorite?"heartFill":"heart"} s={16}/>{item.favorite?"Unfavorit":"Favorit"}
+          </button>
+          <button onClick={onEdit} style={{flex:2,padding:"12px",background:`linear-gradient(135deg,${KSC[700]},${KSC[500]})`,color:"#fff",border:"none",borderRadius:12,fontSize:13,fontWeight:700,cursor:"pointer"}}>Bearbeiten</button>
         </div>
       </div>
-    </div>
+    </Drawer>
   );
 }
 
@@ -3222,23 +3198,23 @@ function OutfitModal({outfit,allItems,onSave,onClose,onDel}) {
 function OutfitCard({outfit,allItems,onClick}) {
   const items=allItems.filter(i=>outfit.itemIds.includes(i.id)).slice(0,4);
   return (
-    <div onClick={onClick} style={{background:"#16162a",borderRadius:6,padding:14,border:"1px solid rgba(255,255,255,0.08)",cursor:"pointer",boxShadow:"0 2px 12px rgba(0,0,0,0.3)",transition:"all .15s"}}
+    <div onClick={onClick} style={{background:"#fff",borderRadius:18,padding:16,border:`1px solid ${KSC[100]}`,cursor:"pointer",boxShadow:"0 2px 12px rgba(0,0,0,0.06)",transition:"transform .15s"}}
       onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"}
       onMouseLeave={e=>e.currentTarget.style.transform=""}>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:10,height:120}}>
         {items.map((item,i)=>{
           return (
-            <div key={item.id} style={{borderRadius:4,background:"#0f0f1e",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+            <div key={item.id} style={{borderRadius:10,background:KSC[50],display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
               {item.image?<img src={item.image} alt="" style={{width:"100%",height:"100%",objectFit:"contain",padding:4}}/>:<span style={{fontSize:28}}>{KS_ICONS[item.kategorie]||"👗"}</span>}
             </div>
           );
         })}
         {items.length<4&&Array(4-items.length).fill(0).map((_,i)=>(
-          <div key={i} style={{borderRadius:4,background:"#0a0a18",border:"1px dashed rgba(255,255,255,0.08)"}}/>
+          <div key={i} style={{borderRadius:10,background:"#f8faff",border:"2px dashed #e2e8f0"}}/>
         ))}
       </div>
-      <div style={{fontWeight:700,fontSize:13,color:"rgba(255,255,255,0.85)",marginBottom:4,letterSpacing:.2}}>{outfit.name}</div>
-      <div style={{fontSize:11,color:"rgba(255,255,255,0.3)"}}>{outfit.itemIds.length} Teile</div>
+      <div style={{fontWeight:800,fontSize:14,color:KSC[900],marginBottom:4}}>{outfit.name}</div>
+      <div style={{fontSize:12,color:"#94a3b8"}}>{outfit.itemIds.length} Teile</div>
     </div>
   );
 }
@@ -3276,33 +3252,33 @@ function SwipeView({items}) {
       {/* Category filter */}
       <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:20,scrollbarWidth:"none"}}>
         {KS_CATS.map(c=>(
-          <button key={c} onClick={()=>{setFilterCat(c);setIdx(0);}} style={{flexShrink:0,padding:"5px 12px",borderRadius:4,border:`1px solid ${filterCat===c?"rgba(167,139,250,0.6)":"rgba(255,255,255,0.08)"}`,background:filterCat===c?"rgba(167,139,250,0.15)":"rgba(255,255,255,0.04)",color:filterCat===c?"#c4b5fd":"rgba(255,255,255,0.4)",fontSize:11,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
+          <button key={c} onClick={()=>{setFilterCat(c);setIdx(0);}} style={{flexShrink:0,padding:"6px 14px",borderRadius:20,border:`2px solid ${filterCat===c?KSC[500]:KSC[200]}`,background:filterCat===c?KSC[500]:"#fff",color:filterCat===c?"#fff":KSC[700],fontSize:12,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
             {KS_ICONS[c]} {c}
           </button>
         ))}
       </div>
 
       {/* Counter */}
-      <div style={{textAlign:"center",fontSize:12,color:"rgba(255,255,255,0.3)",fontWeight:600,marginBottom:16}}>
+      <div style={{textAlign:"center",fontSize:13,color:"#94a3b8",fontWeight:600,marginBottom:16}}>
         {idx+1} / {filtered.length}
-        <button onClick={reset} style={{marginLeft:8,fontSize:11,color:"rgba(167,139,250,0.7)",background:"none",border:"none",cursor:"pointer",fontWeight:700}}>↺ Neustart</button>
+        <button onClick={reset} style={{marginLeft:8,fontSize:11,color:KSC[600],background:"none",border:"none",cursor:"pointer",fontWeight:700}}>↺ Neustart</button>
       </div>
 
       {/* Swipe card */}
       <div style={{display:"flex",justifyContent:"center",marginBottom:24}}>
         <div className={anim==="left"?"swipe-left":anim==="right"?"swipe-right":""}
-          style={{width:280,borderRadius:8,background:"#16162a",boxShadow:"0 16px 48px rgba(0,0,0,0.6)",overflow:"hidden",border:"1px solid rgba(255,255,255,0.08)",animation:!anim?"popIn .3s ease":undefined}}>
-          <div style={{height:340,background:"#0f0f1e",display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
+          style={{width:280,borderRadius:28,background:"#fff",boxShadow:"0 12px 40px rgba(0,0,0,0.12)",overflow:"hidden",animation:!anim?"popIn .3s ease":undefined}}>
+          <div style={{height:340,background:`linear-gradient(145deg,${KSC[50]},${KSC[100]})`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}>
             {current.image&&!err
               ?<img src={current.image} alt={current.name} onError={()=>setErr(true)} style={{width:"100%",height:"100%",objectFit:"contain",padding:20}}/>
               :<span style={{fontSize:80}}>{KS_ICONS[current.kategorie]||"👗"}</span>
             }
-            {current.favorite&&<div style={{position:"absolute",top:16,right:16,color:"#f472b6",filter:"drop-shadow(0 0 8px #f472b680)"}}><Ic n="heartFill" s={22}/></div>}
+            {current.favorite&&<div style={{position:"absolute",top:16,right:16,color:"#ef4444"}}><Ic n="heartFill" s={22}/></div>}
           </div>
           <div style={{padding:"16px 20px 20px"}}>
-            <div style={{fontWeight:700,fontSize:16,color:"rgba(255,255,255,0.9)",marginBottom:6,letterSpacing:.2}}>{current.name}</div>
+            <div style={{fontWeight:900,fontSize:18,color:KSC[900],marginBottom:6}}>{current.name}</div>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-              <span style={{fontSize:10,fontWeight:600,background:"rgba(167,139,250,0.15)",color:"#c4b5fd",padding:"2px 8px",borderRadius:3,letterSpacing:.3}}>{current.kategorie}</span>
+              <span style={{fontSize:11,fontWeight:700,background:KSC[100],color:KSC[700],padding:"2px 8px",borderRadius:10}}>{current.kategorie}</span>
               {current.farbe&&current.farbe!=="–"&&<span style={{fontSize:11,fontWeight:700,background:"#f1f5f9",color:"#64748b",padding:"2px 8px",borderRadius:10}}>{current.farbe}</span>}
               {current.marke&&<span style={{fontSize:11,fontWeight:700,background:"#f8faff",color:"#475569",padding:"2px 8px",borderRadius:10}}>{current.marke}</span>}
               {current.groesse&&<span style={{fontSize:11,fontWeight:700,background:KSC[50],color:KSC[600],padding:"2px 8px",borderRadius:10}}>Gr. {current.groesse}</span>}
@@ -3314,13 +3290,13 @@ function SwipeView({items}) {
 
       {/* Navigation buttons */}
       <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:20}}>
-        <button onClick={()=>go("left")} style={{width:56,height:56,borderRadius:4,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,color:"rgba(255,255,255,0.5)"}}>
+        <button onClick={()=>go("left")} style={{width:64,height:64,borderRadius:32,background:"#fff",border:`2px solid ${KSC[200]}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,boxShadow:"0 4px 16px rgba(0,0,0,0.08)",color:KSC[600]}}>
           ←
         </button>
-        <div style={{fontSize:12,color:"rgba(255,255,255,0.25)",fontWeight:600,textAlign:"center",lineHeight:1.4}}>
+        <div style={{fontSize:13,color:"#94a3b8",fontWeight:600,textAlign:"center",lineHeight:1.4}}>
           Wische oder klicke<br/>um zu navigieren
         </div>
-        <button onClick={()=>go("right")} style={{width:56,height:56,borderRadius:4,background:"linear-gradient(135deg,#7c3aed,#a78bfa)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,color:"#fff",boxShadow:"0 4px 20px rgba(124,58,237,0.4)"}}>
+        <button onClick={()=>go("right")} style={{width:64,height:64,borderRadius:32,background:"linear-gradient(135deg,#facc15,#fde047)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,boxShadow:"0 4px 16px #facc1560",color:"#fff"}}>
           →
         </button>
       </div>
@@ -3328,7 +3304,7 @@ function SwipeView({items}) {
       {/* Progress dots */}
       <div style={{display:"flex",justifyContent:"center",gap:4,marginTop:20,flexWrap:"wrap"}}>
         {filtered.slice(0,20).map((_,i)=>(
-          <div key={i} onClick={()=>setIdx(i)} style={{width:i===idx?20:6,height:6,borderRadius:3,background:i===idx?"#a78bfa":"rgba(255,255,255,0.12)",cursor:"pointer",transition:"all .2s"}}/>
+          <div key={i} onClick={()=>setIdx(i)} style={{width:i===idx?20:6,height:6,borderRadius:3,background:i===idx?KSC[500]:KSC[200],cursor:"pointer",transition:"all .2s"}}/>
         ))}
         {filtered.length>20&&<span style={{fontSize:11,color:"#94a3b8",marginLeft:4}}>+{filtered.length-20}</span>}
       </div>
@@ -3419,34 +3395,34 @@ function KleiderschrankModule({onBack}) {
   },[items]);
 
   return (
-    <div style={{minHeight:"100vh",background:"#0d0d1a"}}>
+    <div style={{minHeight:"100vh",background:"#fffbeb"}}>
       {/* Header */}
-      <header style={{background:"linear-gradient(135deg,#0d0d1a,#1a1a2e)",position:"sticky",top:0,zIndex:50,boxShadow:"0 1px 0 rgba(255,255,255,0.07)",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+      <header style={{background:`linear-gradient(135deg,${KSC[800]},#facc15)`,position:"sticky",top:0,zIndex:50,boxShadow:`0 4px 24px ${KSC[900]}50`}}>
         <div style={{maxWidth:960,margin:"0 auto",padding:"0 16px",display:"flex",alignItems:"center",height:56,gap:12}}>
           <button onClick={onBack} style={{width:36,height:36,borderRadius:12,background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",flexShrink:0}}><Ic n="home" s={16}/></button>
           <span style={{fontSize:24}}>👗</span>
           <div style={{flex:1}}>
             <div style={{fontWeight:900,fontSize:16,color:"#fff"}}>Lorena's Kleiderschrank</div>
-            <div className="hdr-sub" style={{fontSize:10,color:"rgba(255,255,255,0.4)",fontWeight:600,letterSpacing:1.2}}>{items.length} TEILE · {outfits.length} OUTFITS</div>
+            <div className="hdr-sub" style={{fontSize:10,color:"rgba(255,255,255,0.65)",fontWeight:700,letterSpacing:.6}}>{items.length} TEILE · {outfits.length} OUTFITS</div>
           </div>
-          <button onClick={()=>setModal({type:"add"})} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 15px",background:"linear-gradient(135deg,#7c3aed,#a78bfa)",border:"none",borderRadius:6,color:"#fff",fontSize:12,fontWeight:800,cursor:"pointer",letterSpacing:.4}}>
+          <button onClick={()=>setModal({type:"add"})} style={{display:"flex",alignItems:"center",gap:5,padding:"7px 13px",background:"rgba(255,255,255,0.2)",border:"1px solid rgba(255,255,255,0.35)",borderRadius:20,color:"#fff",fontSize:13,fontWeight:800,cursor:"pointer"}}>
             <Ic n="plus" s={14}/>Neu
           </button>
         </div>
       </header>
 
       {/* Nav */}
-      <nav style={{background:"#12122a",borderBottom:"1px solid rgba(255,255,255,0.07)",position:"sticky",top:56,zIndex:40}}>
+      <nav style={{background:"#fff",borderBottom:`1px solid ${KSC[100]}`,position:"sticky",top:56,zIndex:40}}>
         <div style={{maxWidth:960,margin:"0 auto",padding:"0 4px",display:"flex"}}>
           {[["schrank","Schrank","grid"],["outfits","Outfits","star"],["swipen","Swipen","swap"]].map(([id,lb,ic])=>(
-            <button key={id} onClick={()=>setTab(id)} className="nav-btn" style={{display:"flex",alignItems:"center",gap:5,padding:"12px 16px",background:"none",border:"none",cursor:"pointer",fontSize:13,fontWeight:700,color:tab===id?"#a78bfa":"rgba(255,255,255,0.35)",borderBottom:`2.5px solid ${tab===id?"#a78bfa":"transparent"}`,flex:1,justifyContent:"center"}}>
+            <button key={id} onClick={()=>setTab(id)} className="nav-btn" style={{display:"flex",alignItems:"center",gap:5,padding:"12px 16px",background:"none",border:"none",cursor:"pointer",fontSize:13,fontWeight:700,color:tab===id?KSC[700]:"#94a3b8",borderBottom:`2.5px solid ${tab===id?KSC[500]:"transparent"}`,flex:1,justifyContent:"center"}}>
               <Ic n={ic} s={15}/><span className="nav-label">{lb}</span>
             </button>
           ))}
         </div>
       </nav>
 
-      <main className="main-pad" style={{maxWidth:960,margin:"0 auto",padding:"20px 16px 80px",background:"#0d0d1a"}}>
+      <main className="main-pad" style={{maxWidth:960,margin:"0 auto",padding:"20px 16px 80px"}}>
 
         {/* SCHRANK TAB */}
         {tab==="schrank"&&<div style={{animation:"fadein .3s ease"}}>
@@ -3454,10 +3430,10 @@ function KleiderschrankModule({onBack}) {
           <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:8,marginBottom:16,scrollbarWidth:"none"}}>
             {KS_CATS.filter(c=>c!=="Alle").map(c=>(
               <div key={c} onClick={()=>setFilterCat(filterCat===c?"Alle":c)}
-                style={{flexShrink:0,background:filterCat===c?"rgba(167,139,250,0.15)":"rgba(255,255,255,0.04)",border:`1px solid ${filterCat===c?"rgba(167,139,250,0.6)":"rgba(255,255,255,0.08)"}`,borderRadius:8,padding:"8px 12px",cursor:"pointer",textAlign:"center",minWidth:72,transition:"all .15s"}}>
+                style={{flexShrink:0,background:filterCat===c?`linear-gradient(135deg,${KSC[700]},#facc15)`:"#fff",border:`1px solid ${filterCat===c?KSC[500]:KSC[200]}`,borderRadius:14,padding:"8px 12px",cursor:"pointer",textAlign:"center",minWidth:72}}>
                 <div style={{fontSize:20,marginBottom:2}}>{KS_ICONS[c]}</div>
-                <div style={{fontSize:10,fontWeight:700,color:filterCat===c?"#c4b5fd":"rgba(255,255,255,0.5)",whiteSpace:"nowrap"}}>{c.split("/")[0]}</div>
-                <div style={{fontSize:12,fontWeight:900,color:filterCat===c?"#a78bfa":"rgba(255,255,255,0.7)"}}>{totalBycat[c]||0}</div>
+                <div style={{fontSize:10,fontWeight:700,color:filterCat===c?"#fff":KSC[700],whiteSpace:"nowrap"}}>{c.split("/")[0]}</div>
+                <div style={{fontSize:12,fontWeight:900,color:filterCat===c?"#fff":KSC[600]}}>{totalBycat[c]||0}</div>
               </div>
             ))}
           </div>
@@ -3467,17 +3443,17 @@ function KleiderschrankModule({onBack}) {
             <div style={{flex:1,position:"relative"}}>
               <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Suchen nach Name oder Marke…" style={{...ks_inp,paddingLeft:12}}/>
             </div>
-            <button onClick={()=>setFilterFav(x=>!x)} style={{padding:"10px 14px",borderRadius:8,border:`2px solid ${filterFav?"#f472b6":"rgba(255,255,255,0.1)"}`,background:filterFav?"rgba(244,114,182,0.1)":"rgba(255,255,255,0.04)",color:filterFav?"#f472b6":"rgba(255,255,255,0.4)",cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontWeight:700,fontSize:13,flexShrink:0}}>
+            <button onClick={()=>setFilterFav(x=>!x)} style={{padding:"10px 14px",borderRadius:12,border:`2px solid ${filterFav?"#ef4444":KSC[200]}`,background:filterFav?"#fff5f5":"#fff",color:filterFav?"#ef4444":KSC[600],cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontWeight:700,fontSize:13,flexShrink:0}}>
               <Ic n={filterFav?"heartFill":"heart"} s={15}/>
             </button>
           </div>
 
           {filtered.length===0&&(
-            <div style={{textAlign:"center",padding:60,background:"rgba(255,255,255,0.03)",borderRadius:12,border:"2px dashed rgba(255,255,255,0.1)"}}>
+            <div style={{textAlign:"center",padding:60,background:"#fff",borderRadius:20,border:`2px dashed ${KSC[200]}`}}>
               <div style={{fontSize:48,marginBottom:12}}>👗</div>
-              <div style={{fontWeight:800,fontSize:16,color:"rgba(255,255,255,0.7)",marginBottom:6}}>Noch nichts im Schrank</div>
+              <div style={{fontWeight:800,fontSize:16,color:KSC[800],marginBottom:6}}>Noch nichts im Schrank</div>
               <p style={{color:"#94a3b8",fontSize:13,marginBottom:16}}>Füge dein erstes Kleidungsstück hinzu</p>
-              <button onClick={()=>setModal({type:"add"})} style={{padding:"11px 22px",background:"linear-gradient(135deg,#7c3aed,#a78bfa)",color:"#fff",border:"none",borderRadius:8,fontSize:14,fontWeight:800,cursor:"pointer",letterSpacing:.3}}>+ Hinzufügen</button>
+              <button onClick={()=>setModal({type:"add"})} style={{padding:"11px 22px",background:`linear-gradient(135deg,${KSC[700]},${KSC[500]})`,color:"#fff",border:"none",borderRadius:14,fontSize:14,fontWeight:800,cursor:"pointer"}}>+ Hinzufügen</button>
             </div>
           )}
 
@@ -3485,9 +3461,9 @@ function KleiderschrankModule({onBack}) {
           {Object.entries(byCat).map(([cat,catItems])=>(
             <div key={cat} style={{marginBottom:24}}>
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
-                <span style={{fontSize:18}}>{KS_ICONS[cat]||"👗"}</span>
-                <span style={{fontWeight:800,fontSize:13,color:"rgba(255,255,255,0.7)",letterSpacing:1.2,textTransform:"uppercase"}}>{cat}</span>
-                <span style={{fontSize:11,color:"rgba(255,255,255,0.25)",fontWeight:600}}>({catItems.length})</span>
+                <span style={{fontSize:20}}>{KS_ICONS[cat]||"👗"}</span>
+                <span style={{fontWeight:900,fontSize:16,color:KSC[800]}}>{cat}</span>
+                <span style={{fontSize:12,color:"#94a3b8",fontWeight:600}}>({catItems.length})</span>
               </div>
               <div className="grid-3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}}>
                 {catItems.map(item=>(
@@ -3505,18 +3481,18 @@ function KleiderschrankModule({onBack}) {
         {tab==="outfits"&&<div style={{animation:"fadein .3s ease"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
             <div>
-              <h2 style={{fontSize:18,fontWeight:800,color:"rgba(255,255,255,0.85)",letterSpacing:.3}}>Meine Outfits</h2>
-              <div style={{fontSize:12,color:"rgba(255,255,255,0.35)"}}>{outfits.length} gespeicherte Outfits</div>
+              <h2 style={{fontSize:20,fontWeight:900,color:KSC[900]}}>Meine Outfits</h2>
+              <div style={{fontSize:13,color:"#94a3b8"}}>{outfits.length} gespeicherte Outfits</div>
             </div>
-            <button onClick={()=>setModal({type:"outfit"})} style={{display:"flex",alignItems:"center",gap:5,padding:"10px 16px",background:"linear-gradient(135deg,#7c3aed,#a78bfa)",color:"#fff",border:"none",borderRadius:6,fontSize:12,fontWeight:800,cursor:"pointer",letterSpacing:.4}}>
+            <button onClick={()=>setModal({type:"outfit"})} style={{display:"flex",alignItems:"center",gap:5,padding:"10px 16px",background:`linear-gradient(135deg,${KSC[700]},${KSC[500]})`,color:"#fff",border:"none",borderRadius:12,fontSize:13,fontWeight:800,cursor:"pointer"}}>
               <Ic n="plus" s={14}/>Neu
             </button>
           </div>
 
           {outfits.length===0&&(
-            <div style={{textAlign:"center",padding:60,background:"rgba(255,255,255,0.03)",borderRadius:10,border:"2px dashed rgba(255,255,255,0.1)"}}>
+            <div style={{textAlign:"center",padding:60,background:"#fff",borderRadius:20,border:`2px dashed ${KSC[200]}`}}>
               <div style={{fontSize:48,marginBottom:12}}>✨</div>
-              <div style={{fontWeight:800,fontSize:16,color:"rgba(255,255,255,0.7)",marginBottom:6}}>Noch kein Outfit</div>
+              <div style={{fontWeight:800,fontSize:16,color:KSC[800],marginBottom:6}}>Noch kein Outfit</div>
               <p style={{color:"#94a3b8",fontSize:13,marginBottom:16}}>Kombiniere Teile aus deinem Schrank</p>
               <button onClick={()=>setModal({type:"outfit"})} style={{padding:"11px 22px",background:`linear-gradient(135deg,${KSC[700]},${KSC[500]})`,color:"#fff",border:"none",borderRadius:14,fontSize:14,fontWeight:800,cursor:"pointer"}}>+ Outfit erstellen</button>
             </div>
@@ -3534,28 +3510,11 @@ function KleiderschrankModule({onBack}) {
         {/* SWIPE TAB */}
         {tab==="swipen"&&<div style={{animation:"fadein .3s ease"}}>
           <div style={{textAlign:"center",marginBottom:20}}>
-            <h2 style={{fontSize:18,fontWeight:800,color:"rgba(255,255,255,0.85)",marginBottom:4,letterSpacing:.3}}>Schrank durchblättern</h2>
-            <p style={{fontSize:13,color:"rgba(255,255,255,0.35)"}}>Navigiere durch deine Kleider wie eine Diashow</p>
+            <h2 style={{fontSize:20,fontWeight:900,color:KSC[900],marginBottom:4}}>Schrank durchblättern</h2>
+            <p style={{fontSize:13,color:"#94a3b8"}}>Navigiere durch deine Kleider wie eine Diashow</p>
           </div>
           <SwipeView items={items}/>
         </div>}
-
-        {/* Reset Schrank */}
-        <div style={{marginTop:32,padding:"16px",background:"rgba(220,38,38,0.05)",border:"1px solid rgba(220,38,38,0.2)",borderRadius:8,textAlign:"center"}}>
-          <div style={{fontWeight:800,fontSize:14,color:"#7f1d1d",marginBottom:6}}>⚠️ Kleiderschrank zurücksetzen</div>
-          <p style={{fontSize:12,color:"#94a3b8",marginBottom:12}}>Alle {items.length} Kleider und {outfits.length} Outfits werden unwiderruflich gelöscht</p>
-          <button onClick={async()=>{
-            if(!window.confirm("Wirklich alle "+items.length+" Kleider und "+outfits.length+" Outfits löschen? Das kann nicht rückgängig gemacht werden."))return;
-            try{
-              for(const i of items) await deleteDoc(doc(ks_col("ks_items"),i.id));
-              for(const o of outfits) await deleteDoc(doc(ks_col("ks_outfits"),o.id));
-              flash("Kleiderschrank geleert ✓");
-            }catch{flash("Fehler",false);}
-          }} disabled={items.length===0&&outfits.length===0}
-            style={{padding:"10px 22px",background:items.length===0&&outfits.length===0?"#f1f5f9":"#dc2626",color:items.length===0&&outfits.length===0?"#94a3b8":"#fff",border:"none",borderRadius:12,fontSize:13,fontWeight:800,cursor:items.length===0&&outfits.length===0?"not-allowed":"pointer"}}>
-            🗑️ Alles löschen
-          </button>
-        </div>
 
       </main>
 
@@ -3565,7 +3524,7 @@ function KleiderschrankModule({onBack}) {
       {modal?.type==="detail"&&<DetailModal item={modal.item} onClose={()=>setModal(null)} onEdit={()=>setModal({type:"edit",item:modal.item})} onFav={toggleFav}/>}
       {modal?.type==="outfit"&&<OutfitModal outfit={modal.outfit||null} allItems={items} onSave={saveOutfit} onClose={()=>setModal(null)} onDel={delOutfit}/>}
 
-      {toast&&<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:toast.ok?"#4c1d95":"#7f1d1d",color:"#fff",padding:"11px 22px",borderRadius:30,fontSize:13,fontWeight:700,boxShadow:"0 4px 24px rgba(0,0,0,.2)",zIndex:9999,whiteSpace:"nowrap",animation:"fadein .2s ease"}}>{toast.msg}</div>}
+      {toast&&<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:toast.ok?KSC[800]:"#7f1d1d",color:"#fff",padding:"11px 22px",borderRadius:30,fontSize:13,fontWeight:700,boxShadow:"0 4px 24px rgba(0,0,0,.2)",zIndex:9999,whiteSpace:"nowrap",animation:"fadein .2s ease"}}>{toast.msg}</div>}
     </div>
   );
 }
