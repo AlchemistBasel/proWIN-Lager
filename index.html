@@ -973,31 +973,37 @@ function OrderListModal({products,onClose}) {
     return products
       .filter(p=>p.stock<=p.minStock)
       .map(p=>{
-        const needed=Math.max(1,(p.minStock||1)*2-p.stock);
-        return {...p,_needed:needed,_cost:needed*(p.buyPrice||0)};
+        const suggested=Math.max(1,(p.minStock||1)*2-p.stock);
+        return {...p,_suggested:suggested};
       })
       .sort((a,b)=>(a.stock-a.minStock)-(b.stock-b.minStock));
   },[products]);
 
-  // Alle standardmässig ausgewählt
+  // Alle standardmässig ausgewählt, Mengen als editierbarer State
   const [selected,setSelected]=useState(()=>new Set());
-  useEffect(()=>{setSelected(new Set(lowStock.map(p=>p.id)));},[lowStock.length]);
+  const [qtys,setQtys]=useState({});
+  useEffect(()=>{
+    setSelected(new Set(lowStock.map(p=>p.id)));
+    const q={};
+    lowStock.forEach(p=>{q[p.id]=p._suggested;});
+    setQtys(q);
+  },[lowStock.length]);
 
   const toggle=(id)=>setSelected(prev=>{const s=new Set(prev);s.has(id)?s.delete(id):s.add(id);return s;});
   const selectAll=()=>setSelected(new Set(lowStock.map(p=>p.id)));
   const selectNone=()=>setSelected(new Set());
+  const setQty=(id,val)=>setQtys(prev=>({...prev,[id]:Math.max(1,parseInt(val)||1)}));
 
   const selectedItems=lowStock.filter(p=>selected.has(p.id));
-  const selectedTotal=selectedItems.reduce((s,p)=>s+p._cost,0);
+  const selectedTotal=selectedItems.reduce((s,p)=>s+(qtys[p.id]||p._suggested)*(p.buyPrice||0),0);
 
   const [copied,setCopied]=useState(false);
-
   const copy=async()=>{
-    const lines=selectedItems.map(p=>`${p._needed}× ${p.name}${p.buyPrice?` (CHF ${p.buyPrice.toFixed(2)})`:"" }`);
-    if(selectedItems.some(p=>p._cost>0)){
-      lines.push("");
-      lines.push(`Total ${selectedItems.length} Positionen${selectedTotal>0?` · CHF ${selectedTotal.toFixed(2)}`:""}`);
-    }
+    const lines=selectedItems.map(p=>{
+      const qty=qtys[p.id]||p._suggested;
+      return `${qty}× ${p.name}${p.buyPrice?` (CHF ${(qty*p.buyPrice).toFixed(2)})`:""}`;
+    });
+    if(selectedTotal>0){lines.push("");lines.push(`Total ${selectedItems.length} Positionen · CHF ${selectedTotal.toFixed(2)}`);}
     try{await navigator.clipboard.writeText(lines.join("\n"));setCopied(true);setTimeout(()=>setCopied(false),2500);}catch{}
   };
 
@@ -1005,7 +1011,7 @@ function OrderListModal({products,onClose}) {
     <Drawer onClose={onClose}>
       <h3 style={{margin:"0 0 4px",fontSize:18,fontWeight:900,color:B[900]}}>📋 Bestelliste</h3>
       <p style={{color:"#94a3b8",fontSize:13,marginBottom:12}}>
-        {lowStock.length===0?"Alle Produkte über Mindestbestand 🎉":`${lowStock.length} Produkt${lowStock.length!==1?"e":""} unter Mindestbestand`}
+        {lowStock.length===0?"Alle Produkte über Mindestbestand 🎉":`${lowStock.length} Produkt${lowStock.length!==1?"e":""} unter Mindestbestand · Menge anpassbar`}
       </p>
 
       {lowStock.length>0&&<>
@@ -1022,24 +1028,45 @@ function OrderListModal({products,onClose}) {
           </div>
         </div>
 
-        {/* Liste mit Checkboxen */}
-        <div style={{background:"#f8faff",border:`1px solid ${B[100]}`,borderRadius:12,padding:"6px 10px",marginBottom:12,maxHeight:320,overflowY:"auto"}}>
+        {/* Liste mit Checkbox + editierbarer Menge */}
+        <div style={{background:"#f8faff",border:`1px solid ${B[100]}`,borderRadius:12,padding:"6px 10px",marginBottom:12,maxHeight:340,overflowY:"auto"}}>
           {lowStock.map(p=>{
             const sel=selected.has(p.id);
+            const qty=qtys[p.id]||p._suggested;
+            const rowCost=qty*(p.buyPrice||0);
             return (
-              <div key={p.id} onClick={()=>toggle(p.id)}
-                style={{display:"flex",alignItems:"center",gap:10,padding:"9px 4px",borderBottom:`1px solid ${B[50]}`,cursor:"pointer",transition:"background .1s",borderRadius:6,background:sel?"transparent":"transparent"}}
-                onMouseEnter={e=>e.currentTarget.style.background="#eff6ff"}
-                onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-                {/* Checkbox */}
-                <div style={{width:22,height:22,borderRadius:6,border:`2px solid ${sel?B[500]:B[200]}`,background:sel?B[500]:"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"all .15s"}}>
+              <div key={p.id}
+                style={{display:"flex",alignItems:"center",gap:10,padding:"9px 4px",borderBottom:`1px solid ${B[50]}`}}>
+                {/* Checkbox — nur hier klicken für toggle */}
+                <div onClick={()=>toggle(p.id)}
+                  style={{width:22,height:22,borderRadius:6,border:`2px solid ${sel?B[500]:B[200]}`,background:sel?B[500]:"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,cursor:"pointer",transition:"all .15s"}}>
                   {sel&&<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                 </div>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontWeight:800,fontSize:13,color:sel?B[900]:"#94a3b8"}}>{p._needed}× {p.name}</div>
-                  <div style={{fontSize:11,color:"#94a3b8"}}>Bestand: {p.stock}/{p.minStock}{p.buyPrice?` · Einkauf ${chf(p.buyPrice)}`:""}</div>
+
+                {/* Produktname */}
+                <div style={{flex:1,minWidth:0,cursor:"pointer"}} onClick={()=>toggle(p.id)}>
+                  <div style={{fontWeight:800,fontSize:13,color:sel?B[900]:"#94a3b8",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}</div>
+                  <div style={{fontSize:10,color:"#94a3b8"}}>
+                    Bestand: {p.stock}/{p.minStock}
+                    {p._suggested!==qty&&<span style={{color:B[400],marginLeft:4}}>(Vorschlag: {p._suggested})</span>}
+                  </div>
                 </div>
-                {p._cost>0&&<div style={{fontWeight:800,fontSize:13,color:sel?B[700]:"#cbd5e1",flexShrink:0}}>{chf(p._cost)}</div>}
+
+                {/* Menge-Stepper */}
+                <div style={{display:"flex",alignItems:"center",gap:3,flexShrink:0}} onClick={e=>e.stopPropagation()}>
+                  <button onClick={()=>setQty(p.id,qty-1)}
+                    style={{width:26,height:26,borderRadius:6,border:`1px solid ${B[200]}`,background:"#fff",color:B[600],fontSize:16,fontWeight:900,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>−</button>
+                  <input
+                    type="number" min="1" value={qty}
+                    onChange={e=>setQty(p.id,e.target.value)}
+                    style={{width:36,height:26,border:`1px solid ${B[200]}`,borderRadius:6,textAlign:"center",fontSize:13,fontWeight:900,color:B[900],background:"#fff",padding:0}}
+                  />
+                  <button onClick={()=>setQty(p.id,qty+1)}
+                    style={{width:26,height:26,borderRadius:6,border:`1px solid ${B[200]}`,background:"#fff",color:B[600],fontSize:16,fontWeight:900,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>+</button>
+                </div>
+
+                {/* Kosten */}
+                {rowCost>0&&<div style={{fontWeight:800,fontSize:12,color:sel?B[700]:"#cbd5e1",flexShrink:0,minWidth:52,textAlign:"right"}}>{chf(rowCost)}</div>}
               </div>
             );
           })}
@@ -1050,7 +1077,7 @@ function OrderListModal({products,onClose}) {
           style={{width:"100%",padding:"13px",background:copied?"#16a34a":selected.size===0?"#e2e8f0":B[600],color:selected.size===0?"#94a3b8":"#fff",border:"none",borderRadius:12,fontSize:14,fontWeight:800,cursor:selected.size===0?"not-allowed":"pointer",marginBottom:6,transition:"background .2s"}}>
           {copied?"✓ Kopiert!":selected.size===0?"Bitte Produkte auswählen":`📋 ${selected.size} Produkt${selected.size!==1?"e":""} kopieren${selectedTotal>0?` · ${chf(selectedTotal)}`:""}`}
         </button>
-        <div style={{fontSize:11,color:"#94a3b8",textAlign:"center",marginBottom:4}}>Tipp: Vorschlag = doppelter Mindestbestand minus aktueller Bestand</div>
+        <div style={{fontSize:11,color:"#94a3b8",textAlign:"center",marginBottom:4}}>Checkbox = an/abwählen · +/− oder Zahl direkt eintippen</div>
       </>}
 
       {lowStock.length===0&&(
