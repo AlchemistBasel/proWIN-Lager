@@ -978,46 +978,79 @@ function OrderListModal({products,onClose}) {
       })
       .sort((a,b)=>(a.stock-a.minStock)-(b.stock-b.minStock));
   },[products]);
-  const total=lowStock.reduce((s,p)=>s+p._cost,0);
+
+  // Alle standardmässig ausgewählt
+  const [selected,setSelected]=useState(()=>new Set());
+  useEffect(()=>{setSelected(new Set(lowStock.map(p=>p.id)));},[lowStock.length]);
+
+  const toggle=(id)=>setSelected(prev=>{const s=new Set(prev);s.has(id)?s.delete(id):s.add(id);return s;});
+  const selectAll=()=>setSelected(new Set(lowStock.map(p=>p.id)));
+  const selectNone=()=>setSelected(new Set());
+
+  const selectedItems=lowStock.filter(p=>selected.has(p.id));
+  const selectedTotal=selectedItems.reduce((s,p)=>s+p._cost,0);
+
   const [copied,setCopied]=useState(false);
 
-  const textVersion=useMemo(()=>{
-    const lines=lowStock.map(p=>`${p._needed}× ${p.name}${p.buyPrice?` (CHF ${(p.buyPrice).toFixed(2)})`:""}`);
-    lines.push("");
-    lines.push(`Total ${lowStock.length} Positionen · CHF ${total.toFixed(2)}`);
-    return lines.join("\n");
-  },[lowStock,total]);
-
   const copy=async()=>{
-    try{await navigator.clipboard.writeText(textVersion);setCopied(true);setTimeout(()=>setCopied(false),2000);}catch{}
+    const lines=selectedItems.map(p=>`${p._needed}× ${p.name}${p.buyPrice?` (CHF ${p.buyPrice.toFixed(2)})`:"" }`);
+    if(selectedItems.some(p=>p._cost>0)){
+      lines.push("");
+      lines.push(`Total ${selectedItems.length} Positionen${selectedTotal>0?` · CHF ${selectedTotal.toFixed(2)}`:""}`);
+    }
+    try{await navigator.clipboard.writeText(lines.join("\n"));setCopied(true);setTimeout(()=>setCopied(false),2500);}catch{}
   };
 
   return (
     <Drawer onClose={onClose}>
       <h3 style={{margin:"0 0 4px",fontSize:18,fontWeight:900,color:B[900]}}>📋 Bestelliste</h3>
-      <p style={{color:"#94a3b8",fontSize:13,marginBottom:16}}>
-        {lowStock.length===0?"Alle Produkte über Mindestbestand 🎉":`${lowStock.length} Produkt${lowStock.length!==1?"e":""} unter Mindestbestand · Total: ${chf(total)}`}
+      <p style={{color:"#94a3b8",fontSize:13,marginBottom:12}}>
+        {lowStock.length===0?"Alle Produkte über Mindestbestand 🎉":`${lowStock.length} Produkt${lowStock.length!==1?"e":""} unter Mindestbestand`}
       </p>
 
       {lowStock.length>0&&<>
-        <div style={{background:"#f8faff",border:`1px solid ${B[100]}`,borderRadius:12,padding:"12px",marginBottom:12,maxHeight:300,overflowY:"auto"}}>
-          {lowStock.map(p=>(
-            <div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:`1px solid ${B[50]}`}}>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{fontWeight:800,fontSize:13,color:B[900]}}>{p._needed}× {p.name}</div>
-                <div style={{fontSize:11,color:"#94a3b8"}}>Bestand: {p.stock}/{p.minStock} · {p.buyPrice?`Einkauf ${chf(p.buyPrice)}`:"Kein Einkaufspreis"}</div>
-              </div>
-              {p._cost>0&&<div style={{fontWeight:800,fontSize:13,color:B[700],flexShrink:0,marginLeft:10}}>{chf(p._cost)}</div>}
-            </div>
-          ))}
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0 0",fontWeight:900,fontSize:14,color:B[800]}}>
-            <span>Total</span><span>{chf(total)}</span>
+        {/* Auswahl-Schnellbuttons */}
+        <div style={{display:"flex",gap:8,marginBottom:10,alignItems:"center"}}>
+          <button onClick={selectAll} style={{padding:"5px 12px",borderRadius:20,border:`1.5px solid ${B[300]}`,background:selected.size===lowStock.length?B[100]:"#f8faff",color:B[700],fontSize:12,fontWeight:700,cursor:"pointer"}}>
+            Alle ({lowStock.length})
+          </button>
+          <button onClick={selectNone} style={{padding:"5px 12px",borderRadius:20,border:"1.5px solid #e2e8f0",background:selected.size===0?"#f1f5f9":"#f8faff",color:"#94a3b8",fontSize:12,fontWeight:700,cursor:"pointer"}}>
+            Keine
+          </button>
+          <div style={{marginLeft:"auto",fontSize:12,fontWeight:800,color:selected.size>0?B[700]:"#94a3b8"}}>
+            {selected.size} gewählt{selectedTotal>0?` · ${chf(selectedTotal)}`:""}
           </div>
         </div>
-        <button onClick={copy} style={{width:"100%",padding:"12px",background:copied?"#16a34a":B[600],color:"#fff",border:"none",borderRadius:12,fontSize:14,fontWeight:800,cursor:"pointer",marginBottom:8}}>
-          {copied?"✓ In Zwischenablage kopiert":"📋 Als Text kopieren"}
+
+        {/* Liste mit Checkboxen */}
+        <div style={{background:"#f8faff",border:`1px solid ${B[100]}`,borderRadius:12,padding:"6px 10px",marginBottom:12,maxHeight:320,overflowY:"auto"}}>
+          {lowStock.map(p=>{
+            const sel=selected.has(p.id);
+            return (
+              <div key={p.id} onClick={()=>toggle(p.id)}
+                style={{display:"flex",alignItems:"center",gap:10,padding:"9px 4px",borderBottom:`1px solid ${B[50]}`,cursor:"pointer",transition:"background .1s",borderRadius:6,background:sel?"transparent":"transparent"}}
+                onMouseEnter={e=>e.currentTarget.style.background="#eff6ff"}
+                onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                {/* Checkbox */}
+                <div style={{width:22,height:22,borderRadius:6,border:`2px solid ${sel?B[500]:B[200]}`,background:sel?B[500]:"#fff",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"all .15s"}}>
+                  {sel&&<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                </div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontWeight:800,fontSize:13,color:sel?B[900]:"#94a3b8"}}>{p._needed}× {p.name}</div>
+                  <div style={{fontSize:11,color:"#94a3b8"}}>Bestand: {p.stock}/{p.minStock}{p.buyPrice?` · Einkauf ${chf(p.buyPrice)}`:""}</div>
+                </div>
+                {p._cost>0&&<div style={{fontWeight:800,fontSize:13,color:sel?B[700]:"#cbd5e1",flexShrink:0}}>{chf(p._cost)}</div>}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Kopieren-Button */}
+        <button onClick={copy} disabled={selected.size===0}
+          style={{width:"100%",padding:"13px",background:copied?"#16a34a":selected.size===0?"#e2e8f0":B[600],color:selected.size===0?"#94a3b8":"#fff",border:"none",borderRadius:12,fontSize:14,fontWeight:800,cursor:selected.size===0?"not-allowed":"pointer",marginBottom:6,transition:"background .2s"}}>
+          {copied?"✓ Kopiert!":selected.size===0?"Bitte Produkte auswählen":`📋 ${selected.size} Produkt${selected.size!==1?"e":""} kopieren${selectedTotal>0?` · ${chf(selectedTotal)}`:""}`}
         </button>
-        <div style={{fontSize:11,color:"#94a3b8",textAlign:"center"}}>Vorschlag: doppelter Mindestbestand minus aktueller Bestand</div>
+        <div style={{fontSize:11,color:"#94a3b8",textAlign:"center",marginBottom:4}}>Tipp: Vorschlag = doppelter Mindestbestand minus aktueller Bestand</div>
       </>}
 
       {lowStock.length===0&&(
