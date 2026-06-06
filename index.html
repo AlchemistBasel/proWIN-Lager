@@ -2605,6 +2605,109 @@ function StatusBadge({status}) {
   return <span style={{fontSize:10,fontWeight:800,padding:"2px 8px",borderRadius:20,background:s.bg,color:s.color,border:"1px solid "+s.border,whiteSpace:"nowrap"}}>{s.label}{status==="verkauft"?" checkmark":""}</span>;
 }
 
+function QuickSaleModal({flohmärkte,onSave,onClose,recentSales=[]}) {
+  // Default: nächster Flohmarkt (>= heute), sonst der letzte
+  const defaultFmId=useMemo(()=>{
+    const t=today();
+    const future=flohmärkte.filter(f=>f.datum>=t).sort((a,b)=>a.datum.localeCompare(b.datum));
+    if(future.length>0)return future[0].id;
+    if(flohmärkte.length>0)return flohmärkte[0].id;
+    return "";
+  },[flohmärkte]);
+
+  const [flohmarktId,setFlohmarktId]=useState(defaultFmId);
+  const [name,setName]=useState("");
+  const [preis,setPreis]=useState("");
+  const [savedJustNow,setSavedJustNow]=useState([]);
+  const [saving,setSaving]=useState(false);
+
+  const canSave=name.trim()&&parseFloat(preis)>0&&!saving;
+
+  const submit=async(e)=>{
+    e.preventDefault();
+    if(!canSave)return;
+    setSaving(true);
+    const verkaufspreis=parseFloat(preis);
+    const itemName=name.trim();
+    try{
+      await onSave({name:itemName,verkaufspreis,flohmarktId,kanal:"Flohmarkt"});
+      setSavedJustNow(prev=>[{name:itemName,preis:verkaufspreis,ts:Date.now()},...prev].slice(0,8));
+      setName("");setPreis("");
+      // Auto-focus zurück aufs Namensfeld
+      setTimeout(()=>{const el=document.getElementById("qs-name");if(el)el.focus();},10);
+    }catch{}
+    setSaving(false);
+  };
+
+  const sessionTotal=savedJustNow.reduce((s,x)=>s+x.preis,0);
+  const fm=flohmärkte.find(f=>f.id===flohmarktId);
+
+  return (
+    <Drawer onClose={onClose}>
+      <h3 style={{margin:"0 0 4px",fontSize:18,fontWeight:900,color:"#9f1239"}}>💰 Schnellverkauf</h3>
+      <p style={{color:"#94a3b8",fontSize:13,marginBottom:16}}>Direkt erfassen ohne Artikel-Anlegen</p>
+
+      <form onSubmit={submit}>
+        <div style={{display:"flex",flexDirection:"column",gap:11}}>
+          {flohmärkte.length>0?(
+            <Lbl t="Flohmarkt">
+              <select value={flohmarktId} onChange={e=>setFlohmarktId(e.target.value)} style={{...inp,background:"#fff1f2",borderColor:"#fecdd3",color:"#881337"}}>
+                <option value="">— Kein Flohmarkt (lose Verkauf) —</option>
+                {flohmärkte.map(f=><option key={f.id} value={f.id}>{f.name} · {dateStr(f.datum)}</option>)}
+              </select>
+            </Lbl>
+          ):(
+            <div style={{background:"#fffbeb",border:"1px solid #fde68a",borderRadius:10,padding:"10px 12px",fontSize:12,color:"#92400e"}}>
+              ⚠️ Noch kein Flohmarkt angelegt. Verkäufe werden ohne Zuordnung gespeichert.
+            </div>
+          )}
+
+          <Lbl t="Was verkauft? *">
+            <input id="qs-name" autoFocus required value={name} onChange={e=>setName(e.target.value)}
+              placeholder="z.B. Winterjacke blau" style={{...inp,background:"#fff1f2",borderColor:"#fecdd3",color:"#881337",fontSize:15,padding:"12px 14px"}}/>
+          </Lbl>
+
+          <Lbl t="Verkaufspreis CHF *">
+            <input required type="number" step="0.50" min="0" value={preis} onChange={e=>setPreis(e.target.value)}
+              placeholder="0.00" inputMode="decimal"
+              style={{...inp,background:"#fff1f2",borderColor:"#fecdd3",color:"#881337",fontSize:22,fontWeight:900,textAlign:"center",padding:"14px"}}/>
+          </Lbl>
+
+          <button type="submit" disabled={!canSave}
+            style={{padding:"14px",background:canSave?"linear-gradient(135deg,#9f1239,#f43f5e)":"#e2e8f0",color:canSave?"#fff":"#94a3b8",border:"none",borderRadius:12,fontSize:15,fontWeight:900,cursor:canSave?"pointer":"not-allowed",letterSpacing:.3}}>
+            {saving?"…":"✓ Verkauft speichern"}
+          </button>
+        </div>
+      </form>
+
+      {/* Session-Übersicht: bereits in dieser Session erfasste Verkäufe */}
+      {savedJustNow.length>0&&(
+        <div style={{marginTop:18,padding:"14px",background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:12}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:8}}>
+            <div style={{fontWeight:900,fontSize:13,color:"#15803d"}}>
+              ✅ Diese Session: {savedJustNow.length} verkauft
+            </div>
+            <div style={{fontWeight:900,fontSize:15,color:"#15803d"}}>{chf(sessionTotal)}</div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:4,maxHeight:140,overflowY:"auto"}}>
+            {savedJustNow.map((x,i)=>(
+              <div key={x.ts} style={{display:"flex",justifyContent:"space-between",fontSize:12,padding:"4px 0"}}>
+                <span style={{color:"#15803d",fontWeight:600}}>{x.name}</span>
+                <span style={{color:"#16a34a",fontWeight:800}}>+{chf(x.preis)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <button type="button" onClick={onClose}
+        style={{width:"100%",marginTop:14,padding:"12px",background:"#f8faff",color:"#94a3b8",border:"1px solid #e2e8f0",borderRadius:12,fontSize:14,fontWeight:700,cursor:"pointer"}}>
+        Fertig
+      </button>
+    </Drawer>
+  );
+}
+
 function ItemModal({item,flohmärkte,onSave,onClose,onDel,cats,onAddCat}) {
   const isEdit = !!item;
   const [f,setF] = useState(item||{name:"",kategorie:"Haushalt",beschreibung:"",wunschpreis:"",status:"verfuegbar",kanal:"",flohmarktId:"",image:"",notizen:""});
@@ -3028,6 +3131,29 @@ function FlohmarktModule({onBack}) {
     setModal(null);
   };
 
+  // Schnellverkauf: Artikel direkt als verkauft anlegen, ohne vorherige Erfassung
+  const quickSale = async ({name,verkaufspreis,flohmarktId,kanal})=>{
+    const id=uid();
+    const newItem={
+      id,
+      name,
+      kategorie:"Sonstiges",
+      beschreibung:"",
+      wunschpreis:verkaufspreis,
+      verkaufspreis,
+      status:"verkauft",
+      verkauftAm:today(),
+      flohmarktId:flohmarktId||"",
+      kanal:kanal||"Flohmarkt",
+      image:"",
+      notizen:"Schnellverkauf",
+      createdAt:serverTimestamp(),
+      updatedAt:serverTimestamp(),
+    };
+    await setDoc(doc(FM_col("flohmarkt_items"),id),newItem);
+    flash(`✓ ${name} · ${chf(verkaufspreis)}`);
+  };
+
   const toggleMitgenommen = async item => {
     const newStatus = item.status==="mitgenommen"?"verfuegbar":"mitgenommen";
     try{
@@ -3151,10 +3277,16 @@ function FlohmarktModule({onBack}) {
             </select>
           </div>
 
+          {/* Schnellverkauf prominent */}
+          <button onClick={()=>setModal({type:"quicksale"})}
+            style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"center",gap:10,padding:"16px",background:"linear-gradient(135deg,#9f1239,#f43f5e)",color:"#fff",border:"none",borderRadius:16,fontSize:15,fontWeight:900,cursor:"pointer",boxShadow:"0 6px 20px #f43f5e50",marginBottom:12,letterSpacing:.3}}>
+            💰 Schnellverkauf erfassen
+          </button>
+
           {/* Print + Add buttons */}
           <div style={{display:"flex",gap:8,marginBottom:16}}>
             <button onClick={()=>setModal({type:"item"})}
-              style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px",background:"linear-gradient(135deg,"+FM_A[800]+","+FM_A[500]+")",color:"#fff",border:"none",borderRadius:14,fontSize:14,fontWeight:800,cursor:"pointer",boxShadow:"0 4px 16px "+FM_A[600]+"40"}}>
+              style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:8,padding:"13px",background:"#fff",border:"2px solid "+FM_A[300],borderRadius:14,fontSize:14,fontWeight:800,color:FM_A[700],cursor:"pointer"}}>
               <Ic n="plus" s={16}/>Artikel hinzufügen
             </button>
             <button onClick={()=>setModal({type:"print"})}
@@ -3352,6 +3484,7 @@ function FlohmarktModule({onBack}) {
       </main>
 
       {modal?.type==="print"&&<PrintModal items={items} flohmärkte={flohmärkte} onClose={()=>setModal(null)}/>}
+      {modal?.type==="quicksale"&&<QuickSaleModal flohmärkte={flohmärkte} onSave={quickSale} onClose={()=>setModal(null)}/>}
       {modal?.type==="item"&&<ItemModal item={modal.item||null} flohmärkte={flohmärkte} onSave={saveItem} onClose={()=>setModal(null)} onDel={delItem} cats={cats} onAddCat={addCat}/>}
       {modal?.type==="verkauft"&&<VerkauftModal item={modal.item} onSave={opts=>markVerkauft(modal.item,opts)} onClose={()=>setModal(null)}/>}
       {modal?.type==="flohmarkt"&&<FlohmarktModal fm={modal.fm||null} onSave={saveFm} onClose={()=>setModal(null)}/>}
