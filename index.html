@@ -3321,21 +3321,26 @@ function FlohmarktModule({onBack}) {
             const grp=byStatus[st.id]||[];
             if(grp.length===0) return null;
             const wert=grp.reduce((s,i)=>s+(st.id==="verkauft"?(i.verkaufspreis||0):(i.wunschpreis||0)),0);
+            const isOpen=expandedFm["lager_"+st.id]!==undefined?expandedFm["lager_"+st.id]:(st.id!=="verkauft");
             return (
               <div key={st.id} style={{marginBottom:20}}>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+                <button onClick={()=>setExpandedFm(x=>({...x,["lager_"+st.id]:!isOpen}))}
+                  style={{width:"100%",display:"flex",alignItems:"center",gap:8,marginBottom:isOpen?8:0,padding:"6px 0",background:"none",border:"none",cursor:"pointer"}}>
                   <span style={{fontSize:11,fontWeight:800,padding:"3px 10px",borderRadius:20,background:st.bg,color:st.color,border:"1px solid "+st.border}}>{st.label}</span>
-                  <span style={{fontSize:12,color:"#94a3b8",fontWeight:600}}>{grp.length} Artikel{wert>0?" · "+chf(wert):""}</span>
-                </div>
-                <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                  {grp.map(it=>(
-                    <ItemCard key={it.id} item={it} flohmärkte={flohmärkte}
-                      onEdit={item=>setModal({type:"item",item})}
-                      onVerkauft={item=>setModal({type:"verkauft",item})}
-                      onToggleMitgenommen={toggleMitgenommen}
-                    />
-                  ))}
-                </div>
+                  <span style={{fontSize:12,color:"#94a3b8",fontWeight:600,flex:1,textAlign:"left"}}>{grp.length} Artikel{wert>0?" · "+chf(wert):""}</span>
+                  <span style={{fontSize:11,color:"#94a3b8",display:"inline-block",transition:"transform .2s",transform:isOpen?"rotate(180deg)":"rotate(0deg)"}}>▾</span>
+                </button>
+                {isOpen&&(
+                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                    {grp.map(it=>(
+                      <ItemCard key={it.id} item={it} flohmärkte={flohmärkte}
+                        onEdit={item=>setModal({type:"item",item})}
+                        onVerkauft={item=>setModal({type:"verkauft",item})}
+                        onToggleMitgenommen={toggleMitgenommen}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}
