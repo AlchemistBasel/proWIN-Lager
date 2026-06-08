@@ -3093,6 +3093,7 @@ function FlohmarktModule({onBack}) {
   const [flohmärkte,setFm]   = useState([]);
   const [tab,setTab]=useState("lager");
   const [modal,setModal]     = useState(null);
+  const [expandedFm,setExpandedFm] = useState({});
   const [toast,setToast]     = useState(null);
   const [search,setSearch]   = useState("");
   const [filterKat,setFilterKat]       = useState("Alle");
@@ -3401,14 +3402,24 @@ function FlohmarktModule({onBack}) {
                     </div>
                   )}
                   {fmItems.length>0&&(
-                    <div style={{paddingTop:10,borderTop:"1px solid "+FM_A[100]}}>
-                      <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
-                        {fmItems.map(it=>(
-                          <span key={it.id} style={{fontSize:11,fontWeight:700,padding:"3px 9px",borderRadius:20,background:it.status==="verkauft"?"#f0fdf4":FM_A[100],color:it.status==="verkauft"?"#16a34a":FM_A[700],border:"1px solid "+(it.status==="verkauft"?"#bbf7d0":FM_A[300])}}>
-                            {it.status==="verkauft"?"✓ ":""}{it.name}
-                          </span>
-                        ))}
-                      </div>
+                    <div style={{borderTop:"1px solid "+FM_A[100]}}>
+                      <button onClick={()=>setExpandedFm(x=>({...x,[fm.id]:!x[fm.id]}))}
+                        style={{width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 0 "+(expandedFm[fm.id]?"6px":"0"),background:"none",border:"none",cursor:"pointer"}}>
+                        <span style={{fontSize:12,fontWeight:700,color:FM_A[700]}}>{fmItems.length} Artikel {sold.length>0?"("+sold.length+" verkauft)":""}</span>
+                        <span style={{fontSize:11,color:"#94a3b8",fontWeight:600,display:"flex",alignItems:"center",gap:4}}>
+                          {expandedFm[fm.id]?"Einklappen":"Aufklappen"}
+                          <span style={{display:"inline-block",transition:"transform .2s",transform:expandedFm[fm.id]?"rotate(180deg)":"rotate(0deg)"}}>▾</span>
+                        </span>
+                      </button>
+                      {expandedFm[fm.id]&&(
+                        <div style={{display:"flex",flexWrap:"wrap",gap:5,paddingBottom:4}}>
+                          {fmItems.map(it=>(
+                            <span key={it.id} style={{fontSize:11,fontWeight:700,padding:"3px 9px",borderRadius:20,background:it.status==="verkauft"?"#f0fdf4":FM_A[100],color:it.status==="verkauft"?"#16a34a":FM_A[700],border:"1px solid "+(it.status==="verkauft"?"#bbf7d0":FM_A[300])}}>
+                              {it.status==="verkauft"?"✓ ":""}{it.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
