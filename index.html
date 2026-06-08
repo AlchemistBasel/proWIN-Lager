@@ -3180,6 +3180,8 @@ function FlohmarktModule({onBack}) {
   const mitgenommen = items.filter(i=>i.status==="mitgenommen");
   const online      = items.filter(i=>i.status==="online");
   const totalEinnahmen = verkauft.reduce((s,i)=>s+(i.verkaufspreis||0),0);
+  const totalAusgaben = flohmärkte.reduce((s,fm)=>s+(fm.ausgaben||[]).reduce((a,x)=>a+(x.betrag||0),0),0);
+  const gesamtGewinn = totalEinnahmen - totalAusgaben;
 
   const filtered = useMemo(()=>{
     let res = items.filter(it=>{
@@ -3407,9 +3409,19 @@ function FlohmarktModule({onBack}) {
         {tab==="stats"&&<div style={{animation:"fadein .3s ease"}}>
           <h2 style={{fontSize:20,fontWeight:900,color:FM_A[900],marginBottom:16}}>Statistik</h2>
           <div style={{background:"linear-gradient(135deg,"+FM_A[800]+","+FM_A[500]+")",borderRadius:20,padding:"20px",marginBottom:16,color:"#fff"}}>
-            <div style={{fontSize:12,opacity:.75,fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:4}}>Gesamteinnahmen</div>
-            <div style={{fontSize:36,fontWeight:900}}>{chf(totalEinnahmen)}</div>
-            <div style={{fontSize:13,opacity:.8,marginTop:4}}>{verkauft.length} Artikel verkauft von {items.length} total</div>
+            <div style={{fontSize:12,opacity:.75,fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:4}}>Netto-Gewinn</div>
+            <div style={{fontSize:36,fontWeight:900}}>{chf(gesamtGewinn)}</div>
+            <div style={{display:"flex",gap:14,marginTop:10,paddingTop:10,borderTop:"1px solid rgba(255,255,255,0.2)"}}>
+              <div>
+                <div style={{fontSize:10,opacity:.7,fontWeight:700,textTransform:"uppercase",letterSpacing:.4}}>Einnahmen</div>
+                <div style={{fontSize:16,fontWeight:900,marginTop:2}}>+{chf(totalEinnahmen)}</div>
+              </div>
+              {totalAusgaben>0&&<div>
+                <div style={{fontSize:10,opacity:.7,fontWeight:700,textTransform:"uppercase",letterSpacing:.4}}>Ausgaben</div>
+                <div style={{fontSize:16,fontWeight:900,marginTop:2}}>−{chf(totalAusgaben)}</div>
+              </div>}
+            </div>
+            <div style={{fontSize:12,opacity:.75,marginTop:10}}>{verkauft.length} Artikel verkauft von {items.length} total</div>
           </div>
 
           <div style={{background:"#fff",border:"1px solid "+FM_A[200],borderRadius:16,padding:16,marginBottom:16}}>
