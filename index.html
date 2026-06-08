@@ -2858,7 +2858,18 @@ function FlohmarktModal({fm,onSave,onClose}) {
   };
   const delAusgabe = id => s("ausgaben",(f.ausgaben||[]).filter(a=>a.id!==id));
 
-  const submit = e => {e.preventDefault();if(!f.name.trim())return;onSave(f);};
+  const submit = e => {
+    e.preventDefault();if(!f.name.trim())return;
+    // Auto-add pending Ausgabe falls Felder ausgefüllt
+    const pendingBez=newAusgabeBez.trim();
+    const pendingBetrag=parseFloat(newAusgabeBetrag)||0;
+    if(pendingBez&&pendingBetrag>0){
+      const updated={...f,ausgaben:[...(f.ausgaben||[]),{bez:pendingBez,betrag:pendingBetrag,id:uid()}]};
+      onSave(updated);
+    } else {
+      onSave(f);
+    }
+  };
   return (
     <Drawer onClose={onClose}>
       <h3 style={{margin:"0 0 16px",fontSize:18,fontWeight:900,color:FM_A[900]}}>{isEdit?"Flohmarkt bearbeiten":"Neuer Flohmarkt"}</h3>
